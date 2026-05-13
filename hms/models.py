@@ -1,0 +1,677 @@
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import date, datetime
+import json
+
+class AuditLog(models.Model):
+    """
+    Audit Log to track all critical system activities.
+    """
+    ACTION_CHOICES = [
+        ('LOGIN', 'Login'),
+        ('LOGOUT', 'Logout'),
+        ('CREATE', 'Create'),
+        ('UPDATE', 'Update'),
+        ('DELETE', 'Delete'),
+        ('APPROVE', 'Approve'),
+        ('REJECT', 'Reject'),
+        ('EXPORT', 'Export'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='audit_logs')
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
+    model_name = models.CharField(max_length=50, blank=True, null=True)
+    object_id = models.CharField(max_length=50, blank=True, null=True)
+    object_repr = models.CharField(max_length=200, blank=True, null=True)
+    details = models.TextField(blank=True, null=True, help_text="JSON representation of changes")
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=255, blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+        permissions = [
+            ("view_audit_log", "Can view audit logs"),
+            ("export_audit_log", "Can export audit logs"),
+        ]
+
+    def __str__(self):
+        return f"{self.user} - {self.action} - {self.timestamp}"
+
+class Student(models.Model):
+    """Extended profile for students"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
+    university_id = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    phone = models.CharField(max_length=15, blank=True)
+    profile_image = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    timetable = models.FileField(upload_to='timetables/', blank=True, null=True)
+    room_number = models.CharField(max_length=10, blank=True, null=True)
+    
+    RESIDENCE_TYPE_CHOICES = [
+        ('hostel', 'In Hostel'),
+        ('off_campus', 'Off-Campus (Rental)'),
+    ]
+    residence_type = models.CharField(max_length=20, choices=RESIDENCE_TYPE_CHOICES, default='hostel')
+
+    GENDER_CHOICES = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('others', 'Others'),
+    ]
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=True, blank=True)
+
+    DISABILITY_CHOICES = [
+        ('none', 'None'),
+        ('physical', 'Physical Disability'),
+        ('visual', 'Visual Impairment'),
+        ('hearing', 'Hearing Impairment'),
+        ('mental', 'Mental Health Condition'),
+        ('others', 'Others'),
+    ]
+    disability = models.CharField(max_length=20, choices=DISABILITY_CHOICES, default='none')
+    disability_details = models.TextField(blank=True, null=True, help_text="Specify details if 'Others' is selected")
+
+    program_of_study = models.CharField(max_length=100, blank=True, null=True, help_text="Department or Program of Study")
+    
+    hostel = models.CharField(max_length=50, blank=True, null=True, help_text="Name of the hostel/hall")
+
+
+    is_warden = models.BooleanField(default=False)
+    is_on_attachment = models.BooleanField(default=False, help_text="Is the student currently on industrial attachment?")
+    is_graduating = models.BooleanField(default=False, help_text="Is the student in their graduating semester/year?")
+    
+    LEVEL_OF_STUDY_CHOICES = [
+        ('diploma', 'Diploma (TVET)'),
+        ('bachelors', 'Bachelor\'s'),
+        ('masters', 'Master\'s'),
+        ('doctorate', 'Ph.D (Doctorate)'),
+        ('postgrad_diploma', 'Postgrad Diploma'),
+        ('certificate', 'Certificate'),
+    ]
+    level_of_study = models.CharField(max_length=20, choices=LEVEL_OF_STUDY_CHOICES, default='bachelors')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.get_full_name()} ({self.university_id})"
+
+class Meal(models.Model):
+    """Daily meal submission"""
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='meals')
+    date = models.DateField(default=date.today)
+    breakfast = models.BooleanField(default=False)
+    early = models.BooleanField(default=False) # Early breakfast
+    supper = models.BooleanField(default=False)
+    away = models.BooleanField(default=False) # Check if marked away for this specific day
+    submitted_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['student', 'date']
+        ordering = ['-date']
+
+    def __str__(self):
+        return f"{self.student} - {self.date}"
+
+class AwayPeriod(models.Model):
+    """Periods when a student is away"""
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='away_periods')
+    start_date = models.DateField()
+    end_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.start_date > self.end_date:
+            raise ValidationError("End date must be after start date.")
+
+    def __str__(self):
+        return f"{self.student} Away: {self.start_date} to {self.end_date}"
+
+class Activity(models.Model):
+    """Weekly activities"""
+    display_name = models.CharField(max_length=100)
+    weekday = models.IntegerField(choices=[
+        (0, 'Monday'), (1, 'Tuesday'), (2, 'Wednesday'),
+        (3, 'Thursday'), (4, 'Friday'), (5, 'Saturday'), (6, 'Sunday')
+    ])
+    description = models.TextField(blank=True)
+    time = models.TimeField(null=True, blank=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name_plural = "Activities"
+        ordering = ['weekday', 'time']
+
+    def __str__(self):
+        return f"{self.get_weekday_display()} - {self.display_name}"
+
+class Announcement(models.Model):
+    """System announcements"""
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='announcements')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    priority = models.CharField(max_length=20, choices=[
+        ('low', 'Low'),
+        ('normal', 'Normal'),
+        ('high', 'High'),
+        ('urgent', 'Urgent')
+    ], default='normal')
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+class MaintenanceRequest(models.Model):
+    """Maintenance requests"""
+    PRIORITY_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('critical', 'Critical'),
+    ]
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+    ]
+
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='maintenance_requests')
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    location = models.CharField(max_length=100, help_text="Specific location, e.g., Room 101, Common Room", blank=True, null=True)
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    image = models.ImageField(upload_to='maintenance_images/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    admin_notes = models.TextField(blank=True, help_text="Notes from admin/warden", default='')
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+class StaffProfile(models.Model):
+    ROLE_CHOICES = [
+        ('SUPER_ADMIN', 'Super Admin'),
+        ('HEALTH_MANAGER', 'Health Manager'),
+        ('MAINTENANCE_SUPERVISOR', 'Maintenance Supervisor'),
+        ('WARDEN', 'Warden'),
+        ('FINANCE_OFFICER', 'Finance Officer'),
+        ('SECURITY_OFFICER', 'Security Officer'),
+        ('NEWS_EDITOR', 'News Editor'),
+        ('AUDITOR', 'Auditor'),
+        ('EMERGENCY_COORDINATOR', 'Emergency Coordinator'),
+        ('SUPPORT_AGENT', 'Support Agent'),
+        ('TVET_DIRECTOR', 'Diploma Coordinator (TVET)'),
+        ('TVET_COORDINATOR', 'TVET Coordinator'),
+        ('HOSTEL_MANAGER', 'Hostel Manager'),
+        ('KITCHEN_MANAGER', 'Kitchen Manager'),
+        ('DEAN_STUDENTS', 'Dean of Students'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='staff_profile')
+    role = models.CharField(max_length=50, choices=ROLE_CHOICES)
+    national_id = models.CharField(max_length=20, unique=True, verbose_name="Role ID / National ID")
+    phone = models.CharField(max_length=15)
+    is_approved = models.BooleanField(default=True)
+    profile_image = models.ImageField(upload_to='staff_profiles/', null=True, blank=True)
+
+    def get_category(self):
+        """Categorize roles for permission logic - Simplified Version"""
+        role = self.role
+        if role in ['SUPER_ADMIN', 'Super Admin']:
+            return 'EXECUTIVE'
+        if role in ['TVET_DIRECTOR', 'TVET_COORDINATOR', 'DEAN_STUDENTS']:
+            return 'ACADEMIC_ADMIN'
+
+        if role in ['FINANCE_OFFICER', 'AUDITOR']:
+            return 'FINANCE_ADMIN'
+        if role in ['NEWS_EDITOR', 'SUPPORT_AGENT']:
+            return 'STUDENT_SERVICES'
+        if role in ['MAINTENANCE_SUPERVISOR', 'SECURITY_OFFICER', 'EMERGENCY_COORDINATOR']:
+            return 'TECHNICAL_ESTATES'
+        if role in ['HEALTH_MANAGER']:
+            return 'HEALTH_SERVICES'
+        return 'GENERAL_STAFF'
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.get_role_display()}"
+
+class Document(models.Model):
+    """Uploaded documents for students"""
+    title = models.CharField(max_length=200)
+    file = models.FileField(upload_to='documents/')
+    description = models.TextField(blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    is_visible = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title
+
+class DefermentRequest(models.Model):
+    """Student deferment requests (Leave of Absence)"""
+    DEFERMENT_TYPES = [
+        ('fee_challenges', 'Fee Challenges'),
+        ('motherhood_fatherhood', 'Motherhood/Fatherhood'),
+        ('special_exams', 'Special Exams'),
+        ('sick_role', 'Sick Role (Medical)'),
+        ('bereavement', 'Bereavement'),
+        ('suspension_expulsion', 'Suspension/Expulsion'),
+        ('natural_calamity', 'Natural Calamity'),
+        ('other', 'Others'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='deferment_requests')
+    start_date = models.DateField()
+    end_date = models.DateField()
+    deferment_type = models.CharField(max_length=30, choices=DEFERMENT_TYPES, help_text="Select the reason for deferment")
+    other_reason_detail = models.TextField(blank=True, null=True, help_text="Specific details for 'Others' reason")
+    contact_during_deferment = models.CharField(max_length=15, blank=True, null=True, help_text="Contact number during deferment")
+    supporting_documents = models.FileField(upload_to='deferment_docs/', blank=True, null=True, help_text="Supporting documents (Medical reports, letters, etc.)")
+    reason = models.TextField(help_text="Detailed explanation")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    admin_response = models.TextField(blank=True, help_text="Response from admin")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    @property
+    def duration_days(self):
+        if self.start_date and self.end_date:
+            return (self.end_date - self.start_date).days
+        return 0
+
+    def __str__(self):
+        return f"{self.student} - {self.get_deferment_type_display()}"
+
+# Alias for backward compatibility if needed, but DefermentRequest is the primary
+LeaveRequest = DefermentRequest
+
+class EmergencyAlert(models.Model):
+    """Emergency SOS alerts from students"""
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='emergency_alerts')
+    location = models.CharField(max_length=255, blank=True, help_text="Location when alert was triggered")
+    is_resolved = models.BooleanField(default=False)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    admin_notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"SOS: {self.student} at {self.created_at}"
+
+class Suggestion(models.Model):
+    """Anonymous suggestions from students"""
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Suggestion ({self.created_at.strftime('%Y-%m-%d')})"
+
+class Visitor(models.Model):
+    """Visitor logbook"""
+    CATEGORY_CHOICES = [
+        ('male_student', 'Male Student'),
+        ('female_student', 'Female Student'),
+        ('lgbtq', 'LGBTQ'),
+        ('male_parent', 'Male Parents'),
+        ('female_parent', 'Female Parents'),
+        ('pwd', 'PWD'),
+    ]
+
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='visitors')
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='male_student')
+    phone = models.CharField(max_length=15)
+    id_number = models.CharField(max_length=20, help_text="National ID or Passport Number")
+    purpose = models.TextField()
+    check_in_time = models.DateTimeField(auto_now_add=True)
+    check_out_time = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='registered_visitors')
+
+    class Meta:
+        ordering = ['-check_in_time']
+
+    def __str__(self):
+        return f"{self.name} - Visiting {self.student.user.get_full_name()}"
+
+    def check_out(self):
+        """Mark visitor as checked out"""
+        self.check_out_time = timezone.now()
+        self.is_active = False
+        self.save()
+
+class Message(models.Model):
+    """Chat messages between users"""
+    sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
+    recipient = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
+    content = models.TextField(blank=True)
+    attachment = models.FileField(upload_to='chat_attachments/', null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"From {self.sender} to {self.recipient}: {self.content[:20]}"
+
+class Room(models.Model):
+    """Rooms in hostels"""
+    ROOM_TYPES = [
+        ('single', 'Single'), ('double', 'Double'), ('triple', 'Triple'), ('quad', 'Quad')
+    ]
+    room_number = models.CharField(max_length=10, unique=True)
+    floor = models.IntegerField()
+    block = models.CharField(max_length=50, blank=True)
+    room_type = models.CharField(max_length=20, choices=ROOM_TYPES, default='double')
+    capacity = models.IntegerField(default=2)
+    is_available = models.BooleanField(default=True)
+    amenities = models.TextField(blank=True, help_text="List amenities (e.g., AC, attached bathroom)")
+    price_per_semester = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['block', 'floor', 'room_number']
+
+    def __str__(self):
+        return f"{self.room_number} ({self.block})"
+
+class RoomAssignment(models.Model):
+    """Assigning students to rooms"""
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='assignments')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='room_assignments')
+    bed_number = models.IntegerField(null=True, blank=True)
+    assigned_date = models.DateField(default=timezone.now)
+    checkout_date = models.DateField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-assigned_date']
+
+    def __str__(self):
+        return f"{self.student} in {self.room}"
+
+class RoomChangeRequest(models.Model):
+    """Requests to change rooms"""
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='room_change_requests')
+    current_room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, related_name='change_requests_from')
+    requested_room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True, related_name='change_requests_to')
+    reason = models.TextField()
+    status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')
+    ], default='pending')
+    admin_notes = models.TextField(blank=True)
+    reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_room_changes')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Change Request: {self.student}"
+
+class LoginActivity(models.Model):
+    """Track user login activities"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='login_activities', null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, default='Success')
+
+    class Meta:
+        verbose_name_plural = "Login Activities"
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f"{self.user} - {self.timestamp}"
+
+class Notification(models.Model):
+    """System notifications for users"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    link = models.CharField(max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user} - {self.title}"
+
+class Payment(models.Model):
+    """M-Pesa payment records"""
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='payments')
+    transaction_id = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    phone_number = models.CharField(max_length=15)
+    reference = models.CharField(max_length=50, default='Accommodation')
+    status = models.CharField(max_length=20, choices=[
+        ('Pending', 'Pending'), ('Completed', 'Completed'), ('Failed', 'Failed')
+    ], default='Pending')
+    checkout_request_id = models.CharField(max_length=100, null=True, blank=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Payment {self.transaction_id or 'Pending'} - {self.student}"
+
+
+class AdminSubscription(models.Model):
+    """System-wide subscription paid by the admin to keep the system active"""
+    STATUS_CHOICES = [
+        ('Active', 'Active'), ('Expired', 'Expired'), ('Pending', 'Pending')
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    last_payment_date = models.DateTimeField(null=True, blank=True)
+    expiry_date = models.DateTimeField(null=True, blank=True)
+    transaction_id = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    checkout_request_id = models.CharField(max_length=100, null=True, blank=True)
+    phone_number = models.CharField(max_length=15, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=3000.00)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def is_active(self):
+        if self.status != 'Active':
+            return False
+        if self.expiry_date and self.expiry_date < timezone.now():
+            return False
+        return True
+
+    class Meta:
+        verbose_name = "Admin Subscription"
+        verbose_name_plural = "Admin Subscriptions"
+
+    def __str__(self):
+        return f"Subscription {self.status} - Expires {self.expiry_date}"
+
+class RegistrationPayment(models.Model):
+    """One-time registration fee paid by students before account creation"""
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'), ('Completed', 'Completed'), ('Failed', 'Failed')
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    phone_number = models.CharField(max_length=15)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=30.00)
+    transaction_id = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    checkout_request_id = models.CharField(max_length=100, unique=True)
+    # Since account isn't created yet, we map to session data or temporary identifier
+    temp_user_data = models.JSONField(null=True, blank=True, help_text="Stored registration form data")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Registration Payment"
+        verbose_name_plural = "Registration Payments"
+
+    def __str__(self):
+        return f"Reg Payment {self.status} - {self.phone_number}"
+
+class LostItem(models.Model):
+    """Model for Lost and Found items"""
+    STATUS_CHOICES = [
+        ('LOST', 'Lost'),
+        ('FOUND', 'Found'),
+        ('CLAIMED', 'Claimed'),
+    ]
+    
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    location = models.CharField(max_length=100, help_text="Where it was lost or found")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='LOST')
+    contact_phone = models.CharField(max_length=15, help_text="Contact number for the finder/owner")
+    image = models.ImageField(upload_to='lost_found/', blank=True, null=True)
+    reported_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reported_items')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        
+    def __str__(self):
+        return f"{self.get_status_display()}: {self.name}"
+
+class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('meal', 'Meal & Kitchen'),
+        ('finance', 'Finance & Payment'),
+        ('maintenance', 'Maintenance & Support'),
+        ('broadcast', 'General Broadcast'),
+        ('system', 'System Alert')
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True, help_text="Null for system-wide broadcasts")
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='system')
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    link = models.CharField(max_length=255, blank=True, null=True, help_text="Optional URL to redirect when clicked")
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+class TutoringPost(models.Model):
+    POST_TYPE_CHOICES = [
+        ('offer', 'Offering Help (Tutor)'),
+        ('request', 'Requesting Help (Student)'),
+    ]
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='tutoring_posts')
+    subject = models.CharField(max_length=100, help_text="e.g., Mathematics, Python, Accounting")
+    description = models.TextField(help_text="Details about what you can teach or need help with")
+    post_type = models.CharField(max_length=10, choices=POST_TYPE_CHOICES)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.get_post_type_display()}: {self.subject} by {self.student.user.first_name}"
+
+class HealthAppointment(models.Model):
+    SERVICE_TYPE_CHOICES = [
+        ('general', 'General Health'),
+        ('counseling', 'Mental Wellness (Counseling)'),
+        ('emergency', 'Emergency Triage'),
+        ('dental', 'Dental'),
+    ]
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('ongoing', 'Ongoing'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+        ('no_show', 'No Show'),
+    ]
+    
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='health_appointments')
+    service_type = models.CharField(max_length=20, choices=SERVICE_TYPE_CHOICES, default='general')
+    reason = models.TextField(help_text="Briefly describe why you are booking")
+    preferred_date = models.DateField()
+    preferred_slot = models.TimeField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    
+    # Staff assignment
+    assigned_staff = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, 
+                                      related_name='assigned_health_appointments',
+                                      help_text="Doctor or Counselor assigned to this case")
+    
+    # Clinical Data (Confidential)
+    vitals = models.TextField(blank=True, null=True, help_text="Recorded by Nurse (BP, Temp, Weight, etc.)")
+    clinical_notes = models.TextField(blank=True, null=True, help_text="Notes from the session (Private)")
+    prescription = models.TextField(blank=True, null=True, help_text="Medication or follow-up instructions")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-preferred_date', '-preferred_slot']
+
+    def __str__(self):
+        return f"{self.get_service_type_display()} - {self.student.user.get_full_name()} ({self.preferred_date})"
+
+class StaffInvitation(models.Model):
+    """Secure, time-bound and usage-limited staff registration invitation links."""
+    token = models.CharField(max_length=64, unique=True)
+    role = models.CharField(max_length=50)
+    email = models.EmailField(blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
+    expires_at = models.DateTimeField(null=True, blank=True) # Null for 'Never'
+    usage_limit = models.IntegerField(default=1) # 1 for single, N for multiple, 0 for unlimited
+    used_count = models.IntegerField(default=0)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_invitations')
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def is_valid(self):
+        if not self.is_active:
+            return False
+        if self.expires_at and timezone.now() > self.expires_at:
+            return False
+        if self.usage_limit > 0 and self.used_count >= self.usage_limit:
+            return False
+        return True
+
+    def __str__(self):
+        limit_str = f"{self.usage_limit}" if self.usage_limit > 0 else "∞"
+        return f"Invite for {self.role} ({self.used_count}/{limit_str})"

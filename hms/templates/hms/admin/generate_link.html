@@ -1,0 +1,450 @@
+{% extends 'hms/base.html' %}
+{% load static %}
+
+{% block title %}Staff Invitation System - CampusCare{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #4f46e5;
+        --secondary: #0ea5e9;
+        --background: #f8fafc;
+        --surface: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+    }
+
+    .page-container {
+        max-width: 1100px;
+        margin: 3rem auto;
+        padding: 0 1.5rem;
+    }
+
+    .premium-card {
+        background: var(--surface);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin-bottom: 2.5rem;
+    }
+
+    .card-header {
+        background: #1e293b;
+        padding: 2.5rem;
+        text-align: center;
+        color: white;
+    }
+
+    .card-header h1 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        letter-spacing: -0.025em;
+    }
+
+    .card-header p {
+        color: #94a3b8;
+        font-size: 0.95rem;
+    }
+
+    .card-body {
+        padding: 3rem;
+    }
+
+    .section-title {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .form-box {
+        background: #f8fafc;
+        border: 1.5px solid var(--border);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .role-select {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        border: 1.5px solid var(--border);
+        background: white;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-main);
+        outline: none;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .role-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+
+    .option-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+    }
+
+    .radio-card {
+        position: relative;
+        display: block;
+        padding: 1rem;
+        background: white;
+        border: 1.5px solid var(--border);
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+    }
+
+    .radio-card input {
+        position: absolute;
+        opacity: 0;
+    }
+
+    .radio-card span {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-muted);
+    }
+
+    .radio-card:hover {
+        border-color: var(--primary);
+    }
+
+    .radio-card input:checked + span {
+        color: var(--primary);
+    }
+
+    .radio-card:has(input:checked) {
+        border-color: var(--primary);
+        background: rgba(79, 70, 229, 0.05);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+
+    .btn-submit {
+        width: 100%;
+        background: #1e293b;
+        color: white;
+        border: none;
+        padding: 1.25rem;
+        border-radius: 1rem;
+        font-size: 1rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .btn-submit:hover {
+        background: #0f172a;
+        transform: translateY(-2px);
+    }
+
+    /* Table Styles */
+    .table-card {
+        background: var(--surface);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border);
+        overflow: hidden;
+    }
+
+    .table-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 2px solid #1e293b;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table-header h2 {
+        font-size: 1.125rem;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.01em;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table th {
+        background: #f8fafc;
+        padding: 1.25rem 1.5rem;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1.5px solid var(--border);
+    }
+
+    .data-table td {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .link-pill {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+        background: #f1f5f9;
+        padding: 0.4rem 0.75rem;
+        border-radius: 0.5rem;
+        color: var(--text-muted);
+        max-width: 180px;
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border);
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .action-btn:hover {
+        background: #f8fafc;
+        color: var(--text-main);
+        transform: translateY(-1px);
+    }
+
+    .action-btn.delete:hover {
+        background: #fee2e2;
+        color: #ef4444;
+        border-color: #fecaca;
+    }
+
+    .footer-actions {
+        padding: 1.5rem 2rem;
+        background: #f8fafc;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .secondary-btn {
+        padding: 0.6rem 1.25rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--border);
+        background: white;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .secondary-btn:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: var(--text-main);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Generator Section -->
+    <div class="premium-card">
+        <div class="card-header">
+            <h1><i class="fas fa-link"></i> Staff Invitation System</h1>
+            <p>Generate secure, time-bound registration links for new staff members</p>
+        </div>
+        <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                <div style="padding: 1rem 1.5rem; border-radius: 1rem; margin-bottom: 2rem; font-size: 0.9rem; font-weight: 700; {% if message.tags == 'success' %}background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;{% else %}background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" id="genForm">
+                {% csrf_token %}
+                <div class="form-box">
+                    <span class="section-title">Step 1: Select Staff Role</span>
+                    <select name="role" class="role-select" required>
+                        <option value="">-- Select Target Role --</option>
+                        {% for value, label in roles %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-box">
+                        <span class="section-title">Step 2: Link Expiry</span>
+                        <div class="option-grid">
+                            <label class="radio-card">
+                                <input type="radio" name="expiry" value="24h" checked>
+                                <span>24 Hours</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="expiry" value="7d">
+                                <span>7 Days</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="expiry" value="never">
+                                <span>Never</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-box">
+                        <span class="section-title">Step 3: Usage Limit</span>
+                        <div class="option-grid">
+                            <label class="radio-card">
+                                <input type="radio" name="usage" value="single" checked>
+                                <span>Single Use</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="usage" value="multiple">
+                                <span>Multi (5)</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="usage" value="unlimited">
+                                <span>Unlimited</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="genBtn">
+                    <i class="fas fa-magic"></i> Generate Secure Invitation Link
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Active Links Table -->
+    <div class="table-card">
+        <div class="table-header">
+            <h2><i class="fas fa-history"></i> Active Registration Links</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Staff Role</th>
+                        <th>Invitation Link</th>
+                        <th>Expiry</th>
+                        <th>Usage</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invite in invitations %}
+                    <tr>
+                        <td style="color: var(--primary); font-weight: 800;">{{ invite.get_role_display }}</td>
+                        <td><span class="link-pill">{{ invite.full_url }}</span></td>
+                        <td>
+                            {% if invite.expires_at %}
+                                {% if invite.is_expired %}
+                                    <span style="color: #ef4444;">Expired</span>
+                                {% else %}
+                                    {{ invite.expires_at|timeuntil }} left
+                                {% endif %}
+                            {% else %}
+                                <span style="color: var(--secondary);">Permanent</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ invite.used_count }}/{% if invite.usage_limit == 0 %}∞{% else %}{{ invite.usage_limit }}{% endif %}</td>
+                        <td>
+                            {% if invite.is_valid %}
+                            <span class="badge badge-success"><span class="dot"></span> Active</span>
+                            {% else %}
+                            <span class="badge badge-danger"><span class="dot"></span> Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                <button class="action-btn" title="Copy Link" onclick="copyToClipboard('{{ invite.full_url }}')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <a href="{% url 'hms:manage_invitation_action' invite.id %}?action=delete" class="action-btn delete" title="Delete">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 4rem; color: var(--text-muted); font-style: italic;">
+                            No active invitation links found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="footer-actions">
+            <a href="." class="secondary-btn"><i class="fas fa-sync-alt"></i> Refresh List</a>
+            <a href="{% url 'hms:manage_invitation_action' 0 %}?action=clear_expired" class="secondary-btn"><i class="fas fa-broom"></i> Clear Expired</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Invitation link copied to clipboard!');
+        });
+    }
+
+    document.getElementById('genForm').addEventListener('submit', function() {
+        const btn = document.getElementById('genBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Link...';
+    });
+</script>
+{% endblock %}
+

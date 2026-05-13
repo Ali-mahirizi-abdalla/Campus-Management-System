@@ -1,0 +1,239 @@
+{% extends 'hms/base.html' %}
+{% load static %}
+
+{% block title %}Complete Staff Registration - CampusCare{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #4f46e5;
+        --background: #f1f5f9;
+        --surface: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+    }
+
+    .reg-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--background);
+        padding: 2rem;
+    }
+
+    .reg-card {
+        width: 100%;
+        max-width: 700px;
+        background: var(--surface);
+        border-radius: 2rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid var(--border);
+    }
+
+    .reg-header {
+        background: #1e293b;
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+    }
+
+    .reg-header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        margin-bottom: 0.5rem;
+    }
+
+    .reg-header p {
+        color: #94a3b8;
+        font-size: 1rem;
+    }
+
+    .reg-body {
+        padding: 3rem;
+    }
+
+    .role-banner {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        padding: 1rem 1.5rem;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+        color: #0369a1;
+        font-weight: 600;
+    }
+
+    .role-icon {
+        background: #bae6fd;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 640px) {
+        .form-grid { grid-template-columns: 1fr; }
+    }
+
+    .input-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .input-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+
+    /* Style for Django form fields */
+    input[type="text"], input[type="email"], input[type="password"], select, input[type="tel"] {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        border-radius: 0.75rem;
+        border: 1.5px solid var(--border);
+        background: #f8fafc;
+        font-size: 1rem;
+        transition: all 0.2s;
+        outline: none;
+    }
+
+    input:focus {
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+
+    .submit-btn {
+        width: 100%;
+        background: #1e293b;
+        color: white;
+        border: none;
+        padding: 1.25rem;
+        border-radius: 1rem;
+        font-size: 1.125rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .submit-btn:hover {
+        background: #0f172a;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .error-msg {
+        color: #e11d48;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-top: 0.4rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reg-wrapper">
+    <div class="reg-card">
+        <div class="reg-header">
+            <h1>Staff Registration</h1>
+            <p>Finalize your profile to access the administration portal</p>
+        </div>
+
+        <div class="reg-body">
+            <div class="role-banner">
+                <div class="role-icon">👤</div>
+                <div>
+                    <span style="display: block; font-size: 0.75rem; opacity: 0.7;">ASSIGNED ROLE</span>
+                    <span style="font-size: 1.125rem;">{{ invitation.get_role_display|default:invitation.role }}</span>
+                </div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; font-weight: 600;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="invite" value="{{ token }}">
+                
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label class="input-label">First Name</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}<p class="error-msg">{{ form.first_name.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Last Name</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}<p class="error-msg">{{ form.last_name.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Email Address</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}<p class="error-msg">{{ form.email.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label class="input-label">Role ID / National ID</label>
+                        {{ form.national_id }}
+                        {% if form.national_id.errors %}<p class="error-msg">{{ form.national_id.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Phone Number</label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}<p class="error-msg">{{ form.phone.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label class="input-label">Create Password</label>
+                        {{ form.password }}
+                        {% if form.password.errors %}<p class="error-msg">{{ form.password.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Confirm Password</label>
+                        {{ form.confirm_password }}
+                        {% if form.confirm_password.errors %}<p class="error-msg">{{ form.confirm_password.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <!-- Hidden but required by form -->
+                <div style="display:none;">{{ form.role }}</div>
+
+                <button type="submit" class="submit-btn">Register Account</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

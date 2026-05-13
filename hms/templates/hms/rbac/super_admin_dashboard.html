@@ -1,0 +1,336 @@
+{% extends 'hms/base.html' %}
+{% load static %}
+
+{% block title %}Super Admin - CampusCare Control Center{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #4f46e5;
+        --secondary: #0ea5e9;
+        --accent: #f59e0b;
+        --background: #f1f5f9;
+        --surface: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+    }
+
+    .dashboard-wrapper {
+        min-height: 100vh;
+        background: var(--background);
+        padding: 2.5rem;
+    }
+
+    .header-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .header-section h1 {
+        font-size: 2.25rem;
+        font-weight: 900;
+        color: var(--text-main);
+        letter-spacing: -0.025em;
+        margin: 0;
+    }
+
+    .header-section p {
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-top: 0.5rem;
+    }
+
+    /* Premium Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: var(--surface);
+        padding: 1.75rem;
+        border-radius: 1.5rem;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: all 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .stat-content p {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0;
+    }
+
+    .stat-content h2 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-top: 0.25rem;
+    }
+
+    /* Quick Actions */
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 3rem;
+    }
+
+    .action-btn {
+        background: white;
+        padding: 1.25rem;
+        border-radius: 1.25rem;
+        border: 1px solid var(--border);
+        text-align: center;
+        text-decoration: none;
+        color: var(--text-main);
+        font-weight: 700;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .action-btn i {
+        font-size: 1.25rem;
+        color: var(--primary);
+    }
+
+    .action-btn:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        transform: scale(1.05);
+    }
+
+    .action-btn:hover i {
+        color: white;
+    }
+
+    /* Layout Sections */
+    .layout-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+        .layout-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+        background: var(--surface);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border);
+        padding: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.125rem;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .list-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .list-item:last-child { border-bottom: none; }
+
+    .item-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 0.75rem;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: var(--primary);
+        font-size: 0.8125rem;
+    }
+
+    .item-content h4 {
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .item-content p {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.125rem;
+    }
+
+    .view-all-link {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+    .view-all-link:hover { opacity: 0.8; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <!-- Header -->
+    <div class="header-section">
+        <h1>Control Center</h1>
+        <p>Full system overview and administrative management</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #e0e7ff; color: #4338ca;">🎓</div>
+            <div class="stat-content">
+                <p>Total Students</p>
+                <h2>{{ total_students }}</h2>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #f5f3ff; color: #6d28d9;">👥</div>
+            <div class="stat-content">
+                <p>Total Staff</p>
+                <h2>{{ total_staff }}</h2>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fff7ed; color: #c2410c;">📋</div>
+            <div class="stat-content">
+                <p>Pending Deferments</p>
+                <h2>{{ pending_deferments }}</h2>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fef2f2; color: #b91c1c;">🔧</div>
+            <div class="stat-content">
+                <p>Maintenance</p>
+                <h2>{{ pending_maintenance }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions-grid">
+        <a href="{% url 'hms:manage_students' %}" class="action-btn">
+            <i class="fas fa-user-graduate"></i> Students
+        </a>
+        <a href="{% url 'hms:admin_deferment_all' %}" class="action-btn">
+            <i class="fas fa-file-signature"></i> Deferments
+        </a>
+        <a href="{% url 'hms:manage_maintenance' %}" class="action-btn">
+            <i class="fas fa-tools"></i> Repairs
+        </a>
+        <a href="{% url 'hms:audit_logs' %}" class="action-btn">
+            <i class="fas fa-history"></i> Audit Logs
+        </a>
+        <a href="{% url 'hms:room_list' %}" class="action-btn">
+            <i class="fas fa-door-open"></i> Rooms
+        </a>
+        <a href="{% url 'hms:visitor_management' %}" class="action-btn">
+            <i class="fas fa-id-badge"></i> Visitors
+        </a>
+        <a href="{% url 'hms:analytics_dashboard' %}" class="action-btn">
+            <i class="fas fa-chart-pie"></i> Analytics
+        </a>
+        <a href="{% url 'hms:register_staff' %}" class="action-btn">
+            <i class="fas fa-user-plus"></i> Add Staff
+        </a>
+    </div>
+
+    <div class="layout-grid">
+        <!-- Recent Audit Logs -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-search"></i> Recent Audit Activity</h2>
+            </div>
+            <div class="list-container">
+                {% for log in recent_logs %}
+                <div class="list-item">
+                    <div class="item-avatar">{{ log.user.first_name|first|upper }}{{ log.user.last_name|first|upper }}</div>
+                    <div class="item-content">
+                        <h4>{{ log.action }}</h4>
+                        <p>{{ log.timestamp|timesince }} ago • {{ log.user.get_full_name }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: var(--text-muted); padding: 2rem;">No recent activities logged.</p>
+                {% endfor %}
+            </div>
+            <a href="{% url 'hms:audit_logs' %}" class="view-all-link">Access Detailed Audit Trail →</a>
+        </div>
+
+        <!-- Recent Students -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-graduation-cap"></i> New Student Registrations</h2>
+            </div>
+            <div class="list-container">
+                {% for student in recent_students %}
+                <div class="list-item">
+                    <div class="item-avatar" style="background: #f0f9ff; color: #0369a1;">{{ student.user.first_name|first|upper }}</div>
+                    <div class="item-content">
+                        <h4>{{ student.user.get_full_name }}</h4>
+                        <p>ID: {{ student.university_id }} • Registered on {{ student.user.date_joined|date:"M d, Y" }}</p>
+                    </div>
+                    <a href="{% url 'hms:student_details' student.user.id %}" style="margin-left: auto; color: var(--primary); font-size: 0.8125rem; font-weight: 700;">View</a>
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: var(--text-muted); padding: 2rem;">No students registered recently.</p>
+                {% endfor %}
+            </div>
+            <a href="{% url 'hms:manage_students' %}" class="view-all-link">Manage Student Directory →</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

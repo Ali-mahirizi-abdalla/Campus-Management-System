@@ -1,0 +1,107 @@
+{% extends 'hms/base.html' %}
+{% load static %}
+
+{% block title %}Medical Dashboard - CampusCare{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">🏥 Medical Dashboard</h1>
+    <p class="text-gray-500 dark:text-gray-400 mt-1">Clinical operations and patient waiting lists</p>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Pending Requests</p>
+          <p class="text-3xl font-bold text-amber-600 dark:text-amber-400 mt-1">{{ stats.pending }}</p>
+        </div>
+        <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900 rounded-xl flex items-center justify-center text-2xl">⏳</div>
+      </div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Assigned To Me</p>
+          <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-1">{{ stats.assigned_to_me }}</p>
+        </div>
+        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center text-2xl">🩺</div>
+      </div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Completed Today</p>
+          <p class="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{{ stats.completed_today }}</p>
+        </div>
+        <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 rounded-xl flex items-center justify-center text-2xl">✅</div>
+      </div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Total All Time</p>
+          <p class="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">{{ stats.total_all_time }}</p>
+        </div>
+        <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-xl flex items-center justify-center text-2xl">📈</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+    <div class="bg-blue-600 text-white rounded-xl p-4 text-center font-semibold shadow-sm">Pending Appointments</div>
+    <div class="bg-amber-500 text-white rounded-xl p-4 text-center font-semibold shadow-sm">Active Consultations</div>
+    <div class="bg-emerald-500 text-white rounded-xl p-4 text-center font-semibold shadow-sm">Completed Logs</div>
+    <div class="bg-gray-700 text-white rounded-xl p-4 text-center font-semibold shadow-sm">All Records</div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Priority Waiting List -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+      <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">🚨 Priority Waiting List</h2>
+      <div class="space-y-3">
+        {% for app in pending_appointments %}
+        <div class="flex items-start gap-3 py-2 border-b border-gray-100 dark:border-gray-700 last:border-0 relative">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 
+            {% if app.service_type == 'emergency' %}bg-red-100 text-red-700{% elif app.service_type == 'counseling' %}bg-amber-100 text-amber-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+            {% if app.service_type == 'general' %}🩺{% elif app.service_type == 'counseling' %}🧠{% elif app.service_type == 'emergency' %}🚑{% else %}🦷{% endif %}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 dark:text-gray-200 truncate font-semibold">{{ app.student.user.get_full_name }}</p>
+            <p class="text-xs text-gray-500 line-clamp-1">"{{ app.reason }}"</p>
+            <p class="text-xs text-gray-400 mt-0.5">Time: {{ app.preferred_slot }} | Requested {{ app.created_at|timesince }} ago</p>
+          </div>
+          <a href="{% url 'hms:health_appointment_detail' app.pk %}" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">View</a>
+        </div>
+        {% empty %}
+        <p class="text-gray-400 text-sm text-center py-4">Queue is clear.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Active Consultations -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+      <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">🩺 Active Consultations</h2>
+      <div class="space-y-3">
+        {% for app in my_appointments %}
+        <div class="flex items-center gap-3 py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+          <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-xs font-bold text-blue-700 dark:text-blue-300">{{ app.student.user.first_name|first|upper }}</div>
+          <div class="flex-1">
+            <p class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ app.student.user.get_full_name }}</p>
+            <p class="text-xs text-gray-400">{{ app.get_service_type_display }} | {{ app.updated_at|timesince }} elapsed</p>
+          </div>
+          <a href="{% url 'hms:health_appointment_detail' app.pk %}" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800">Document</a>
+        </div>
+        {% empty %}
+        <p class="text-gray-400 text-sm text-center py-4">No active consultations assigned.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

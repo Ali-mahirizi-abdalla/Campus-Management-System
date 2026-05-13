@@ -1,0 +1,374 @@
+{% extends 'hms/base.html' %}
+{% load static %}
+
+{% block title %}👤 Staff Profile: {{ staff.user.get_full_name }} - CampusCare{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #4f46e5;
+        --secondary: #0ea5e9;
+        --background: #f8fafc;
+        --surface: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+    }
+
+    .page-wrapper {
+        min-height: 100vh;
+        background: var(--background);
+        padding: 3rem 1.5rem;
+    }
+
+    .details-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .back-nav {
+        margin-bottom: 0.5rem;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.875rem;
+        transition: color 0.2s;
+    }
+
+    .back-link:hover {
+        color: var(--primary);
+    }
+
+    /* Profile Header Card */
+    .profile-header-card {
+        background: var(--surface);
+        border-radius: 2rem;
+        border: 1px solid var(--border);
+        padding: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+
+    .profile-identity {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .avatar-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 2rem;
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: 800;
+        color: #475569;
+        border: 4px solid #ffffff;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .avatar-large img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .identity-text h1 {
+        font-size: 2.25rem;
+        font-weight: 900;
+        color: var(--text-main);
+        letter-spacing: -0.025em;
+        margin: 0;
+    }
+
+    .identity-text p {
+        color: var(--text-muted);
+        font-size: 1.125rem;
+        font-weight: 500;
+        margin-top: 0.25rem;
+    }
+
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #1e293b;
+        color: white;
+        padding: 0.5rem 1.25rem;
+        border-radius: 2rem;
+        font-size: 0.8125rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 1rem;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    /* Grid Layout */
+    .details-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+        .details-grid { grid-template-columns: 1fr; }
+    }
+
+    .info-card {
+        background: var(--surface);
+        border-radius: 1.5rem;
+        border: 1px solid var(--border);
+        padding: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-title {
+        font-size: 0.875rem;
+        font-weight: 900;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f8fafc;
+    }
+
+    .info-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-item label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-item span {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    /* Activity Sidebar */
+    .activity-card {
+        background: #1e293b;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .stat-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #334155;
+    }
+
+    .stat-row:last-of-type { border-bottom: none; }
+
+    .stat-label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #94a3b8;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #ffffff;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 0.875rem 1.5rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+        border: 1.5px solid transparent;
+    }
+
+    .btn-primary { background: #1e293b; color: white; }
+    .btn-primary:hover { background: #0f172a; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+
+    .btn-outline { background: white; border-color: var(--border); color: var(--text-main); }
+    .btn-outline:hover { background: #f8fafc; border-color: #94a3b8; }
+
+    .btn-danger { background: #fee2e2; color: #991b1b; }
+    .btn-danger:hover { background: #fecaca; transform: translateY(-2px); }
+
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="details-container">
+        <div class="back-nav">
+            <a href="{% url 'hms:manage_staff' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i> RETURN TO STAFF DIRECTORY
+            </a>
+        </div>
+
+        <!-- Header Profile Card -->
+        <div class="profile-header-card">
+            <div class="profile-identity">
+                <div class="avatar-large">
+                    {% if staff.profile_image %}
+                        <img src="{{ staff.profile_image.url }}" alt="{{ staff.user.get_full_name }}">
+                    {% else %}
+                        {{ staff.user.first_name|first|upper }}{{ staff.user.last_name|first|upper }}
+                    {% endif %}
+                </div>
+                <div class="identity-text">
+                    <h1>{{ staff.user.get_full_name }}</h1>
+                    <p>{{ staff.user.email }}</p>
+                    <div class="role-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        {{ staff.get_role_display }}
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="{% url 'hms:edit_staff' staff.id %}" class="btn btn-outline">
+                    <i class="fas fa-user-edit"></i> Edit Profile
+                </a>
+                <a href="{% url 'hms:delete_staff' staff.id %}" class="btn btn-danger" onclick="return confirm('CRITICAL: Are you sure you want to terminate this staff account? This action cannot be undone.')">
+                    <i class="fas fa-user-times"></i> Terminate Account
+                </a>
+            </div>
+        </div>
+
+        <div class="details-grid">
+            <div class="main-info">
+                <div class="info-card">
+                    <h3 class="card-title"><i class="fas fa-id-card"></i> Core Identity & Account</h3>
+                    <div class="info-row">
+                        <div class="info-item">
+                            <label>System Username</label>
+                            <span>{{ staff.user.username }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Account Status</label>
+                            <span>
+                                <span class="status-dot" style="background: {% if staff.user.is_active %}#10b981{% else %}#ef4444{% endif %};"></span>
+                                {{ staff.user.is_active|yesno:"ACTIVE,INACTIVE" }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-item">
+                            <label>National / Role ID</label>
+                            <span>{{ staff.national_id|default:"Not Provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Contact Phone</label>
+                            <span>{{ staff.phone|default:"Not Provided" }}</span>
+                        </div>
+                    </div>
+                    <div class="info-row" style="margin-bottom: 0;">
+                        <div class="info-item">
+                            <label>Date Registered</label>
+                            <span>{{ staff.created_at|date:"F d, Y" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Last Login Activity</label>
+                            <span>{{ staff.user.last_login|date:"F d, Y H:i"|default:"Never Logged In" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card" style="margin-top: 2rem;">
+                    <h3 class="card-title"><i class="fas fa-briefcase"></i> Administrative Mapping</h3>
+                    <div class="info-row" style="margin-bottom: 0;">
+                        <div class="info-item">
+                            <label>Assigned Department</label>
+                            <span>{{ staff.get_category }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Approval Verification</label>
+                            <span style="color: {% if staff.is_approved %}#10b981{% else %}#f59e0b{% endif %};">
+                                {{ staff.is_approved|yesno:"VERIFIED,PENDING APPROVAL" }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-info">
+                <div class="activity-card">
+                    <h3 class="card-title" style="color: white; border-bottom-color: #334155; margin-bottom: 1rem;">
+                        <i class="fas fa-chart-line"></i> Activity Pulse
+                    </h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Actions Performed</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Audit Logs</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Reports Generated</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">System Alerts</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div style="margin-top: 1rem; padding-top: 1rem; text-align: center;">
+                        <p style="font-size: 0.75rem; color: #64748b; font-weight: 600;">System activities are tracked for security auditing.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

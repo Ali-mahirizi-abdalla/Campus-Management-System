@@ -1,0 +1,153 @@
+{% extends 'hms/base.html' %}
+{% load static %}
+
+{% block title %}Visitor Management{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row min-h-screen -mt-8 -mx-4">
+    <!-- Inclusion of Standard Sidebar -->
+    {% include 'hms/includes/sidebar.html' %}
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 md:p-8 overflow-y-auto">
+        <div
+            class="mb-8 p-8 rounded-2xl shadow-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white border border-indigo-500/20">
+            <h1 class="text-3xl font-extrabold mb-2 tracking-tight">Visitor Logbook</h1>
+            <p class="text-indigo-100 font-medium">Manage visitor check-ins and check-outs with ease.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Check-In Form -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-xl p-6">
+                <h3 class="text-xl font-bold mb-4 text-slate-900 border-b border-slate-100 pb-2">Check In Visitor</h3>
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Select Student</label>
+                        {{ form.student }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Visitor Name</label>
+                        {{ form.name }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Category</label>
+                        {{ form.category }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Phone Number</label>
+                        {{ form.phone }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">ID / Passport</label>
+                        {{ form.id_number }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Purpose of Visit</label>
+                        {{ form.purpose }}
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow transition">
+                        Check In Visitor
+                    </button>
+                </form>
+            </div>
+
+            <!-- Active Visitors List -->
+            <div class="lg:col-span-2 space-y-8">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+                    <div class="p-4 bg-emerald-50 border-b border-emerald-100 flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-emerald-800">Currently Active Visitors</h3>
+                        <span
+                            class="bg-emerald-600 text-white text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full">{{ active_visitors|length }} Active</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead
+                                class="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                                <tr>
+                                    <th class="p-4">Visitor</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Visiting</th>
+                                    <th class="p-4">Time In</th>
+                                    <th class="p-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                {% for visitor in active_visitors %}
+                                <tr class="hover:bg-slate-50/50 transition">
+                                    <td class="p-4">
+                                        <p class="font-bold text-slate-900">{{ visitor.name }}</p>
+                                        <p class="text-xs text-slate-500 font-mono">{{ visitor.phone }}</p>
+                                    </td>
+                                    <td class="p-4">
+                                        <span
+                                            class="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                            {{ visitor.get_category_display }}
+                                        </span>
+                                    </td>
+                                    <td class="p-4">
+                                        <p class="text-sm font-bold text-slate-900">{{ visitor.student.user.get_full_name }}</p>
+                                        <p class="text-xs text-slate-500">Room: {{ visitor.student.room_number|default:"N/A" }}</p>
+                                    </td>
+                                    <td class="p-4 text-sm text-slate-600 font-medium">
+                                        {{ visitor.check_in_time|date:"g:i A" }}
+                                        <span class="text-[10px] text-slate-400 block uppercase tracking-tighter">{{ visitor.check_in_time|timesince }}
+                                            ago</span>
+                                    </td>
+                                    <td class="p-4">
+                                        <a href="{% url 'hms:checkout_visitor' visitor.id %}"
+                                            class="inline-block bg-rose-50 text-rose-700 hover:bg-rose-100 px-4 py-2 rounded-xl text-xs font-bold border border-rose-100 transition shadow-sm">
+                                            Check Out
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="p-8 text-center text-slate-400 italic font-medium">No
+                                        visitors currently
+                                        inside.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent History -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 bg-slate-50/50">
+                        <h3 class="text-lg font-bold text-slate-900">Recent Log History</h3>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto">
+                        <table class="w-full text-left">
+                            <tbody class="divide-y divide-slate-100">
+                                {% for visitor in visitor_history %}
+                                <tr class="text-sm hover:bg-slate-50/50 transition-colors">
+                                    <td class="p-3">
+                                        <p class="font-bold text-slate-900">{{ visitor.name }}</p>
+                                        <p class="text-[10px] text-indigo-600 font-bold uppercase tracking-widest">{{ visitor.get_category_display }}</p>
+                                    </td>
+                                    <td class="p-3 text-slate-600 font-medium">Visited {{ visitor.student.user.first_name }}</td>
+                                    <td class="p-3 text-slate-400 text-right font-mono">
+                                        <span class="block text-[10px]">IN: {{ visitor.check_in_time|date:"M d, H:i" }}</span>
+                                        <span class="block text-[10px]">OUT: {{ visitor.check_out_time|date:"H:i" }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'hms/base.html' %}
+{% load static %}
+
+{% block title %}My Alerts & Notifications{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8 space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div>
+            <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                My <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">Alerts</span>
+            </h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">Keep track of your system updates and personal alerts.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-2xl text-sm font-bold border border-indigo-100 dark:border-indigo-800">
+                {{ notifications|length }} Total
+            </span>
+        </div>
+    </div>
+
+    <!-- Notifications List -->
+    <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 shadow-2xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
+        {% if notifications %}
+        <div class="divide-y divide-slate-100 dark:divide-slate-700">
+            {% for notif in notifications %}
+            <div class="p-6 md:p-8 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-all duration-300 relative group">
+                <div class="flex gap-6">
+                    <!-- Category Icon -->
+                    <div class="flex-shrink-0">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transform group-hover:rotate-6 transition-transform duration-300
+                            {% if notif.notification_type == 'meal' %}bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400
+                            {% elif notif.notification_type == 'finance' %}bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400
+                            {% elif notif.notification_type == 'maintenance' %}bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400
+                            {% else %}bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400{% endif %}">
+                            
+                            {% if notif.notification_type == 'meal' %}
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.703 2.703 0 01-3 0 2.703 2.703 0 01-3 0 2.703 2.703 0 01-3 0 2.704 2.704 0 01-1.5-.454M2.747 8.074c.227-.266.52-.447.853-.518l7.051-1.507a2.001 2.001 0 011.698.406l5.474 4.312c.433.341.64 1.135.533 1.666l-1.031 5.127a2 2 0 01-1.956 1.621H4.682a2 2 0 01-1.956-1.621l-1.031-5.127c-.107-.531.1-1.325.533-1.666l.519-.409z"></path></svg>
+                            {% elif notif.notification_type == 'finance' %}
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            {% elif notif.notification_type == 'maintenance' %}
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                            {% else %}
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-1 min-w-0">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                                {{ notif.title }}
+                            </h3>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                {{ notif.created_at|timesince }} ago
+                            </span>
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed mb-6">
+                            {{ notif.message }}
+                        </p>
+                        
+                        {% if notif.link %}
+                        <a href="{{ notif.link }}" class="inline-flex items-center text-sm font-black text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
+                            View Details
+                            <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-20 text-center">
+            <div class="w-24 h-24 bg-slate-50 dark:bg-slate-900 rounded-3xl flex items-center justify-center mx-auto mb-6 grayscale opacity-50">
+                <svg class="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+            </div>
+            <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2">No Alerts Found</h3>
+            <p class="text-slate-500 dark:text-slate-400 font-medium">You're all caught up! New alerts will appear here as they arrive.</p>
+            <div class="pt-8">
+                <a href="{% if user.is_staff %}{% url 'hms:admin_dashboard' %}{% else %}{% url 'hms:student_dashboard' %}{% endif %}" 
+                    class="inline-flex items-center px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-2xl hover:bg-slate-800 dark:hover:bg-slate-100 transition-all">
+                    Return to Dashboard
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
