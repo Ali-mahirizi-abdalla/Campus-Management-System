@@ -24,6 +24,7 @@ ALLOWED_HOSTS = [
     'www.campus-care.co.ke',
     'swms-web.onrender.com',
     '.onrender.com',
+    '216.24.57.1',
     'localhost',
     '127.0.0.1',
 ]
@@ -34,6 +35,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://www.campus-care.co.ke',
     'http://campus-care.co.ke',
     'http://www.campus-care.co.ke',
+    'https://swms-web.onrender.com',
+    'https://*.onrender.com',
     'https://38.247.148.232',
     'http://38.247.148.232',
     'https://*.ngrok-free.app',
