@@ -89,7 +89,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    # Google provider only loaded if credentials are configured (requires 'cryptography' package)
+
     
     # Whitenoise
     'whitenoise.runserver_nostatic',
@@ -102,6 +103,10 @@ INSTALLED_APPS = [
 
     # Scalability & Storage
 ]
+
+# Only load Google OAuth provider if credentials are set (it requires 'cryptography' package)
+if os.getenv('GOOGLE_CLIENT_ID'):
+    INSTALLED_APPS += ['allauth.socialaccount.providers.google']
 
 SITE_ID = 1
 
