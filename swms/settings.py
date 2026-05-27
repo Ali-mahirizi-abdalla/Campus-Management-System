@@ -15,16 +15,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # ============================================
 SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv("DEBUG", "True") == "True"
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False  # Make sure this is False for production
 
-ALLOWED_HOSTS = [
-    'campus-care.co.ke',
-    'www.campus-care.co.ke',
-    'swms-web.onrender.com',
-    '.onrender.com',  # This allows all render.com subdomains
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['swms-web.onrender.com']
 
 # CSRF protection
 CSRF_TRUSTED_ORIGINS = [
