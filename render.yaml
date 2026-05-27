@@ -21,9 +21,9 @@ services:
       - key: DEBUG
         value: "False"
       - key: USE_SQLITE
-        value: "False" # Set to True if you want to use SQLite with a persistent disk instead
+        value: "False" # Set to True if you want to use SQLite
       - key: ALLOWED_HOSTS
-        value: swms-web.onrender.com,localhost,127.0.0.1 # Update this with your custom domain later if needed
+        value: "swms-web.onrender.com,.onrender.com,campus-care.co.ke,www.campus-care.co.ke,localhost,127.0.0.1"
       
       # Automatically link the PostgreSQL database
       - key: DATABASE_URL

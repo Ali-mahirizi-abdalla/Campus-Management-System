@@ -18,8 +18,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# ✅ ADD YOUR DOMAINS HERE
-ALLOWED_HOSTS = [
+# ✅ ALLOWED HOSTS — controlled via ALLOWED_HOSTS env var on Render
+_allowed_hosts_env = os.getenv('ALLOWED_HOSTS', '')
+ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts_env.split(',') if h.strip()] or [
     'campus-care.co.ke',
     'www.campus-care.co.ke',
     'swms-web.onrender.com',
