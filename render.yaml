@@ -15,7 +15,7 @@ services:
       - key: PORT
         value: 10000
       - key: PYTHON_VERSION
-        value: 3.13.0
+        value: 3.11.9
       - key: SECRET_KEY
         generateValue: true # Render will automatically generate a secure 256-bit key
       - key: DEBUG
