@@ -17,7 +17,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = ['campus-care.co.ke', 'www.campus-care.co.ke', '.onrender.com']
+ALLOWED_HOSTS = [
+    'campus-care.co.ke',
+    'www.campus-care.co.ke',
+    'swms-web.onrender.com',
+    '.onrender.com',  # This allows all render.com subdomains
+    'localhost',
+    '127.0.0.1',
+]
 
 # CSRF protection
 CSRF_TRUSTED_ORIGINS = [
