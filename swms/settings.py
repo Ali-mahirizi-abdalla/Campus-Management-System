@@ -390,14 +390,32 @@ elif USE_CLOUDINARY:
 DBBACKUP_STORAGE_ALIAS = 'dbbackup'
 
 
-# Add MySQL to PATH for dbbackup
-os.environ['PATH'] += r';C:\Program Files\MySQL\MySQL Server 8.0\bin'
+# Add MySQL to PATH for dbbackup (Windows only)
+if os.name == 'nt':
+    mysql_path = r'C:\Program Files\MySQL\MySQL Server 8.0\bin'
+    if mysql_path not in os.environ['PATH']:
+        os.environ['PATH'] += ';' + mysql_path
 
-DBBACKUP_CONNECTORS = {
-    'default': {
-        'CONNECTOR': 'dbbackup.db.mysql.MysqlDumpConnector',
+# Select DBBackup connector dynamically depending on the active database engine
+db_engine = DATABASES['default']['ENGINE']
+if 'postgresql' in db_engine or 'postgres' in db_engine:
+    DBBACKUP_CONNECTORS = {
+        'default': {
+            'CONNECTOR': 'dbbackup.db.postgresql.PgDumpConnector',
+        }
     }
-}
+elif 'mysql' in db_engine:
+    DBBACKUP_CONNECTORS = {
+        'default': {
+            'CONNECTOR': 'dbbackup.db.mysql.MysqlDumpConnector',
+        }
+    }
+else:
+    DBBACKUP_CONNECTORS = {
+        'default': {
+            'CONNECTOR': 'dbbackup.db.sqlite.SqliteConnector',
+        }
+    }
 
 # ============================================
 # TELEGRAM BROADCAST CONFIGURATION
