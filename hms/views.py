@@ -3500,8 +3500,31 @@ def delete_staff(request, staff_id):
 @login_required
 @admin_only
 def manage_roles(request):
-    """Redirect to the unified management dashboard"""
-    return redirect('hms:manage_staff')
+    """Unified management dashboard for all 15 Staff Roles"""
+    roles = StaffProfile.ROLE_CHOICES
+    
+    role_stats = []
+    for role_code, role_name in roles:
+        staff_in_role = StaffProfile.objects.filter(role=role_code)
+        
+        # Instantiate a dummy profile just to get the color code easily
+        dummy_profile = StaffProfile(role=role_code)
+        color_info = dummy_profile.get_role_color()
+        
+        role_stats.append({
+            'code': role_code,
+            'name': role_name,
+            'count': staff_in_role.count(),
+            'color_hex': color_info['hex'],
+            'color_name': color_info['name'],
+            'staff': staff_in_role
+        })
+        
+    context = {
+        'role_stats': role_stats,
+        'total_staff': StaffProfile.objects.count()
+    }
+    return render(request, 'hms/admin/manage_roles.html', context)
 
 
 @login_required

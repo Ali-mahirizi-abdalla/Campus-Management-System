@@ -1,72 +1,63 @@
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import User, Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from hms.models import StaffProfile
 
 class Command(BaseCommand):
-    help = 'Setup Role-Based Access Control Groups and Permissions'
+    help = 'Sets up the 15 RBAC Staff Roles and seeds staff users'
 
-    def handle(self, *args, **options):
-        roles = {
-            'Super Admin': {
-                'permissions': '__all__',
-            },
-            'Welfare Officer': {
-                'permissions': [
-                    'view_student', 'change_student',
-                    'view_defermentrequest', 'change_defermentrequest',
-                    'view_announcement', 'add_announcement', 'change_announcement',
-                    'view_auditlog',
-                ]
-            },
-            'Hostel Manager': {
-                'permissions': [
-                    'view_room', 'add_room', 'change_room',
-                    'view_roomassignment', 'add_roomassignment', 'change_roomassignment',
-                    'view_roomchangerequest', 'change_roomchangerequest',
-                    'view_student',
-                ]
-            },
-            'Kitchen Manager': {
-                'permissions': [
-                    'view_meal', 'add_meal', 'change_meal',
-                    'view_activity', 'add_activity', 'change_activity',
-                    'view_announcement',
-                ]
-            },
-            'Security': {
-                'permissions': [
-                    'view_visitor', 'add_visitor', 'change_visitor',
-                    'view_student',
-                ]
-            },
-            'Student': {
-                'permissions': [
-                    'view_student', 'change_student',
-                    'add_maintenancerequest', 'view_maintenancerequest',
-                    'add_tutoringpost', 'view_tutoringpost', 'delete_tutoringpost',
-                    'view_meal', 'add_meal',
-                    'view_announcement',
-                ]
-            }
-        }
+    def handle(self, *args, **kwargs):
+        self.stdout.write("Starting RBAC setup...")
 
-        hms_content_types = ContentType.objects.filter(app_label='hms')
-        all_permissions = Permission.objects.filter(content_type__in=hms_content_types)
+        roles = [
+            'SUPER_ADMIN', 'HEALTH_MGR', 'MAINT_SUP', 'WARDEN', 'FINANCE',
+            'SECURITY', 'NEWS_EDITOR', 'AUDITOR', 'EMERGENCY', 'SUPPORT',
+            'DIPLOMA', 'DEAN_HHS', 'DEFERMENT', 'DEPT_MCS', 'DVC_ASA'
+        ]
 
-        for role_name, config in roles.items():
-            group, created = Group.objects.get_or_create(name=role_name)
+        for role in roles:
+            Group.objects.get_or_create(name=role)
+            self.stdout.write(f"Group created/verified: {role}")
+
+        # Seed staff
+        staff_data = [
+            {'name': 'Omar Abdalla', 'email': 'omar@campus.edu', 'role': 'DEAN_HHS'},
+            {'name': 'Moses Isutsa', 'email': 'moses@campus.edu', 'role': 'DEFERMENT'},
+            {'name': 'Musa Shile', 'email': 'musa@campus.edu', 'role': 'DEPT_MCS'},
+            {'name': 'Troy Tsuma', 'email': 'troy@campus.edu', 'role': 'DVC_ASA'},
+            {'name': 'John Kariuki', 'email': 'john@campus.edu', 'role': 'HEALTH_MGR'},
+            {'name': 'Mary Wanjiku', 'email': 'mary@campus.edu', 'role': 'WARDEN'},
+            {'name': 'Peter Odhiambo', 'email': 'peter@campus.edu', 'role': 'FINANCE'},
+            {'name': 'Sarah Chebet', 'email': 'sarah@campus.edu', 'role': 'SECURITY'},
+            {'name': 'James Kariuki', 'email': 'james@campus.edu', 'role': 'DIPLOMA'}
+        ]
+
+        for s in staff_data:
+            username = s['email'].split('@')[0]
+            user, created = User.objects.get_or_create(
+                username=username,
+                defaults={
+                    'email': s['email'],
+                    'first_name': s['name'].split()[0],
+                    'last_name': ' '.join(s['name'].split()[1:]) if len(s['name'].split()) > 1 else ''
+                }
+            )
             if created:
-                self.stdout.write(self.style.SUCCESS(f'Created group: {role_name}'))
-            else:
-                self.stdout.write(f'Group already exists: {role_name}')
-                group.permissions.clear()
+                user.set_password('Staff123!')
+                user.save()
+                
+            group = Group.objects.get(name=s['role'])
+            user.groups.add(group)
 
-            if config['permissions'] == '__all__':
-                group.permissions.set(all_permissions)
-                self.stdout.write(f'Assigned all hms permissions to {role_name}')
-            else:
-                perms = all_permissions.filter(codename__in=config['permissions'])
-                group.permissions.set(perms)
-                self.stdout.write(f'Assigned {perms.count()} permissions to {role_name}')
+            StaffProfile.objects.get_or_create(
+                user=user,
+                defaults={
+                    'role': s['role'],
+                    'national_id': f"ID_{username.upper()}",
+                    'phone': '0700000000',
+                    'is_approved': True
+                }
+            )
+            self.stdout.write(f"Seeded staff user: {s['name']} as {s['role']}")
 
-        self.stdout.write(self.style.SUCCESS('RBAC Setup Completed Successfully'))
+        self.stdout.write(self.style.SUCCESS("Successfully set up RBAC roles and staff!"))

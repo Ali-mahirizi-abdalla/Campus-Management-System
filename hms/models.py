@@ -201,20 +201,20 @@ class MaintenanceRequest(models.Model):
 class StaffProfile(models.Model):
     ROLE_CHOICES = [
         ('SUPER_ADMIN', 'Super Admin'),
-        ('HEALTH_MANAGER', 'Health Manager'),
-        ('MAINTENANCE_SUPERVISOR', 'Maintenance Supervisor'),
+        ('HEALTH_MGR', 'Health Manager'),
+        ('MAINT_SUP', 'Maintenance Supervisor'),
         ('WARDEN', 'Warden'),
-        ('FINANCE_OFFICER', 'Finance Officer'),
-        ('SECURITY_OFFICER', 'Security Officer'),
+        ('FINANCE', 'Finance Officer'),
+        ('SECURITY', 'Security Officer'),
         ('NEWS_EDITOR', 'News Editor'),
         ('AUDITOR', 'Auditor'),
-        ('EMERGENCY_COORDINATOR', 'Emergency Coordinator'),
-        ('SUPPORT_AGENT', 'Support Agent'),
-        ('TVET_DIRECTOR', 'Diploma Coordinator (TVET)'),
-        ('TVET_COORDINATOR', 'TVET Coordinator'),
-        ('HOSTEL_MANAGER', 'Hostel Manager'),
-        ('KITCHEN_MANAGER', 'Kitchen Manager'),
-        ('DEAN_STUDENTS', 'Dean of Students'),
+        ('EMERGENCY', 'Emergency Coordinator'),
+        ('SUPPORT', 'Support Agent'),
+        ('DIPLOMA', 'Diploma Coordinator'),
+        ('DEAN_HHS', 'Dean of Students'),
+        ('DEFERMENT', 'Deferment Officer'),
+        ('DEPT_MCS', 'Dept MCS Coordinator'),
+        ('DVC_ASA', 'DVC ASA'),
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='staff_profile')
@@ -224,22 +224,43 @@ class StaffProfile(models.Model):
     is_approved = models.BooleanField(default=True)
     profile_image = models.ImageField(upload_to='staff_profiles/', null=True, blank=True)
 
+    def get_role_color(self):
+        colors = {
+            'SUPER_ADMIN': {'name': 'Navy', 'hex': '#1E293B'},
+            'HEALTH_MGR': {'name': 'Emerald', 'hex': '#059669'},
+            'MAINT_SUP': {'name': 'Orange', 'hex': '#EA580C'},
+            'WARDEN': {'name': 'Purple', 'hex': '#7C3AED'},
+            'FINANCE': {'name': 'Teal', 'hex': '#0D9488'},
+            'SECURITY': {'name': 'Blue', 'hex': '#2563EB'},
+            'NEWS_EDITOR': {'name': 'Pink', 'hex': '#DB2777'},
+            'AUDITOR': {'name': 'Gray', 'hex': '#4B5563'},
+            'EMERGENCY': {'name': 'Red', 'hex': '#DC2626'},
+            'SUPPORT': {'name': 'Cyan', 'hex': '#0891B2'},
+            'DIPLOMA': {'name': 'Amber', 'hex': '#D97706'},
+            'DEAN_HHS': {'name': 'Brown', 'hex': '#78350F'},
+            'DEFERMENT': {'name': 'Green', 'hex': '#15803D'},
+            'DEPT_MCS': {'name': 'Indigo', 'hex': '#4338CA'},
+            'DVC_ASA': {'name': 'Violet', 'hex': '#6B21A8'},
+        }
+        return colors.get(self.role, {'name': 'Gray', 'hex': '#4B5563'})
+
     def get_category(self):
-        """Categorize roles for permission logic - Simplified Version"""
+        """Categorize roles for permission logic"""
         role = self.role
         if role in ['SUPER_ADMIN', 'Super Admin']:
             return 'EXECUTIVE'
-        if role in ['TVET_DIRECTOR', 'TVET_COORDINATOR', 'DEAN_STUDENTS']:
+        if role in ['DIPLOMA', 'DEAN_HHS', 'DEFERMENT', 'DEPT_MCS', 'DVC_ASA']:
             return 'ACADEMIC_ADMIN'
-
-        if role in ['FINANCE_OFFICER', 'AUDITOR']:
+        if role in ['FINANCE', 'AUDITOR']:
             return 'FINANCE_ADMIN'
-        if role in ['NEWS_EDITOR', 'SUPPORT_AGENT']:
+        if role in ['NEWS_EDITOR', 'SUPPORT']:
             return 'STUDENT_SERVICES'
-        if role in ['MAINTENANCE_SUPERVISOR', 'SECURITY_OFFICER', 'EMERGENCY_COORDINATOR']:
+        if role in ['MAINT_SUP', 'SECURITY', 'EMERGENCY']:
             return 'TECHNICAL_ESTATES'
-        if role in ['HEALTH_MANAGER']:
+        if role in ['HEALTH_MGR']:
             return 'HEALTH_SERVICES'
+        if role in ['WARDEN']:
+            return 'ACCOMMODATION'
         return 'GENERAL_STAFF'
 
     created_at = models.DateTimeField(auto_now_add=True)
