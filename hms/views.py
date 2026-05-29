@@ -3453,18 +3453,18 @@ def get_role_color(role_code):
     """Helper to return the specific color for each role as per design specs"""
     colors = {
         'SUPER_ADMIN': '#1E293B',
-        'HEALTH_MANAGER': '#059669',
-        'MAINTENANCE_SUPERVISOR': '#EA580C',
+        'HEALTH_MGR': '#059669',
+        'MAINT_SUP': '#EA580C',
         'WARDEN': '#7C3AED',
-        'FINANCE_OFFICER': '#0D9488',
-        'SECURITY_OFFICER': '#2563EB',
+        'FINANCE': '#0D9488',
+        'SECURITY': '#2563EB',
         'NEWS_EDITOR': '#DB2777',
         'AUDITOR': '#4B5563',
-        'EMERGENCY_COORDINATOR': '#DC2626',
-        'SUPPORT_AGENT': '#0891B2',
-        'TVET_DIRECTOR': '#D97706',
-        'DEAN_STUDENTS': '#78350F',
-        'DEFERMENT_OFFICER': '#15803D',
+        'EMERGENCY': '#DC2626',
+        'SUPPORT': '#0891B2',
+        'DIPLOMA': '#D97706',
+        'DEAN_HHS': '#78350F',
+        'DEFERMENT': '#15803D',
         'DEPT_MCS': '#4338CA',
         'DVC_ASA': '#6B21A8',
     }
@@ -3500,8 +3500,69 @@ def delete_staff(request, staff_id):
 @login_required
 @admin_only
 def manage_roles(request):
-    """Redirect to the unified management dashboard"""
-    return redirect('hms:manage_staff')
+    """Enterprise-grade Role Management Dashboard"""
+    
+    # Static data to simulate dynamic roles until full DB migration
+    role_meta = {
+        'SUPER_ADMIN': {'desc': 'Full system access – all modules', 'dept': 'Administration', 'perms': ['FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL']},
+        'HEALTH_MGR': {'desc': 'Manage appointments, patients', 'dept': 'Medical', 'perms': ['NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'MAINT_SUP': {'desc': 'Manage work orders, technicians', 'dept': 'Maintenance', 'perms': ['NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'WARDEN': {'desc': 'Manage accommodation, deferments', 'dept': 'Student Affairs', 'perms': ['NO', 'NO', 'NO', 'FULL', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'FINANCE': {'desc': 'Manage payments, M-Pesa records', 'dept': 'Finance', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO']},
+        'SECURITY': {'desc': 'Manage visitors, entry/exit logs', 'dept': 'Security', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO']},
+        'NEWS_EDITOR': {'desc': 'Create news, schedule posts', 'dept': 'Communications', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO']},
+        'AUDITOR': {'desc': 'View audit logs only (read-only)', 'dept': 'Administration', 'perms': ['READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']},
+        'EMERGENCY': {'desc': 'Send emergency alerts', 'dept': 'Security', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO']},
+        'SUPPORT': {'desc': 'Manage student chats, tickets', 'dept': 'IT Support', 'perms': ['READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'NO', 'NO', 'NO']},
+        'DIPLOMA': {'desc': 'Manage diploma (TVET) students only', 'dept': 'Academic', 'perms': ['FULL', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'DEAN_HHS': {'desc': 'Manage student affairs and welfare', 'dept': 'Student Affairs', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'NO', 'NO', 'READ', 'NO', 'NO']},
+        'DEFERMENT': {'desc': 'Process student deferment requests', 'dept': 'Academic', 'perms': ['READ', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'DEPT_MCS': {'desc': 'Manage computer science department', 'dept': 'Academic', 'perms': ['FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'DVC_ASA': {'desc': 'Deputy Vice Chancellor – Academic', 'dept': 'Administration', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']}
+    }
+
+    modules = [
+        'Student Management', 'Health Management', 'Maintenance Requests',
+        'Accommodation', 'Deferment Management', 'Payments & M-Pesa',
+        'Visitors Log', 'News & Alerts', 'Emergency Alerts', 'Audit Logs'
+    ]
+
+    roles = StaffProfile.ROLE_CHOICES
+    
+    role_stats = []
+    total_permissions = 0
+    assigned_roles = 0
+
+    for role_code, role_name in roles:
+        staff_in_role = StaffProfile.objects.filter(role=role_code).select_related('user')
+        count = staff_in_role.count()
+        if count > 0:
+            assigned_roles += 1
+
+        meta = role_meta.get(role_code, {'desc': '', 'dept': '', 'perms': ['NO']*10})
+        total_permissions += sum(1 for p in meta['perms'] if p != 'NO')
+        
+        role_stats.append({
+            'code': role_code,
+            'name': role_name,
+            'count': count,
+            'color_hex': get_role_color(role_code),
+            'desc': meta['desc'],
+            'dept': meta['dept'],
+            'perms': meta['perms'],
+            'staff': staff_in_role,
+        })
+        
+    context = {
+        'role_stats': role_stats,
+        'modules': modules,
+        'total_roles': len(roles),
+        'active_roles': len(roles),
+        'assigned_roles': assigned_roles,
+        'total_permissions': total_permissions,
+        'page_title': 'Role Management'
+    }
+    return render(request, 'hms/admin/manage_roles.html', context)
 
 
 @login_required

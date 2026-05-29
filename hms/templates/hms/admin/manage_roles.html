@@ -1,67 +1,1047 @@
 {% extends 'hms/base.html' %}
 {% load static %}
 
-{% block title %}Manage Staff Roles | Campus Care{% endblock %}
+{% block title %}Role & Access Management | CampusCare{% endblock %}
+
+{% block extra_head %}
+<!-- Google Fonts: Outfit -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* CSS System Variables */
+    :root {
+        --primary: #1E293B;
+        --secondary: #0D9488;
+        --success: #059669;
+        --danger: #DC2626;
+        --warning: #F59E0B;
+        --bg-main: #F8FAFC;
+        --card-bg: #FFFFFF;
+        --border: #E2E8F0;
+        --text-primary: #0F172A;
+        --text-secondary: #475569;
+        --radius-lg: 24px;
+        --radius-md: 12px;
+        --radius-sm: 8px;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+    }
+
+    .dark {
+        --primary: #F8FAFC;
+        --bg-main: #0F172A;
+        --card-bg: #1E293B;
+        --border: #334155;
+        --text-primary: #F8FAFC;
+        --text-secondary: #94A3B8;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    }
+
+    /* General Style Overrides */
+    .role-page-wrapper {
+        font-family: 'Outfit', sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Premium Custom Card */
+    .premium-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+    }
+    .premium-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* Stats Card Styling */
+    .stat-card-gradient {
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-card-gradient::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(13, 148, 136, 0.05) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    /* Custom Form Fields */
+    .custom-input {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        border-radius: var(--radius-md);
+        padding: 10px 16px;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+    .custom-input:focus {
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    }
+
+    /* Custom Toggle Switch for View Mode */
+    .view-toggle-btn {
+        padding: 8px 16px;
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .view-toggle-btn.active {
+        background: var(--secondary);
+        color: #FFFFFF !important;
+    }
+
+    /* Tables & Matrix Grid */
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .custom-table th {
+        background: rgba(0, 0, 0, 0.02);
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+    }
+    .dark .custom-table th {
+        background: rgba(255, 255, 255, 0.02);
+    }
+    .custom-table td {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+        color: var(--text-primary);
+    }
+    .custom-table tr:last-child td {
+        border-bottom: none;
+    }
+    .custom-table tr:hover td {
+        background: rgba(13, 148, 136, 0.02);
+    }
+
+    /* Matrix Matrix specific style */
+    .matrix-table {
+        table-layout: fixed;
+    }
+    .matrix-cell {
+        text-align: center;
+        padding: 12px 6px !important;
+        vertical-align: middle;
+        font-weight: 500;
+        font-size: 12px;
+    }
+    .matrix-header-rotate {
+        height: 60px;
+        vertical-align: bottom;
+        padding: 8px !important;
+        text-align: center;
+        font-size: 11px;
+    }
+
+    /* Permission Badges */
+    .perm-badge {
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .perm-full {
+        background: rgba(5, 150, 105, 0.1);
+        color: #059669;
+    }
+    .perm-read {
+        background: rgba(37, 99, 235, 0.1);
+        color: #2563EB;
+    }
+    .perm-no {
+        background: rgba(100, 116, 139, 0.1);
+        color: #64748B;
+    }
+
+    /* Staff Avatar stack */
+    .avatar-stack {
+        display: flex;
+        align-items: center;
+    }
+    .avatar-stack-item {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid var(--card-bg);
+        margin-right: -8px;
+        font-size: 10px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--border);
+        color: var(--text-secondary);
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .avatar-stack-item:hover {
+        transform: translateY(-2px);
+        z-index: 10;
+    }
+
+    /* Modals Container */
+    .custom-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    .custom-modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .custom-modal-box {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-lg);
+        width: 100%;
+        max-width: 650px;
+        max-height: 90vh;
+        overflow-y: auto;
+        transform: scale(0.95);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .custom-modal-overlay.active .custom-modal-box {
+        transform: scale(1);
+    }
+
+    /* Micro animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease forwards;
+    }
+
+    /* Action Buttons */
+    .action-icon-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-sm);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border);
+        background: var(--card-bg);
+        color: var(--text-secondary);
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .action-icon-btn:hover {
+        background: var(--secondary);
+        color: #FFFFFF !important;
+        border-color: var(--secondary);
+    }
+
+    /* Scrollbar */
+    .custom-scrollbar-x::-webkit-scrollbar {
+        height: 6px;
+    }
+    .custom-scrollbar-x::-webkit-scrollbar-track {
+        background: var(--bg-main);
+    }
+    .custom-scrollbar-x::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <!-- Header Section -->
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+<div class="role-page-wrapper w-full min-h-screen p-4 md:p-6 animate-fade-in">
+    <!-- PAGE HEADER -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-200 dark:border-slate-700/50 pb-4">
         <div>
-            <h2 class="h3 mb-1 text-gray-800"><i class="fas fa-shield-alt text-primary me-2"></i>Staff Roles & Permissions</h2>
-            <p class="text-muted mb-0">Role-Based Access Control (RBAC) Matrix across {{ total_staff }} active staff members.</p>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-2xl">👑</span>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-white">Role & Access Management</h1>
+            </div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Define roles, set module access permissions, and control system entry points.</p>
         </div>
-        <a href="{% url 'hms:manage_staff' %}" class="btn btn-outline-primary shadow-sm">
-            <i class="fas fa-users me-2"></i> Manage Staff Directory
-        </a>
+        <div class="flex items-center gap-3">
+            <a href="{% url 'hms:manage_staff' %}" class="btn px-4 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-semibold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                <i class="fas fa-users-cog mr-2"></i>Staff Directory
+            </a>
+            <button onclick="openCreateModal()" class="btn px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold shadow-sm flex items-center gap-2 transition">
+                <i class="fas fa-plus"></i> Create Custom Role
+            </button>
+        </div>
     </div>
 
-    <!-- Roles Grid -->
-    <div class="row g-4">
-        {% for role in role_stats %}
-        <div class="col-xl-3 col-lg-4 col-md-6">
-            <div class="card h-100 shadow-sm border-0 border-start border-4" style="border-left-color: {{ role.color_hex }} !important;">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="badge rounded-pill px-3 py-2" style="background-color: {{ role.color_hex }}20; color: {{ role.color_hex }}; font-weight: 600;">
-                            {{ role.name }}
-                        </span>
-                        <div class="fs-4 fw-bold text-gray-700">{{ role.count }}</div>
-                    </div>
-                    <div class="text-xs font-weight-bold text-uppercase mb-2 text-muted">
-                        Role Code: {{ role.code }}
-                    </div>
-                    
-                    {% if role.count > 0 %}
-                    <div class="mt-3 pt-3 border-top">
-                        <p class="text-xs font-weight-bold mb-2">Assigned Staff:</p>
-                        <div class="d-flex flex-column gap-2">
-                            {% for staff in role.staff %}
-                            <div class="d-flex align-items-center">
-                                <div class="avatar avatar-sm me-2 rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; background-color: {{ role.color_hex }}; font-size: 10px;">
-                                    {{ staff.user.first_name|first }}{{ staff.user.last_name|first }}
-                                </div>
-                                <span class="text-sm text-gray-700">{{ staff.user.get_full_name }}</span>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% else %}
-                    <div class="mt-3 pt-3 border-top text-center text-muted">
-                        <i class="fas fa-user-slash mb-1"></i>
-                        <p class="text-xs mb-0">No staff assigned</p>
-                    </div>
-                    {% endif %}
-                </div>
+    <!-- STATISTICS CARDS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <!-- Card 1 -->
+        <div class="premium-card p-5 stat-card-gradient flex items-center gap-4">
+            <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800/80 rounded-2xl flex items-center justify-center text-xl text-slate-700 dark:text-slate-300 shadow-inner">
+                🛡️
+            </div>
+            <div>
+                <span class="block text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">Total System Roles</span>
+                <span class="text-2xl font-bold text-slate-800 dark:text-white">{{ total_roles }}</span>
             </div>
         </div>
-        {% endfor %}
+
+        <!-- Card 2 -->
+        <div class="premium-card p-5 stat-card-gradient flex items-center gap-4">
+            <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl flex items-center justify-center text-xl text-emerald-600 dark:text-emerald-400 shadow-inner">
+                ✅
+            </div>
+            <div>
+                <span class="block text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">Active Roles</span>
+                <span class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ active_roles }}</span>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="premium-card p-5 stat-card-gradient flex items-center gap-4">
+            <div class="w-12 h-12 bg-amber-50 dark:bg-amber-950/30 rounded-2xl flex items-center justify-center text-xl text-amber-600 dark:text-amber-400 shadow-inner">
+                👥
+            </div>
+            <div>
+                <span class="block text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">Assigned Roles</span>
+                <span class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{ assigned_roles }} / {{ total_roles }}</span>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="premium-card p-5 stat-card-gradient flex items-center gap-4">
+            <div class="w-12 h-12 bg-teal-50 dark:bg-teal-950/30 rounded-2xl flex items-center justify-center text-xl text-teal-600 dark:text-teal-400 shadow-inner">
+                🔑
+            </div>
+            <div>
+                <span class="block text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">Total Permissions</span>
+                <span class="text-2xl font-bold text-teal-600 dark:text-teal-400">{{ total_permissions }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTION BAR -->
+    <div class="premium-card p-4 mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <!-- Search and Filters (Left) -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+            <div class="relative flex-1 max-w-md">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" id="role-search-input" oninput="filterRoles()" class="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-xl text-sm outline-none transition focus:border-teal-500 dark:focus:border-teal-500 focus:ring-1 focus:ring-teal-500/20" placeholder="Search roles by name or description...">
+            </div>
+            <select id="dept-filter-select" onchange="filterRoles()" class="py-2 px-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-xl text-sm outline-none transition focus:border-teal-500">
+                <option value="ALL">All Departments</option>
+                <option value="Administration">Administration</option>
+                <option value="Medical">Medical</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Student Affairs">Student Affairs</option>
+                <option value="Finance">Finance</option>
+                <option value="Security">Security</option>
+                <option value="Communications">Communications</option>
+                <option value="IT Support">IT Support</option>
+                <option value="Academic">Academic</option>
+            </select>
+            <button onclick="clearSearchFilters()" class="px-4 py-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 text-sm font-medium transition">
+                Clear
+            </button>
+        </div>
+
+        <!-- View Toggles (Right) -->
+        <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl self-start lg:self-auto border border-slate-200 dark:border-slate-700">
+            <button onclick="switchView('list')" id="btn-view-list" class="view-toggle-btn active text-slate-700 dark:text-slate-300 text-xs flex items-center gap-1.5 transition">
+                <i class="fas fa-list-ul"></i> List View
+            </button>
+            <button onclick="switchView('matrix')" id="btn-view-matrix" class="view-toggle-btn text-slate-700 dark:text-slate-300 text-xs flex items-center gap-1.5 transition">
+                <i class="fas fa-th"></i> Matrix View
+            </button>
+        </div>
+    </div>
+
+    <!-- TABS CONTAINER -->
+    <div class="premium-card w-full">
+        <!-- LIST VIEW -->
+        <div id="view-list-container" class="w-full">
+            <div class="overflow-x-auto custom-scrollbar-x">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Role & Code</th>
+                            <th>Department</th>
+                            <th>Description</th>
+                            <th>Staff Assigned</th>
+                            <th>Status</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list-table-body">
+                        {% for role in role_stats %}
+                        <tr class="role-row" data-role-code="{{ role.code }}" data-role-name="{{ role.name }}" data-role-dept="{{ role.dept }}" data-role-desc="{{ role.desc }}">
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <span class="w-3 h-3 rounded-full shadow-sm" style="background: {{ role.color_hex }};"></span>
+                                    <div>
+                                        <span class="block font-semibold text-slate-800 dark:text-white leading-tight mb-0.5">{{ role.name }}</span>
+                                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">CODE: {{ role.code }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 text-xs rounded-full border border-slate-200 dark:border-slate-700/50 font-medium">
+                                    {{ role.dept }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-slate-500 dark:text-slate-400 text-xs line-clamp-2 max-w-md">{{ role.desc }}</span>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    {% if role.count > 0 %}
+                                    <div class="avatar-stack">
+                                        {% for staff in role.staff|slice:":4" %}
+                                        <div onclick="openStaffModal('{{ role.code }}')" class="avatar-stack-item text-white" style="background-color: {{ role.color_hex }};" title="{{ staff.user.get_full_name }}">
+                                            {{ staff.user.first_name|first }}{{ staff.user.last_name|first }}
+                                        </div>
+                                        {% endfor %}
+                                        {% if role.count > 4 %}
+                                        <div onclick="openStaffModal('{{ role.code }}')" class="avatar-stack-item bg-slate-200 text-slate-700 text-xs dark:bg-slate-700 dark:text-slate-200" title="And {{ role.count|add:'-4' }} more staff">
+                                            +{{ role.count|add:'-4' }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <span class="text-xs font-bold text-slate-700 dark:text-slate-300">({{ role.count }})</span>
+                                    {% else %}
+                                    <span class="text-slate-400 dark:text-slate-600 text-xs italic">No staff assigned</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold rounded-full flex items-center gap-1.5 w-max">
+                                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Active
+                                </span>
+                            </td>
+                            <td class="text-right">
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <button onclick="openStaffModal('{{ role.code }}')" class="action-icon-btn" title="View Staff">
+                                        <i class="fas fa-users text-xs"></i>
+                                    </button>
+                                    <button onclick="openEditModal('{{ role.code }}')" class="action-icon-btn" title="Edit Permissions">
+                                        <i class="fas fa-lock text-xs"></i>
+                                    </button>
+                                    <button onclick="duplicateRole('{{ role.code }}')" class="action-icon-btn" title="Duplicate Role">
+                                        <i class="fas fa-copy text-xs"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- MATRIX VIEW -->
+        <div id="view-matrix-container" class="w-full hidden">
+            <div class="overflow-x-auto custom-scrollbar-x">
+                <table class="custom-table matrix-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 220px; text-align: left;">Role</th>
+                            {% for module in modules %}
+                            <th class="matrix-header-rotate text-center" style="width: 120px;">
+                                <div class="truncate max-w-[120px]">{{ module }}</div>
+                            </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody id="matrix-table-body">
+                        {% for role in role_stats %}
+                        <tr class="role-row" data-role-code="{{ role.code }}" data-role-name="{{ role.name }}" data-role-dept="{{ role.dept }}" data-role-desc="{{ role.desc }}">
+                            <td style="font-weight: 600; text-align: left;">
+                                <div class="flex items-center gap-2 truncate max-w-[200px]">
+                                    <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background: {{ role.color_hex }};"></span>
+                                    <span>{{ role.name }}</span>
+                                </div>
+                            </td>
+                            {% for perm in role.perms %}
+                            <td class="matrix-cell">
+                                {% if perm == 'FULL' %}
+                                <span class="perm-badge perm-full"><i class="fas fa-shield"></i> Full</span>
+                                {% elif perm == 'READ' %}
+                                <span class="perm-badge perm-read"><i class="fas fa-eye"></i> Read</span>
+                                {% else %}
+                                <span class="perm-badge perm-no"><i class="fas fa-ban"></i> None</span>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Legend and Info -->
+            <div class="border-t border-slate-200 dark:border-slate-700/50 p-4 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    <span class="text-slate-400 dark:text-slate-500 uppercase tracking-wider">Access Levels:</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-3 h-3 bg-emerald-500/20 text-emerald-600 rounded-full inline-flex items-center justify-center text-[8px] font-bold">●</span> Full Access (Read, Write, Delete)
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-3 h-3 bg-blue-500/20 text-blue-600 rounded-full inline-flex items-center justify-center text-[8px] font-bold">●</span> Read Only (View records only)
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-3 h-3 bg-slate-500/20 text-slate-500 rounded-full inline-flex items-center justify-center text-[8px] font-bold">●</span> No Access (Blocked module access)
+                    </div>
+                </div>
+                <button onclick="savePermissionMatrixMock()" class="btn px-4 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold shadow-sm transition">
+                    Save Permission Grid
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
-<style>
-    .avatar-sm { width: 2rem; height: 2rem; }
-    .card { transition: transform 0.2s; }
-    .card:hover { transform: translateY(-3px); }
-</style>
+<!-- ==================== MODALS ==================== -->
+
+<!-- 1. CREATE / EDIT ROLE MODAL -->
+<div id="role-edit-modal" class="custom-modal-overlay">
+    <div class="custom-modal-box">
+        <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 dark:border-slate-700/50">
+            <h3 id="modal-title-text" class="text-lg font-bold text-slate-800 dark:text-white">Create Custom Role</h3>
+            <button onclick="closeRoleModal()" class="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form onsubmit="saveRoleForm(event)" class="p-6">
+            <!-- Hidden inputs -->
+            <input type="hidden" id="edit-role-code-val">
+            <input type="hidden" id="edit-role-action-val" value="create">
+
+            <!-- Tabs in Modal -->
+            <div class="flex gap-4 border-b border-slate-200 dark:border-slate-700/50 mb-5">
+                <button type="button" id="btn-modal-tab-details" onclick="switchModalTab('details')" class="pb-2 border-b-2 border-teal-500 text-teal-600 font-semibold text-sm outline-none transition">
+                    Role Information
+                </button>
+                <button type="button" id="btn-modal-tab-perms" onclick="switchModalTab('perms')" class="pb-2 border-b-2 border-transparent text-slate-500 dark:text-slate-400 font-semibold text-sm outline-none transition">
+                    Module Permissions
+                </button>
+            </div>
+
+            <!-- TAB 1: Role Details -->
+            <div id="modal-tab-details-container" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Role Name</label>
+                        <input type="text" id="role-name-input" required class="custom-input text-sm" placeholder="e.g. Health Officer">
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Role Code (Uppercase)</label>
+                        <input type="text" id="role-code-input" required class="custom-input text-sm" placeholder="e.g. HEALTH_OFFICER" style="text-transform: uppercase;">
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Department</label>
+                    <select id="role-dept-select" required class="custom-input text-sm">
+                        <option value="Administration">Administration</option>
+                        <option value="Medical">Medical</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Student Affairs">Student Affairs</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Security">Security</option>
+                        <option value="Communications">Communications</option>
+                        <option value="IT Support">IT Support</option>
+                        <option value="Academic">Academic</option>
+                    </select>
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Description</label>
+                    <textarea id="role-desc-input" rows="3" required class="custom-input text-sm resize-none" placeholder="Provide a brief explanation of the responsibilities for this role..."></textarea>
+                </div>
+            </div>
+
+            <!-- TAB 2: Permissions -->
+            <div id="modal-tab-perms-container" class="hidden space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                <p class="text-xs text-slate-400 dark:text-slate-500 mb-2">Toggle the access levels for each of the 10 core modules in the Campus Care System:</p>
+                
+                {% for module in modules %}
+                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl gap-4">
+                    <div>
+                        <span class="block text-sm font-semibold text-slate-800 dark:text-white">{{ module }}</span>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500">Enable/disable functionality for this module.</span>
+                    </div>
+                    <!-- Perm levels -->
+                    <div class="flex items-center gap-2 bg-white dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-700 rounded-xl">
+                        <label class="cursor-pointer text-xs font-medium px-2.5 py-1 rounded-lg transition-colors inline-flex items-center gap-1 hover:bg-slate-50 dark:hover:bg-slate-700">
+                            <input type="radio" name="perm-{{ forloop.counter0 }}" value="NO" checked class="hidden-radio sr-only">
+                            <span class="radio-label text-slate-500 hover:text-slate-800">None</span>
+                        </label>
+                        <label class="cursor-pointer text-xs font-medium px-2.5 py-1 rounded-lg transition-colors inline-flex items-center gap-1 hover:bg-slate-50 dark:hover:bg-slate-700">
+                            <input type="radio" name="perm-{{ forloop.counter0 }}" value="READ" class="hidden-radio sr-only">
+                            <span class="radio-label text-slate-500 hover:text-slate-800">Read</span>
+                        </label>
+                        <label class="cursor-pointer text-xs font-medium px-2.5 py-1 rounded-lg transition-colors inline-flex items-center gap-1 hover:bg-slate-50 dark:hover:bg-slate-700">
+                            <input type="radio" name="perm-{{ forloop.counter0 }}" value="FULL" class="hidden-radio sr-only">
+                            <span class="radio-label text-slate-500 hover:text-slate-800">Full</span>
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-200 dark:border-slate-700/50">
+                <button type="button" onclick="closeRoleModal()" class="px-4 py-2 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-semibold rounded-xl transition">
+                    Cancel
+                </button>
+                <button type="submit" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold rounded-xl shadow-sm transition">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- 2. VIEW STAFF ASSIGNED MODAL -->
+<div id="staff-view-modal" class="custom-modal-overlay">
+    <div class="custom-modal-box" style="max-width: 700px;">
+        <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 dark:border-slate-700/50">
+            <div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white" id="staff-modal-title">Super Admin staff</h3>
+                <p class="text-xs text-slate-400 dark:text-slate-500" id="staff-modal-subtitle">Active staff members assigned this role</p>
+            </div>
+            <button onclick="closeStaffModal()" class="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <div id="staff-modal-loading" class="text-center py-8 text-slate-400 dark:text-slate-500">
+                <i class="fas fa-circle-notch animate-spin text-2xl mb-2"></i>
+                <p class="text-sm">Fetching assigned staff...</p>
+            </div>
+            
+            <div id="staff-modal-empty" class="hidden text-center py-10">
+                <span class="text-4xl block mb-3">👥</span>
+                <h4 class="font-bold text-slate-700 dark:text-slate-300 mb-1">No Staff Assigned</h4>
+                <p class="text-xs text-slate-400 dark:text-slate-500 max-w-sm mx-auto">There are currently no staff members carrying this permission set. You can invite new staff or reassign roles in the directory.</p>
+                <a href="{% url 'hms:manage_staff' %}" class="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-teal-600 hover:text-teal-700">
+                    Go to Staff Directory <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div id="staff-modal-table-container" class="hidden overflow-x-auto max-h-[350px] overflow-y-auto border border-slate-100 dark:border-slate-700/30 rounded-xl custom-scrollbar-x">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Staff Member</th>
+                            <th>Email</th>
+                            <th>National ID</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staff-modal-rows">
+                        <!-- Loaded via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="flex justify-end p-4 border-t border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/30">
+            <button onclick="closeStaffModal()" class="px-4 py-1.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold rounded-xl transition">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== PAGE DATA SCRIPTS ==================== -->
+{% for role in role_stats %}
+<!-- Staff details for {{ role.code }} -->
+<script id="staff-data-{{ role.code }}" type="application/json">
+  [
+    {% for staff in role.staff %}
+    {
+      "name": "{{ staff.user.get_full_name|escapejs }}",
+      "email": "{{ staff.user.email|escapejs }}",
+      "phone": "{{ staff.phone|escapejs }}",
+      "national_id": "{{ staff.national_id|escapejs }}",
+      "joined": "{{ staff.user.date_joined|date:'M d, Y' }}",
+      "avatar_name": "{{ staff.user.first_name|first }}{{ staff.user.last_name|first }}",
+      "profile_image": "{% if staff.profile_image %}{{ staff.profile_image.url }}{% endif %}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+</script>
+
+<!-- Role configurations for {{ role.code }} -->
+<script id="role-data-{{ role.code }}" type="application/json">
+  {
+    "code": "{{ role.code|escapejs }}",
+    "name": "{{ role.name|escapejs }}",
+    "desc": "{{ role.desc|escapejs }}",
+    "dept": "{{ role.dept|escapejs }}",
+    "color": "{{ role.color_hex|escapejs }}",
+    "perms": [
+      {% for perm in role.perms %}
+      "{{ perm }}"{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ]
+  }
+</script>
+{% endfor %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // State management
+    let currentView = 'list';
+    
+    // Switch between list and matrix view
+    function switchView(viewType) {
+        currentView = viewType;
+        
+        const listContainer = document.getElementById('view-list-container');
+        const matrixContainer = document.getElementById('view-matrix-container');
+        
+        const btnList = document.getElementById('btn-view-list');
+        const btnMatrix = document.getElementById('btn-view-matrix');
+        
+        if (viewType === 'list') {
+            listContainer.classList.remove('hidden');
+            matrixContainer.classList.add('hidden');
+            btnList.classList.add('active');
+            btnMatrix.classList.remove('active');
+        } else {
+            listContainer.classList.add('hidden');
+            matrixContainer.classList.remove('hidden');
+            btnList.classList.remove('active');
+            btnMatrix.classList.add('active');
+        }
+    }
+
+    // Live search and filter roles
+    function filterRoles() {
+        const query = document.getElementById('role-search-input').value.toLowerCase().trim();
+        const dept = document.getElementById('dept-filter-select').value;
+        const rows = document.querySelectorAll('.role-row');
+        
+        rows.forEach(row => {
+            const name = row.getAttribute('data-role-name').toLowerCase();
+            const desc = row.getAttribute('data-role-desc').toLowerCase();
+            const code = row.getAttribute('data-role-code').toLowerCase();
+            const rowDept = row.getAttribute('data-role-dept');
+            
+            const matchesQuery = name.includes(query) || desc.includes(query) || code.includes(query);
+            const matchesDept = (dept === 'ALL' || rowDept === dept);
+            
+            if (matchesQuery && matchesDept) {
+                row.classList.remove('hidden');
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+    }
+
+    function clearSearchFilters() {
+        document.getElementById('role-search-input').value = '';
+        document.getElementById('dept-filter-select').value = 'ALL';
+        filterRoles();
+    }
+
+    // Modal Operations: STAFF ASSIGNED VIEW
+    function openStaffModal(roleCode) {
+        const scriptTag = document.getElementById('staff-data-' + roleCode);
+        const roleScript = document.getElementById('role-data-' + roleCode);
+        if (!scriptTag || !roleScript) return;
+        
+        const staffList = JSON.parse(scriptTag.textContent);
+        const roleData = JSON.parse(roleScript.textContent);
+        
+        document.getElementById('staff-modal-title').textContent = roleData.name + ' Assigned Staff';
+        document.getElementById('staff-modal-subtitle').textContent = `Showing all ${staffList.length} staff member(s) with ${roleData.name} access.`;
+        
+        const loadingEl = document.getElementById('staff-modal-loading');
+        const emptyEl = document.getElementById('staff-modal-empty');
+        const tableContainerEl = document.getElementById('staff-modal-table-container');
+        const tbody = document.getElementById('staff-modal-rows');
+        
+        loadingEl.classList.remove('hidden');
+        emptyEl.classList.add('hidden');
+        tableContainerEl.classList.add('hidden');
+        
+        setTimeout(() => {
+            loadingEl.classList.add('hidden');
+            if (staffList.length === 0) {
+                emptyEl.classList.remove('hidden');
+            } else {
+                tbody.innerHTML = '';
+                staffList.forEach(staff => {
+                    const tr = document.createElement('tr');
+                    
+                    let avatarHtml = `<div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white text-xs" style="background: ${roleData.color}">
+                        ${staff.avatar_name}
+                    </div>`;
+                    if (staff.profile_image) {
+                        avatarHtml = `<img src="${staff.profile_image}" class="w-8 h-8 rounded-full object-cover border border-slate-200">`;
+                    }
+                    
+                    tr.innerHTML = `
+                        <td>
+                            <div class="flex items-center gap-3">
+                                ${avatarHtml}
+                                <span class="font-semibold text-slate-800 dark:text-white text-sm">${staff.name}</span>
+                            </div>
+                        </td>
+                        <td><span class="text-slate-500 dark:text-slate-400 text-xs">${staff.email}</span></td>
+                        <td><span class="text-slate-500 dark:text-slate-400 text-xs font-mono">${staff.national_id}</span></td>
+                        <td><span class="text-slate-500 dark:text-slate-400 text-xs">${staff.joined}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                tableContainerEl.classList.remove('hidden');
+            }
+        }, 300);
+        
+        document.getElementById('staff-view-modal').classList.add('active');
+    }
+
+    function closeStaffModal() {
+        document.getElementById('staff-view-modal').classList.remove('active');
+    }
+
+    // Modal Operations: CREATE / EDIT ROLE FORM
+    function openCreateModal() {
+        document.getElementById('edit-role-action-val').value = 'create';
+        document.getElementById('edit-role-code-val').value = '';
+        document.getElementById('modal-title-text').textContent = 'Create Custom Role';
+        
+        // Reset fields
+        document.getElementById('role-name-input').value = '';
+        document.getElementById('role-code-input').value = '';
+        document.getElementById('role-code-input').disabled = false;
+        document.getElementById('role-dept-select').value = 'Administration';
+        document.getElementById('role-desc-input').value = '';
+        
+        // Reset radio buttons to 'None'
+        const radios = document.querySelectorAll('#role-edit-modal input[type="radio"]');
+        radios.forEach(radio => {
+            if (radio.value === 'NO') {
+                radio.checked = true;
+                updateRadioLabelHighlight(radio);
+            }
+        });
+        
+        switchModalTab('details');
+        document.getElementById('role-edit-modal').classList.add('active');
+    }
+
+    function openEditModal(roleCode) {
+        const roleScript = document.getElementById('role-data-' + roleCode);
+        if (!roleScript) return;
+        const roleData = JSON.parse(roleScript.textContent);
+        
+        document.getElementById('edit-role-action-val').value = 'edit';
+        document.getElementById('edit-role-code-val').value = roleCode;
+        document.getElementById('modal-title-text').textContent = 'Edit ' + roleData.name + ' Role';
+        
+        document.getElementById('role-name-input').value = roleData.name;
+        document.getElementById('role-code-input').value = roleData.code;
+        document.getElementById('role-code-input').disabled = true; // Code shouldn't change
+        document.getElementById('role-dept-select').value = roleData.dept || 'Administration';
+        document.getElementById('role-desc-input').value = roleData.desc;
+        
+        // Populate permissions
+        roleData.perms.forEach((perm, idx) => {
+            const radio = document.querySelector(`input[name="perm-${idx}"][value="${perm}"]`);
+            if (radio) {
+                radio.checked = true;
+                updateRadioLabelHighlight(radio);
+            }
+        });
+        
+        switchModalTab('details');
+        document.getElementById('role-edit-modal').classList.add('active');
+    }
+
+    function closeRoleModal() {
+        document.getElementById('role-edit-modal').classList.remove('active');
+    }
+
+    // Modal tabs control
+    function switchModalTab(tab) {
+        const btnDetails = document.getElementById('btn-modal-tab-details');
+        const btnPerms = document.getElementById('btn-modal-tab-perms');
+        const containerDetails = document.getElementById('modal-tab-details-container');
+        const containerPerms = document.getElementById('modal-tab-perms-container');
+        
+        if (tab === 'details') {
+            btnDetails.classList.add('border-teal-500', 'text-teal-600');
+            btnDetails.classList.remove('border-transparent', 'text-slate-500');
+            btnPerms.classList.add('border-transparent', 'text-slate-500');
+            btnPerms.classList.remove('border-teal-500', 'text-teal-600');
+            
+            containerDetails.classList.remove('hidden');
+            containerPerms.classList.add('hidden');
+        } else {
+            btnPerms.classList.add('border-teal-500', 'text-teal-600');
+            btnPerms.classList.remove('border-transparent', 'text-slate-500');
+            btnDetails.classList.add('border-transparent', 'text-slate-500');
+            btnDetails.classList.remove('border-teal-500', 'text-teal-600');
+            
+            containerDetails.classList.add('hidden');
+            containerPerms.classList.remove('hidden');
+        }
+    }
+
+    // Radios style updater helper
+    function updateRadioLabelHighlight(checkedRadio) {
+        // Find other radios in the same group
+        const groupName = checkedRadio.getAttribute('name');
+        const groupRadios = document.querySelectorAll(`input[name="${groupName}"]`);
+        
+        groupRadios.forEach(radio => {
+            const parentLabel = radio.closest('label');
+            const spanLabel = parentLabel.querySelector('.radio-label');
+            if (radio.checked) {
+                parentLabel.classList.remove('bg-white', 'dark:bg-slate-800');
+                if (radio.value === 'FULL') {
+                    parentLabel.className = parentLabel.className.replace(/bg-\S+/, '') + ' bg-emerald-500 text-white';
+                    spanLabel.className = 'radio-label text-white font-semibold';
+                } else if (radio.value === 'READ') {
+                    parentLabel.className = parentLabel.className.replace(/bg-\S+/, '') + ' bg-blue-500 text-white';
+                    spanLabel.className = 'radio-label text-white font-semibold';
+                } else {
+                    parentLabel.className = parentLabel.className.replace(/bg-\S+/, '') + ' bg-slate-500 text-white';
+                    spanLabel.className = 'radio-label text-white font-semibold';
+                }
+            } else {
+                parentLabel.className = parentLabel.className.replace(/bg-\S+/, '').replace('text-white', '').trim();
+                parentLabel.classList.add('bg-white', 'dark:bg-slate-800');
+                spanLabel.className = 'radio-label text-slate-500 dark:text-slate-400';
+            }
+        });
+    }
+
+    // Attach event listeners to all permission radios
+    document.addEventListener('DOMContentLoaded', () => {
+        const radios = document.querySelectorAll('#role-edit-modal input[type="radio"]');
+        radios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                updateRadioLabelHighlight(e.target);
+            });
+            // Initial highlight call
+            if (radio.checked) {
+                updateRadioLabelHighlight(radio);
+            }
+        });
+    });
+
+    // MOCK SUBMISSIONS
+    function saveRoleForm(e) {
+        e.preventDefault();
+        const action = document.getElementById('edit-role-action-val').value;
+        const name = document.getElementById('role-name-input').value;
+        const code = document.getElementById('role-code-input').value.toUpperCase().trim();
+        const dept = document.getElementById('role-dept-select').value;
+        const desc = document.getElementById('role-desc-input').value;
+        
+        showPageNotification(`Role '${name}' (${code}) has been successfully ${action === 'create' ? 'created' : 'updated'} in the local cache!`, 'success');
+        closeRoleModal();
+    }
+
+    function duplicateRole(roleCode) {
+        const roleScript = document.getElementById('role-data-' + roleCode);
+        if (!roleScript) return;
+        const roleData = JSON.parse(roleScript.textContent);
+        
+        openCreateModal();
+        document.getElementById('role-name-input').value = roleData.name + ' (Copy)';
+        document.getElementById('role-code-input').value = roleData.code + '_COPY';
+        document.getElementById('role-dept-select').value = roleData.dept;
+        document.getElementById('role-desc-input').value = roleData.desc;
+        
+        roleData.perms.forEach((perm, idx) => {
+            const radio = document.querySelector(`input[name="perm-${idx}"][value="${perm}"]`);
+            if (radio) {
+                radio.checked = true;
+                updateRadioLabelHighlight(radio);
+            }
+        });
+        
+        showPageNotification(`Role parameters for ${roleData.name} duplicated! Complete the fields to save.`, 'info');
+    }
+
+    function savePermissionMatrixMock() {
+        showPageNotification('Success! Permission Matrix configuration has been compiled and saved.', 'success');
+    }
+
+    // Inline notifications (Toast) helper
+    function showPageNotification(msg, type = 'success') {
+        const container = document.body;
+        const toast = document.createElement('div');
+        
+        let colorClasses = 'bg-emerald-600 text-white';
+        let icon = 'fa-check-circle';
+        if (type === 'error') {
+            colorClasses = 'bg-red-600 text-white';
+            icon = 'fa-exclamation-circle';
+        } else if (type === 'info') {
+            colorClasses = 'bg-blue-600 text-white';
+            icon = 'fa-info-circle';
+        }
+        
+        toast.className = `fixed bottom-6 right-6 ${colorClasses} px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 z-[9999] transition-all transform translate-y-10 opacity-0`;
+        toast.style.fontFamily = "'Outfit', sans-serif";
+        toast.innerHTML = `
+            <i class="fas ${icon} text-lg"></i>
+            <span class="text-xs font-semibold">${msg}</span>
+        `;
+        
+        container.appendChild(toast);
+        
+        // Anim in
+        setTimeout(() => {
+            toast.style.transform = 'translateY(0)';
+            toast.style.opacity = '1';
+        }, 10);
+        
+        // Anim out and remove
+        setTimeout(() => {
+            toast.style.transform = 'translateY(10px)';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
+    }
+</script>
 {% endblock %}
