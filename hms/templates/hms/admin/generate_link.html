@@ -7,381 +7,683 @@
 <style>
     :root {
         --primary: #1E293B;
+        --primary-hover: #0F172A;
         --secondary: #0D9488;
         --success: #10B981;
+        --success-bg: #ECFDF5;
+        --success-border: #A7F3D0;
         --warning: #F59E0B;
-        --danger: #EF4444;
+        --warning-bg: #FFFBEB;
+        --warning-border: #FDE68A;
+        --danger: #E11D48;
+        --danger-bg: #FFF1F2;
+        --danger-border: #FECDD3;
         --background: #F8FAFC;
         --surface: #FFFFFF;
         --border: #E2E8F0;
         --input-border: #CBD5E1;
-        --text-main: #1E293B;
-        --text-muted: #64748b;
+        --text-main: #0F172A;
+        --text-muted: #475569;
+        
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Dark theme style overrides */
+    .dark {
+        --background: #0F172A;
+        --surface: #1E293B;
+        --border: #334155;
+        --input-border: #475569;
+        --text-main: #F8FAFC;
+        --text-muted: #94A3B8;
+        --success-bg: rgba(16, 185, 129, 0.1);
+        --success-border: rgba(16, 185, 129, 0.2);
+        --warning-bg: rgba(245, 158, 11, 0.1);
+        --warning-border: rgba(245, 158, 11, 0.2);
+        --danger-bg: rgba(225, 29, 72, 0.1);
+        --danger-border: rgba(225, 29, 72, 0.2);
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
     }
 
     body {
         background-color: var(--background);
+        color: var(--text-main);
+        transition: background-color var(--transition);
     }
 
     .page-container {
-        max-width: 1100px;
+        max-width: 1200px;
         margin: 2rem auto;
         padding: 0 1.5rem;
     }
     
+    /* Header redesigned as a modern linear gradient panel */
     .page-header {
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
+        background: linear-gradient(135deg, #1E293B, #0F172A);
+        padding: 2.5rem 2rem;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        color: #FFFFFF;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .dark .page-header {
+        background: linear-gradient(135deg, #1E293B, #020617);
+        border: 1px solid var(--border);
     }
 
     .page-header h1 {
-        font-size: 1.8rem;
+        font-size: 2.2rem;
         font-weight: 800;
-        color: var(--primary);
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        margin-bottom: 0.5rem;
+        margin: 0 0 0.5rem 0;
+        letter-spacing: -0.025em;
         text-transform: uppercase;
     }
 
     .page-header p {
-        color: var(--text-muted);
-        font-size: 1rem;
+        color: #94A3B8;
+        font-size: 1.05rem;
         margin: 0;
+        font-weight: 500;
     }
 
-    .modern-card {
+    /* Section card matching professional standards */
+    .section-card {
         background: var(--surface);
-        border-radius: 20px;
+        border-radius: 16px;
         border: 1px solid var(--border);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        padding: 24px;
-        margin-bottom: 24px;
+        box-shadow: var(--card-shadow);
+        padding: 2rem;
+        margin-bottom: 2.5rem;
+        transition: var(--transition);
     }
     
-    .card-title {
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--primary);
+    .section-card:hover {
+        box-shadow: var(--hover-shadow);
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.75rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
+    }
+
+    /* Layout structure for steps */
+    .steps-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
         margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .steps-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .step-box {
+        background: var(--background);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: var(--transition);
+    }
+
+    .step-box.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .step-label {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 1rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
 
-    .form-group {
-        margin-bottom: 1.5rem;
+    /* Dropdown wrapper & element */
+    .select-wrapper {
+        position: relative;
     }
 
     .form-select {
         width: 100%;
         padding: 12px 16px;
-        border-radius: 12px;
+        border-radius: 10px;
         border: 1px solid var(--input-border);
         background: var(--surface);
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 600;
         color: var(--text-main);
         outline: none;
-        transition: all 0.2s;
+        transition: var(--transition);
         cursor: pointer;
         appearance: none;
         background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 1rem center;
-        background-size: 16px 12px;
+        background-size: 14px 10px;
     }
-
+    
     .form-select:focus {
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+        box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.15);
+    }
+    
+    .dark .form-select:focus {
+        border-color: #38BDF8;
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
     }
 
-    .radio-group {
+    /* Custom Radio Cards */
+    .radio-row {
         display: flex;
         gap: 1rem;
         flex-wrap: wrap;
     }
-
-    .radio-option {
+    
+    .radio-card {
         flex: 1;
-        min-width: 140px;
+        min-width: 130px;
         position: relative;
     }
-
-    .radio-option input[type="radio"] {
+    
+    .radio-card input[type="radio"] {
         position: absolute;
         opacity: 0;
+        width: 0;
+        height: 0;
     }
-
-    .radio-label {
+    
+    .radio-card-label {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
-        padding: 12px 16px;
-        border-radius: 12px;
+        gap: 0.65rem;
+        padding: 12px 14px;
+        border-radius: 10px;
         border: 1px solid var(--input-border);
         background: var(--surface);
+        font-size: 0.9rem;
         font-weight: 600;
-        color: var(--text-muted);
+        color: var(--text-secondary);
         cursor: pointer;
-        transition: all 0.2s;
+        transition: var(--transition);
+        user-select: none;
     }
     
-    .radio-label::before {
-        content: '';
-        display: inline-block;
+    .radio-card-label:hover {
+        border-color: var(--text-muted);
+        background: rgba(0, 0, 0, 0.015);
+    }
+    
+    .dark .radio-card-label:hover {
+        background: rgba(255, 255, 255, 0.015);
+    }
+    
+    .radio-circle {
         width: 16px;
         height: 16px;
         border-radius: 50%;
         border: 2px solid var(--input-border);
-        background: white;
-        transition: all 0.2s;
-    }
-
-    .radio-option input[type="radio"]:checked + .radio-label {
-        border-color: var(--primary);
-        color: var(--primary);
-        background: rgba(30, 41, 59, 0.02);
+        display: inline-block;
+        position: relative;
+        flex-shrink: 0;
+        transition: var(--transition);
     }
     
-    .radio-option input[type="radio"]:checked + .radio-label::before {
+    .radio-card input[type="radio"]:checked + .radio-card-label {
         border-color: var(--primary);
-        background: var(--primary);
-        box-shadow: inset 0 0 0 3px white;
+        color: var(--text-main);
+        background: rgba(30, 41, 59, 0.04);
+    }
+    
+    .dark .radio-card input[type="radio"]:checked + .radio-card-label {
+        border-color: #38BDF8;
+        background: rgba(56, 189, 248, 0.05);
     }
 
-    .radio-option input[type="radio"]:focus-visible + .radio-label {
-        box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+    .radio-card input[type="radio"]:checked + .radio-card-label .radio-circle {
+        border-color: var(--primary);
+        background: var(--primary);
+    }
+    
+    .dark .radio-card input[type="radio"]:checked + .radio-card-label .radio-circle {
+        border-color: #38BDF8;
+        background: #38BDF8;
+    }
+    
+    .radio-card input[type="radio"]:checked + .radio-card-label .radio-circle::after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #FFFFFF;
+    }
+    
+    .dark .radio-card input[type="radio"]:checked + .radio-card-label .radio-circle::after {
+        background: #0F172A;
+    }
+
+    /* Actions Button layout styling */
+    .form-actions-center {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
     }
 
     .btn-primary {
-        width: 100%;
         background: var(--primary);
-        color: white;
+        color: #FFFFFF;
         border: none;
-        padding: 12px 24px;
-        border-radius: 40px;
+        padding: 14px 32px;
+        border-radius: 12px;
         font-size: 1rem;
         font-weight: 700;
         cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
+        transition: var(--transition);
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .dark .btn-primary {
+        background: #38BDF8;
+        color: #0F172A;
     }
 
     .btn-primary:hover {
-        background: #0f172a;
+        background: var(--primary-hover);
         transform: translateY(-2px);
-    }
-
-    .btn-secondary {
-        background: var(--surface);
-        color: var(--primary);
-        border: 1px solid var(--primary);
-        padding: 12px 24px;
-        border-radius: 40px;
-        font-size: 0.9rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-decoration: none;
-    }
-
-    .btn-secondary:hover {
-        background: rgba(30, 41, 59, 0.05);
-        color: var(--primary);
-    }
-
-    /* Success Box */
-    .success-box {
-        background: #f0fdf4;
-        border: 1px solid #bbf7d0;
-        border-radius: 20px;
-        padding: 24px;
-        margin-bottom: 24px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
     
-    .success-title {
+    .dark .btn-primary:hover {
+        background: #7DD3FC;
+    }
+
+    /* Recently Generated Link Premium Success Card */
+    .success-card {
+        background: var(--surface);
+        border: 2px solid var(--success-border);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2.5rem;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .success-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--success);
+    }
+    
+    .success-header {
         color: var(--success);
-        font-size: 1.1rem;
+        font-size: 1.25rem;
         font-weight: 800;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
-    
-    .generated-link {
+
+    .generated-link-container {
         display: flex;
         align-items: center;
         gap: 1rem;
-        background: white;
-        padding: 12px 16px;
-        border-radius: 12px;
-        border: 1px solid #bbf7d0;
-        margin-bottom: 1rem;
-        font-family: 'JetBrains Mono', monospace;
-        font-weight: 600;
-        color: var(--primary);
-    }
-    
-    .link-details {
+        background: var(--background);
+        padding: 14px 20px;
+        border-radius: 10px;
+        border: 1px dashed var(--success-border);
         margin-bottom: 1.5rem;
-        color: var(--text-main);
-        font-weight: 500;
-        line-height: 1.6;
+        word-break: break-all;
     }
     
-    .link-details strong {
+    .generated-link-text {
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
         font-weight: 700;
-        margin-right: 0.5rem;
+        font-size: 0.95rem;
+        color: var(--success);
+        flex: 1;
+    }
+
+    .meta-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 1.75rem;
     }
     
-    .share-actions {
+    @media (max-width: 768px) {
+        .meta-bar {
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+        }
+    }
+    
+    .meta-item {
+        background: var(--background);
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 0.25rem;
+    }
+    
+    .meta-item-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .meta-item-value {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+    
+    .horizontal-actions {
         display: flex;
         gap: 1rem;
         flex-wrap: wrap;
     }
     
-    .share-btn {
-        background: white;
+    .btn-action {
+        flex: 1;
+        min-width: 140px;
+        padding: 12px 16px;
+        border-radius: 10px;
         border: 1px solid var(--border);
+        background: var(--surface);
         color: var(--text-main);
-        padding: 8px 16px;
-        border-radius: 12px;
         font-size: 0.85rem;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
-        display: flex;
+        display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 0.5rem;
-        transition: all 0.2s;
+        transition: var(--transition);
+        text-decoration: none;
     }
     
-    .share-btn:hover {
-        background: #f1f5f9;
+    .btn-action:hover {
+        background: var(--background);
         border-color: var(--input-border);
+        transform: translateY(-1px);
+    }
+    
+    .btn-action.copy {
+        background: var(--primary);
+        color: #FFFFFF;
+        border-color: var(--primary);
+    }
+    
+    .dark .btn-action.copy {
+        background: #FFFFFF;
+        color: #0F172A;
+        border-color: #FFFFFF;
+    }
+    
+    .btn-action.copy:hover {
+        background: var(--primary-hover);
+    }
+    
+    .dark .btn-action.copy:hover {
+        background: #E2E8F0;
+    }
+    
+    .btn-action.revoke {
+        border-color: var(--danger-border);
+        color: var(--danger);
+        background: var(--danger-bg);
+    }
+    
+    .btn-action.revoke:hover {
+        background: var(--danger);
+        color: #FFFFFF;
+        border-color: var(--danger);
     }
 
-    /* Table Styles */
-    .table-responsive {
-        overflow-x: auto;
-    }
-
-    .data-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-
-    .data-table th {
+    /* Table Component Styling */
+    .table-container {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
         background: var(--surface);
-        padding: 1rem;
-        text-align: left;
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        border-bottom: 2px solid var(--border);
-        position: sticky;
-        top: 0;
-        z-index: 10;
+        margin-bottom: 1.5rem;
     }
 
-    .data-table td {
-        padding: 1rem;
-        border-bottom: 1px solid var(--border);
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .premium-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .premium-table th {
+        background: var(--background);
+        padding: 1.25rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.075em;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .premium-table td {
+        padding: 1.25rem 1rem;
         font-size: 0.9rem;
         color: var(--text-main);
-        font-weight: 500;
+        font-weight: 600;
+        border-bottom: 1px solid var(--border);
         vertical-align: middle;
         white-space: nowrap;
     }
-    
-    .data-table tbody tr {
-        transition: background-color 0.2s;
+
+    .premium-table tbody tr {
+        transition: var(--transition);
     }
 
-    .data-table tbody tr:hover {
-        background-color: #f8fafc;
+    .premium-table tbody tr:hover {
+        background: rgba(0, 0, 0, 0.015);
     }
     
-    .data-table tbody tr:last-child td {
+    .dark .premium-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.015);
+    }
+
+    .premium-table tbody tr:last-child td {
         border-bottom: none;
     }
 
-    .link-text {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.85rem;
+    .table-link-text {
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        font-size: 0.8rem;
         color: var(--secondary);
+        background: rgba(13, 148, 136, 0.05);
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(13, 148, 136, 0.1);
+        display: inline-block;
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .dark .table-link-text {
+        color: #2DD4BF;
+        background: rgba(45, 212, 191, 0.05);
+        border-color: rgba(45, 212, 191, 0.1);
     }
 
-    .badge {
+    /* Badges */
+    .status-badge {
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        padding: 0.35rem 0.75rem;
+        padding: 6px 12px;
         border-radius: 20px;
         font-size: 0.75rem;
         font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
-    .badge-success { background: #dcfce7; color: #166534; }
-    .badge-danger { background: #fee2e2; color: #991b1b; }
-    .badge-warning { background: #fef3c7; color: #b45309; }
-    
-    .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-
-    .action-group {
-        display: flex;
-        gap: 0.5rem;
-        justify-content: flex-end;
+    .status-badge-active {
+        background: var(--success-bg);
+        color: var(--success);
+        border: 1px solid var(--success-border);
     }
 
-    .icon-btn {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        border: 1px solid transparent;
-        background: transparent;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-muted);
-        transition: all 0.2s;
-        text-decoration: none;
-        cursor: pointer;
-    }
-
-    .icon-btn:hover {
-        background: #f8fafc;
-        border-color: var(--border);
-        color: var(--text-main);
-        transform: translateY(-1px);
-    }
-
-    .icon-btn.delete:hover {
-        background: #fee2e2;
-        border-color: #fecaca;
+    .status-badge-expired {
+        background: var(--danger-bg);
         color: var(--danger);
+        border: 1px solid var(--danger-border);
     }
 
-    .table-actions {
+    .status-badge-warning {
+        background: var(--warning-bg);
+        color: var(--warning);
+        border: 1px solid var(--warning-border);
+    }
+    
+    .badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    /* Table Actions Button Bar */
+    .table-actions-bottom {
         display: flex;
         gap: 1rem;
         margin-top: 1.5rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--border);
+        justify-content: flex-start;
+    }
+
+    .btn-secondary {
+        padding: 10px 20px;
+        border-radius: 10px;
+        border: 1px solid var(--primary);
+        background: transparent;
+        color: var(--primary);
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+        text-decoration: none;
+    }
+    
+    .dark .btn-secondary {
+        border-color: #38BDF8;
+        color: #38BDF8;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(30, 41, 59, 0.05);
+    }
+    
+    .dark .btn-secondary:hover {
+        background: rgba(56, 189, 248, 0.05);
+    }
+
+    .btn-secondary.danger {
+        border-color: var(--danger);
+        color: var(--danger);
+    }
+
+    .btn-secondary.danger:hover {
+        background: var(--danger);
+        color: #FFFFFF;
+    }
+
+    .row-actions {
+        display: flex;
+        gap: 0.35rem;
+        justify-content: flex-end;
+    }
+
+    .btn-row-action {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text-secondary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+    }
+
+    .btn-row-action:hover {
+        background: var(--background);
+        color: var(--text-main);
+        border-color: var(--input-border);
+    }
+
+    .btn-row-action.delete:hover {
+        background: var(--danger-bg);
+        color: var(--danger);
+        border-color: var(--danger-border);
     }
 
     /* Toast Notification */
@@ -398,7 +700,7 @@
     .toast {
         background: var(--surface);
         border-left: 4px solid var(--success);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
         padding: 1rem 1.5rem;
         display: flex;
@@ -418,27 +720,21 @@
     }
     
     .toast-message {
-        font-weight: 600;
+        font-weight: 700;
         color: var(--text-main);
         font-size: 0.9rem;
     }
 
     @media (max-width: 768px) {
-        .radio-group {
+        .horizontal-actions {
             flex-direction: column;
         }
-        
-        .table-actions {
+        .table-actions-bottom {
             flex-direction: column;
         }
-        
         .btn-secondary {
             width: 100%;
             justify-content: center;
-        }
-        
-        .share-actions {
-            flex-direction: column;
         }
     }
 </style>
@@ -446,205 +742,277 @@
 
 {% block content %}
 <div class="page-container">
+    
+    <!-- Linear Gradient Modern Header Panel -->
     <div class="page-header">
-        <h1><i class="fas fa-link"></i> STAFF INVITATION SYSTEM</h1>
+        <h1><i class="fas fa-link"></i> Staff Invitation System</h1>
         <p>Generate secure, time-bound registration links for new staff members</p>
     </div>
 
+    <!-- Message system notifications -->
     {% if messages %}
         {% for message in messages %}
             {% if message.tags == 'success' and 'link generated successfully' in message.message|lower %}
-                <!-- Skip default success message to show the beautiful card -->
+                <!-- Skip standard success banner to let success-card display -->
             {% else %}
-                <div class="modern-card" style="padding: 16px; border-left: 4px solid {% if message.tags == 'success' %}var(--success){% else %}var(--danger){% endif %}; margin-bottom: 24px;">
-                    <div style="font-weight: 600; color: {% if message.tags == 'success' %}var(--success){% else %}var(--danger){% endif %};">{{ message }}</div>
+                <div class="section-card" style="padding: 16px; border-left: 5px solid {% if message.tags == 'success' %}var(--success){% else %}var(--danger){% endif %}; margin-bottom: 24px;">
+                    <div style="font-weight: 700; color: {% if message.tags == 'success' %}var(--success){% else %}var(--danger){% endif %};">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i> {{ message }}
+                    </div>
                 </div>
             {% endif %}
         {% endfor %}
     {% endif %}
 
+    <!-- Recently Generated Success Card -->
     {% if generated_link and invitations.0 %}
-    <div class="success-box">
-        <div class="success-title"><i class="fas fa-check-circle"></i> LINK GENERATED SUCCESSFULLY</div>
-        
-        <div class="generated-link">
-            <i class="fas fa-link" style="color: var(--success);"></i>
-            <span id="new-link-text">{{ generated_link }}</span>
+    <div class="success-card">
+        <div class="success-header">
+            <i class="fas fa-check-circle"></i> Recently Generated Link
         </div>
         
-        <div class="link-details">
-            <div><strong>Role:</strong> {{ invitations.0.get_role_display }}</div>
-            <div><strong>Expires:</strong> {% if invitations.0.expires_at %}{{ invitations.0.expires_at|timeuntil }} left{% else %}Never Expires{% endif %}</div>
-            <div><strong>Uses:</strong> {{ invitations.0.used_count }}/{% if invitations.0.usage_limit == 0 %}Unlimited{% else %}{{ invitations.0.usage_limit }}{% endif %}</div>
+        <div class="generated-link-container">
+            <i class="fas fa-link" style="color: var(--success); font-size: 1.2rem;"></i>
+            <span class="generated-link-text" id="new-link-text">{{ generated_link }}</span>
         </div>
         
-        <div class="share-actions">
-            <button type="button" class="share-btn" onclick="copyToClipboard('{{ generated_link }}', 'Link copied to clipboard!')">
-                <i class="fas fa-clipboard"></i> COPY LINK
+        <!-- Metadata bar with dividers -->
+        <div class="meta-bar">
+            <div class="meta-item">
+                <span class="meta-item-label">Role</span>
+                <span class="meta-item-value">{{ invitations.0.get_role_display }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-item-label">Expires</span>
+                <span class="meta-item-value">
+                    {% if invitations.0.expires_at %}
+                        {{ invitations.0.expires_at|timeuntil }} left
+                    {% else %}
+                        Never
+                    {% endif %}
+                </span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-item-label">Usage</span>
+                <span class="meta-item-value">{{ invitations.0.used_count }}/{% if invitations.0.usage_limit == 0 %}∞{% else %}{{ invitations.0.usage_limit }}{% endif %}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-item-label">Status</span>
+                <span class="meta-item-value" style="color: var(--success); display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
+                    <span class="badge-dot" style="background: var(--success);"></span> ACTIVE
+                </span>
+            </div>
+        </div>
+        
+        <!-- Quick Action Bar -->
+        <div class="horizontal-actions">
+            <button type="button" class="btn-action copy" onclick="copyToClipboard('{{ generated_link }}', 'Link copied to clipboard!')">
+                <i class="fas fa-clipboard"></i> Copy Link
             </button>
-            <button type="button" class="share-btn" onclick="simulateAction('Email sent successfully')">
-                <i class="fas fa-envelope"></i> EMAIL
+            <button type="button" class="btn-action" onclick="simulateAction('Email sent successfully!')">
+                <i class="fas fa-envelope"></i> Send Email
             </button>
-            <button type="button" class="share-btn" onclick="simulateAction('SMS sent successfully')">
-                <i class="fas fa-comment-alt"></i> SMS
+            <button type="button" class="btn-action" onclick="simulateAction('SMS sent successfully!')">
+                <i class="fas fa-comment-alt"></i> Send SMS
             </button>
-            <button type="button" class="share-btn" onclick="simulateAction('WhatsApp message queued')">
-                <i class="fab fa-whatsapp"></i> WHATSAPP
+            <button type="button" class="btn-action" onclick="simulateAction('WhatsApp message queued!')">
+                <i class="fab fa-whatsapp"></i> WhatsApp
             </button>
+            <a href="{% url 'hms:manage_invitation_action' invitations.0.id %}?action=delete" class="btn-action revoke">
+                <i class="fas fa-times-circle"></i> Revoke Link
+            </a>
         </div>
     </div>
     {% endif %}
 
+    <!-- Generate Link Panel -->
     <form method="POST" id="genForm">
         {% csrf_token %}
         
-        <div class="modern-card">
-            <div class="card-title">STEP 1: SELECT STAFF ROLE</div>
-            <div class="form-group mb-0">
-                <select name="role" class="form-select" required>
-                    <option value="">▼ -- Select Target Role --</option>
-                    {% for value, label in roles %}
-                    <option value="{{ value }}">• {{ label }}</option>
-                    {% endfor %}
-                </select>
+        <div class="section-card">
+            <div class="section-title">
+                <i class="fas fa-plus-circle"></i> Generate New Invitation Link
             </div>
-        </div>
+            
+            <div class="steps-grid">
+                <!-- Step 1 -->
+                <div class="step-box">
+                    <div class="step-label">
+                        <i class="fas fa-user-tag"></i> Step 1: Select Staff Role
+                    </div>
+                    <div class="select-wrapper">
+                        <select name="role" class="form-select" required>
+                            <option value="">▼ -- Select Target Role --</option>
+                            {% for value, label in roles %}
+                            <option value="{{ value }}">{% if label %}{{ label }}{% else %}{{ value }}{% endif %}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
 
-        <div class="modern-card">
-            <div class="card-title">STEP 2: LINK EXPIRY</div>
-            <div class="radio-group">
-                <label class="radio-option">
-                    <input type="radio" name="expiry" value="24h" checked>
-                    <div class="radio-label">24 Hours</div>
-                </label>
-                <label class="radio-option">
-                    <input type="radio" name="expiry" value="7d">
-                    <div class="radio-label">7 Days</div>
-                </label>
-                <label class="radio-option">
-                    <input type="radio" name="expiry" value="30d">
-                    <div class="radio-label">30 Days</div>
-                </label>
-                <label class="radio-option">
-                    <input type="radio" name="expiry" value="never">
-                    <div class="radio-label">Never Expires</div>
-                </label>
+                <!-- Step 2 -->
+                <div class="step-box">
+                    <div class="step-label">
+                        <i class="fas fa-clock"></i> Step 2: Link Expiry
+                    </div>
+                    <div class="radio-row">
+                        <label class="radio-card">
+                            <input type="radio" name="expiry" value="24h" checked>
+                            <div class="radio-card-label">
+                                <span class="radio-circle"></span>
+                                <span>24 Hours</span>
+                            </div>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="expiry" value="7d">
+                            <div class="radio-card-label">
+                                <span class="radio-circle"></span>
+                                <span>7 Days</span>
+                            </div>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="expiry" value="never">
+                            <div class="radio-card-label">
+                                <span class="radio-circle"></span>
+                                <span>Never</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-box full-width">
+                    <div class="step-label">
+                        <i class="fas fa-users-cog"></i> Step 3: Usage Limit
+                    </div>
+                    <div class="radio-row">
+                        <label class="radio-card">
+                            <input type="radio" name="usage" value="single" checked>
+                            <div class="radio-card-label">
+                                <span class="radio-circle"></span>
+                                <span>Single Use (1 person)</span>
+                            </div>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="usage" value="multiple">
+                            <div class="radio-card-label">
+                                <span class="radio-circle"></span>
+                                <span>Multiple Use (5 people)</span>
+                            </div>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="usage" value="unlimited">
+                            <div class="radio-card-label">
+                                <span class="radio-circle"></span>
+                                <span>Unlimited</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="modern-card">
-            <div class="card-title">STEP 3: USAGE LIMIT</div>
-            <div class="radio-group">
-                <label class="radio-option">
-                    <input type="radio" name="usage" value="single" checked>
-                    <div class="radio-label">Single Use (1 person)</div>
-                </label>
-                <label class="radio-option">
-                    <input type="radio" name="usage" value="multiple">
-                    <div class="radio-label">Multiple Use (5 people)</div>
-                </label>
-                <label class="radio-option">
-                    <input type="radio" name="usage" value="unlimited">
-                    <div class="radio-label">Unlimited</div>
-                </label>
+            <div class="form-actions-center">
+                <button type="submit" class="btn-primary" id="genBtn">
+                    <i class="fas fa-link"></i> Generate Invitation Link
+                </button>
             </div>
-        </div>
-
-        <div class="modern-card" style="padding: 0; background: transparent; border: none; box-shadow: none;">
-            <button type="submit" class="btn-primary" id="genBtn">
-                <i class="fas fa-link"></i> GENERATE INVITATION LINK
-            </button>
         </div>
     </form>
 
-    <div class="modern-card">
-        <div class="card-title" style="margin-bottom: 1rem;"><i class="fas fa-clipboard-list"></i> ACTIVE REGISTRATION LINKS</div>
-        
-        <div class="table-responsive">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ROLE</th>
-                        <th>INVITATION LINK</th>
-                        <th>EXPIRY</th>
-                        <th>USAGE</th>
-                        <th>STATUS</th>
-                        <th style="text-align: right;">ACTION</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for invite in invitations %}
-                    <tr>
-                        <td style="font-weight: 700;">{{ invite.get_role_display }}</td>
-                        <td>
-                            <span class="link-text">{{ invite.full_url|truncatechars:35 }}</span>
-                        </td>
-                        <td>
-                            {% if invite.expires_at %}
-                                {% if invite.is_expired %}
-                                    <span style="color: var(--danger);">Expired</span>
-                                {% else %}
-                                    {{ invite.expires_at|timeuntil }} left
-                                {% endif %}
-                            {% else %}
-                                <span style="color: var(--secondary);">Never</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ invite.used_count }}/{% if invite.usage_limit == 0 %}∞{% else %}{{ invite.usage_limit }}{% endif %}
-                        </td>
-                        <td>
-                            {% if invite.is_expired %}
-                            <span class="badge badge-danger"><span class="dot"></span> Expired</span>
-                            {% elif invite.is_valid %}
-                            <span class="badge badge-success"><span class="dot"></span> Active</span>
-                            {% else %}
-                            <span class="badge badge-warning"><span class="dot"></span> Exhausted</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <div class="action-group">
-                                <button type="button" class="icon-btn" title="Copy Link" onclick="copyToClipboard('{{ invite.full_url }}', 'Link copied to clipboard')">
-                                    <i class="fas fa-clipboard"></i>
-                                </button>
-                                <button type="button" class="icon-btn" title="Email Link" onclick="simulateAction('Email sent to {{ invite.get_role_display }}')">
-                                    <i class="fas fa-envelope"></i>
-                                </button>
-                                <button type="button" class="icon-btn" title="Refresh/Renew Link" onclick="simulateAction('Link validity refreshed')">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                                <a href="{% url 'hms:manage_invitation_action' invite.id %}?action=delete" class="icon-btn delete" title="Delete Link">
-                                    {% if invite.is_expired or not invite.is_valid %}
-                                    <i class="fas fa-trash-alt"></i>
-                                    {% else %}
-                                    <i class="fas fa-times"></i>
-                                    {% endif %}
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-muted);">
-                            No active invitation links found.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- Active Registration Links Panel -->
+    <div class="section-card">
+        <div class="section-title">
+            <i class="fas fa-clipboard-list"></i> Active Registration Links
         </div>
         
-        <div class="table-actions">
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th>Staff Role</th>
+                            <th>Invitation Link</th>
+                            <th>Expiry</th>
+                            <th>Usage</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invite in invitations %}
+                        <tr>
+                            <td style="font-weight: 700;">{{ invite.get_role_display }}</td>
+                            <td>
+                                <span class="table-link-text" title="{{ invite.full_url }}">{{ invite.full_url }}</span>
+                            </td>
+                            <td>
+                                {% if invite.expires_at %}
+                                    {% if invite.is_expired %}
+                                        <span style="color: var(--danger); font-weight: 700;">EXPIRED</span>
+                                    {% else %}
+                                        {{ invite.expires_at|timeuntil }} left
+                                    {% endif %}
+                                {% else %}
+                                    <span style="color: var(--secondary); font-weight: 700;">Never</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ invite.used_count }}/{% if invite.usage_limit == 0 %}∞{% else %}{{ invite.usage_limit }}{% endif %}
+                            </td>
+                            <td>
+                                {% if invite.is_expired %}
+                                <span class="status-badge status-badge-expired"><span class="badge-dot"></span> Expired</span>
+                                {% elif invite.is_valid %}
+                                <span class="status-badge status-badge-active"><span class="badge-dot"></span> Active</span>
+                                {% else %}
+                                <span class="status-badge status-badge-warning"><span class="badge-dot"></span> Exhausted</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="row-actions">
+                                    <button type="button" class="btn-row-action" title="Copy Link" onclick="copyToClipboard('{{ invite.full_url }}', 'Link copied to clipboard!')">
+                                        <i class="fas fa-clipboard"></i>
+                                    </button>
+                                    <button type="button" class="btn-row-action" title="Email Link" onclick="simulateAction('Email sent to {{ invite.get_role_display }}')">
+                                        <i class="fas fa-envelope"></i>
+                                    </button>
+                                    <button type="button" class="btn-row-action" title="Refresh/Renew Link" onclick="simulateAction('Link validity refreshed!')">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <a href="{% url 'hms:manage_invitation_action' invite.id %}?action=delete" class="btn-row-action delete" title="Delete Link">
+                                        {% if invite.is_expired or not invite.is_valid %}
+                                        <i class="fas fa-trash-alt"></i>
+                                        {% else %}
+                                        <i class="fas fa-times"></i>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-muted); font-weight: 500;">
+                                <i class="fas fa-info-circle" style="margin-right: 0.25rem;"></i> No active invitation links found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="table-actions-bottom">
             <a href="." class="btn-secondary">
-                <i class="fas fa-sync-alt"></i> REFRESH LIST
+                <i class="fas fa-sync-alt"></i> Refresh List
             </a>
-            <a href="{% url 'hms:manage_invitation_action' 0 %}?action=clear_expired" class="btn-secondary" style="color: var(--danger); border-color: var(--danger);">
-                <i class="fas fa-trash-alt"></i> CLEAR EXPIRED
+            <a href="{% url 'hms:manage_invitation_action' 0 %}?action=clear_expired" class="btn-secondary danger">
+                <i class="fas fa-trash-alt"></i> Clear Expired
             </a>
         </div>
     </div>
 </div>
 
+<!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
@@ -661,7 +1029,7 @@
         
         container.appendChild(toast);
         
-        // Trigger reflow to apply animation
+        // Trigger reflow to apply transition animation
         setTimeout(() => {
             toast.classList.add('show');
         }, 10);
@@ -699,7 +1067,7 @@
         textArea.select();
         try {
             var successful = document.execCommand('copy');
-            if(successful) {
+            if (successful) {
                 showToast(successMessage);
             } else {
                 alert('Failed to copy link. Please manually copy.');
@@ -717,9 +1085,8 @@
     document.getElementById('genForm').addEventListener('submit', function() {
         const btn = document.getElementById('genBtn');
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> GENERATING LINK...';
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Generating Link...';
         btn.style.opacity = '0.8';
     });
 </script>
 {% endblock %}
-
