@@ -192,13 +192,28 @@ def user_login(request):
             return redirect('hms:kitchen_manager_dashboard')
         elif 'Security' in user_groups:
             return redirect('hms:security_dashboard')
-        elif hasattr(user, 'staff_profile') and user.staff_profile.role in ['TVET_DIRECTOR', 'TVET_COORDINATOR']:
-            return redirect('hms:tvet_director_dashboard')
-
-        elif hasattr(user, 'student_profile'):
-            return redirect('hms:student_dashboard')
-        elif hasattr(user, 'staff_profile') and user.staff_profile.get_category() == 'HEALTH_SERVICES':
-            return redirect('hms:manage_health')
+        elif hasattr(user, 'staff_profile'):
+            role = user.staff_profile.role
+            if role in ['TVET_DIRECTOR', 'TVET_COORDINATOR', 'DIR_TVET']:
+                return redirect('hms:tvet_director_dashboard')
+            elif role == 'VC':
+                return redirect('hms:vc_dashboard')
+            elif role == 'DVC':
+                return redirect('hms:dvc_dashboard')
+            elif role == 'REG_ADMIN':
+                return redirect('hms:reg_admin_dashboard')
+            elif role == 'REG_USER':
+                return redirect('hms:reg_user_dashboard')
+            elif role == 'DEAN_GRAD':
+                return redirect('hms:dean_grad_dashboard')
+            elif role == 'DIR_RESOURCE':
+                return redirect('hms:dir_resource_dashboard')
+            elif role == 'NEWS_AUDITOR':
+                return redirect('hms:news_auditor_dashboard')
+            elif user.staff_profile.get_category() == 'HEALTH_SERVICES':
+                return redirect('hms:manage_health')
+            else:
+                return redirect('hms:admin_dashboard')
         else:
             return redirect('hms:admin_dashboard')
 
@@ -224,13 +239,30 @@ def user_login(request):
                 return redirect('hms:security_dashboard')
             elif 'TVET Director' in user_groups:
                 return redirect('hms:tvet_director_dashboard')
-            elif hasattr(user, 'staff_profile') and user.staff_profile.role in ['TVET_DIRECTOR', 'TVET_COORDINATOR']:
-                return redirect('hms:tvet_director_dashboard')
-
             elif hasattr(user, 'student_profile'):
                 return redirect('hms:student_dashboard')
-            elif hasattr(user, 'staff_profile') and user.staff_profile.get_category() == 'HEALTH_SERVICES':
-                return redirect('hms:manage_health')
+            elif hasattr(user, 'staff_profile'):
+                role = user.staff_profile.role
+                if role in ['TVET_DIRECTOR', 'TVET_COORDINATOR', 'DIR_TVET']:
+                    return redirect('hms:tvet_director_dashboard')
+                elif role == 'VC':
+                    return redirect('hms:vc_dashboard')
+                elif role == 'DVC':
+                    return redirect('hms:dvc_dashboard')
+                elif role == 'REG_ADMIN':
+                    return redirect('hms:reg_admin_dashboard')
+                elif role == 'REG_USER':
+                    return redirect('hms:reg_user_dashboard')
+                elif role == 'DEAN_GRAD':
+                    return redirect('hms:dean_grad_dashboard')
+                elif role == 'DIR_RESOURCE':
+                    return redirect('hms:dir_resource_dashboard')
+                elif role == 'NEWS_AUDITOR':
+                    return redirect('hms:news_auditor_dashboard')
+                elif user.staff_profile.get_category() == 'HEALTH_SERVICES':
+                    return redirect('hms:manage_health')
+                else:
+                    return redirect('hms:admin_dashboard')
             else:
                 # Fallback for staff with undefined group or legacy admin
                 if user.is_staff:
@@ -852,6 +884,57 @@ def kitchen_manager_dashboard(request):
 @admin_only
 def security_dashboard(request):
     return render(request, 'hms/dashboards/security.html', {})
+
+def render_role_dashboard(request, title, desc):
+    today = date.today()
+    context = {
+        'dashboard_title': title,
+        'dashboard_description': desc,
+        'total_students': Student.objects.count(),
+        'total_staff': StaffProfile.objects.count(),
+        'pending_deferments': DefermentRequest.objects.filter(status='pending').count(),
+        'pending_maintenance': MaintenanceRequest.objects.filter(status='pending').count(),
+        'active_announcements': Announcement.objects.filter(is_active=True).count(),
+        'recent_logs': AuditLog.objects.order_by('-timestamp')[:10],
+        'recent_students': Student.objects.select_related('user').order_by('-created_at')[:5],
+        'dept_counts': {
+            'education': Student.objects.filter(program_of_study__icontains='Education').count(),
+            'agriculture': Student.objects.filter(program_of_study__icontains='Agriculture').count(),
+            'business': Student.objects.filter(program_of_study__icontains='Business').count(),
+            'environmental': Student.objects.filter(program_of_study__icontains='Environmental').count(),
+            'spas': Student.objects.filter(Q(program_of_study__icontains='SPAS') | Q(program_of_study__icontains='Spatial')).count(),
+            'health': Student.objects.filter(program_of_study__icontains='Health').count(),
+        }
+    }
+    return render(request, 'hms/rbac/role_dashboard.html', context)
+
+@login_required
+def vc_dashboard(request):
+    return render_role_dashboard(request, 'Vice Chancellor Dashboard', 'Executive oversight of all staff and operations.')
+
+@login_required
+def dvc_dashboard(request):
+    return render_role_dashboard(request, 'Deputy Vice Chancellor Dashboard', 'Oversight of university administration and staff.')
+
+@login_required
+def reg_admin_dashboard(request):
+    return render_role_dashboard(request, 'Registrar Admin Dashboard', 'Administrative oversight of all registered staff members.')
+
+@login_required
+def reg_user_dashboard(request):
+    return render_role_dashboard(request, 'Registrar User Dashboard', 'View and manage registered staff records.')
+
+@login_required
+def dean_grad_dashboard(request):
+    return render_role_dashboard(request, 'Dean - Graduate School Dashboard', "Oversight of Master's and PhD students.")
+
+@login_required
+def dir_resource_dashboard(request):
+    return render_role_dashboard(request, 'Director - Resources Dashboard', 'Manage university resources and facilities.')
+
+@login_required
+def news_auditor_dashboard(request):
+    return render_role_dashboard(request, 'News Auditor Dashboard', 'Audit university news and announcements.')
 
 @login_required
 @admin_only
@@ -3087,6 +3170,15 @@ def delete_tutoring_post(request, post_id):
 def super_admin_dashboard(request):
     """Full system analytics and management for Super Admin"""
     today = date.today()
+    dept_counts = {
+        'education': Student.objects.filter(program_of_study__icontains='Education').count(),
+        'agriculture': Student.objects.filter(program_of_study__icontains='Agriculture').count(),
+        'business': Student.objects.filter(program_of_study__icontains='Business').count(),
+        'environmental': Student.objects.filter(program_of_study__icontains='Environmental').count(),
+        'spas': Student.objects.filter(Q(program_of_study__icontains='SPAS') | Q(program_of_study__icontains='Spatial')).count(),
+        'health': Student.objects.filter(program_of_study__icontains='Health').count(),
+    }
+    
     context = {
         'total_students': Student.objects.count(),
         'total_staff': StaffProfile.objects.count(),
@@ -3099,6 +3191,7 @@ def super_admin_dashboard(request):
         'recent_logs': AuditLog.objects.order_by('-timestamp')[:10],
         'recent_students': Student.objects.select_related('user').order_by('-created_at')[:5],
         'recent_payments': Payment.objects.filter(status='Completed').order_by('-created_at')[:5],
+        'dept_counts': dept_counts,
     }
     return render(request, 'hms/rbac/super_admin_dashboard.html', context)
 
@@ -3518,7 +3611,15 @@ def manage_roles(request):
         'DEAN_HHS': {'desc': 'Manage student affairs and welfare', 'dept': 'Student Affairs', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'NO', 'NO', 'READ', 'NO', 'NO']},
         'DEFERMENT': {'desc': 'Process student deferment requests', 'dept': 'Academic', 'perms': ['READ', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO']},
         'DEPT_MCS': {'desc': 'Manage computer science department', 'dept': 'Academic', 'perms': ['FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
-        'DVC_ASA': {'desc': 'Deputy Vice Chancellor – Academic', 'dept': 'Administration', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']}
+        'DVC_ASA': {'desc': 'Deputy Vice Chancellor – Academic', 'dept': 'Administration', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']},
+        'VC': {'desc': 'Vice Chancellor – Full staff view', 'dept': 'Executive', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']},
+        'DVC': {'desc': 'Deputy Vice Chancellor – Full staff view', 'dept': 'Executive', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']},
+        'REG_ADMIN': {'desc': 'Register Admin – View registered staff', 'dept': 'Administration', 'perms': ['READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']},
+        'REG_USER': {'desc': 'Register User – View registered staff', 'dept': 'Administration', 'perms': ['READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']},
+        'DEAN_GRAD': {'desc': 'Dean Graduate School – Manage grad students', 'dept': 'Graduate School', 'perms': ['FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'DIR_RESOURCE': {'desc': 'Director Resource Mobilization – Funding', 'dept': 'Graduate School', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO']},
+        'DIR_TVET': {'desc': 'Director TVET – Manage TVET department', 'dept': 'TVET', 'perms': ['FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'NEWS_AUDITOR': {'desc': 'News Auditor – Audit news/announcements', 'dept': 'Audit', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'READ', 'NO', 'READ']}
     }
 
     modules = [
@@ -3546,7 +3647,7 @@ def manage_roles(request):
             'code': role_code,
             'name': role_name,
             'count': count,
-            'color_hex': get_role_color(role_code),
+            'color_hex': StaffProfile(role=role_code).get_role_color().get('hex', '#4B5563'),
             'desc': meta['desc'],
             'dept': meta['dept'],
             'perms': meta['perms'],

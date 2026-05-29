@@ -1,7 +1,7 @@
 {% extends 'hms/base.html' %}
 {% load static %}
 
-{% block title %}Super Admin - CampusCare Control Center{% endblock %}
+{% block title %}{{ dashboard_title }} - CampusCare{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -299,8 +299,8 @@
 <div class="dashboard-wrapper">
     <!-- Header -->
     <div class="header-section">
-        <h1>Control Center</h1>
-        <p>Full system overview and administrative management</p>
+        <h1>{{ dashboard_title }}</h1>
+        <p>{{ dashboard_description }}</p>
     </div>
 
     <!-- Stats Grid -->

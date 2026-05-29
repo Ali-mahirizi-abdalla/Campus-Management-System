@@ -215,6 +215,14 @@ class StaffProfile(models.Model):
         ('DEFERMENT', 'Deferment Officer'),
         ('DEPT_MCS', 'Dept MCS Coordinator'),
         ('DVC_ASA', 'DVC ASA'),
+        ('VC', 'Vice Chancellor'),
+        ('DVC', 'Deputy Vice Chancellor'),
+        ('REG_ADMIN', 'Register Admin'),
+        ('REG_USER', 'Register User'),
+        ('DEAN_GRAD', 'Dean - Graduate School'),
+        ('DIR_RESOURCE', 'Director - Resource Mobilization'),
+        ('DIR_TVET', 'Director - TVET'),
+        ('NEWS_AUDITOR', 'News Auditor'),
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='staff_profile')
@@ -239,19 +247,27 @@ class StaffProfile(models.Model):
             'DIPLOMA': {'name': 'Amber', 'hex': '#D97706'},
             'DEAN_HHS': {'name': 'Brown', 'hex': '#78350F'},
             'DEFERMENT': {'name': 'Green', 'hex': '#15803D'},
-            'DEPT_MCS': {'name': 'Indigo', 'hex': '#4338CA'},
-            'DVC_ASA': {'name': 'Violet', 'hex': '#6B21A8'},
+            ('DEPT_MCS'): {'name': 'Indigo', 'hex': '#4338CA'},
+            ('DVC_ASA'): {'name': 'Violet', 'hex': '#6B21A8'},
+            ('VC'): {'name': 'Gold', 'hex': '#D4AF37'},
+            ('DVC'): {'name': 'Silver', 'hex': '#C0C0C0'},
+            ('REG_ADMIN'): {'name': 'Blue', 'hex': '#1D4ED8'},
+            ('REG_USER'): {'name': 'Light Blue', 'hex': '#3B82F6'},
+            ('DEAN_GRAD'): {'name': 'Purple', 'hex': '#6D28D9'},
+            ('DIR_RESOURCE'): {'name': 'Green', 'hex': '#047857'},
+            ('DIR_TVET'): {'name': 'Orange', 'hex': '#C2410C'},
+            ('NEWS_AUDITOR'): {'name': 'Gray', 'hex': '#6B7280'},
         }
         return colors.get(self.role, {'name': 'Gray', 'hex': '#4B5563'})
 
     def get_category(self):
         """Categorize roles for permission logic"""
         role = self.role
-        if role in ['SUPER_ADMIN', 'Super Admin']:
+        if role in ['SUPER_ADMIN', 'Super Admin', 'VC', 'DVC', 'REG_ADMIN', 'REG_USER']:
             return 'EXECUTIVE'
-        if role in ['DIPLOMA', 'DEAN_HHS', 'DEFERMENT', 'DEPT_MCS', 'DVC_ASA']:
+        if role in ['DIPLOMA', 'DEAN_HHS', 'DEFERMENT', 'DEPT_MCS', 'DVC_ASA', 'DEAN_GRAD', 'DIR_TVET']:
             return 'ACADEMIC_ADMIN'
-        if role in ['FINANCE', 'AUDITOR']:
+        if role in ['FINANCE', 'AUDITOR', 'DIR_RESOURCE', 'NEWS_AUDITOR']:
             return 'FINANCE_ADMIN'
         if role in ['NEWS_EDITOR', 'SUPPORT']:
             return 'STUDENT_SERVICES'

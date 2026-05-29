@@ -32,6 +32,13 @@ urlpatterns = [
     path('kitchen/dashboard/', views.kitchen_manager_dashboard, name='kitchen_manager_dashboard'),
     path('security/dashboard/', views.security_dashboard, name='security_dashboard'),
     path('tvet/dashboard/', views.tvet_director_dashboard, name='tvet_director_dashboard'),
+    path('vc/dashboard/', views.vc_dashboard, name='vc_dashboard'),
+    path('dvc/dashboard/', views.dvc_dashboard, name='dvc_dashboard'),
+    path('reg-admin/dashboard/', views.reg_admin_dashboard, name='reg_admin_dashboard'),
+    path('reg-user/dashboard/', views.reg_user_dashboard, name='reg_user_dashboard'),
+    path('dean-grad/dashboard/', views.dean_grad_dashboard, name='dean_grad_dashboard'),
+    path('dir-resource/dashboard/', views.dir_resource_dashboard, name='dir_resource_dashboard'),
+    path('news-auditor/dashboard/', views.news_auditor_dashboard, name='news_auditor_dashboard'),
     
     # Admin Dashboard (Legacy/Generic)
     path('manage/dashboard/', views.dashboard_admin, name='admin_dashboard'),
