@@ -335,22 +335,35 @@
 <script>
     // DATA STATE
     const ROLE_DATA = {
-        'SUPER_ADMIN': { name: 'Super Admin', color: '#1E293B', desc: 'Full system access' },
-        'HEALTH_MANAGER': { name: 'Health Manager', color: '#10B981', desc: 'Manage health records' },
-        'MAINTENANCE_SUPERVISOR': { name: 'Maintenance Supervisor', color: '#F59E0B', desc: 'Manage work orders' },
-        'WARDEN': { name: 'Warden', color: '#8B5CF6', desc: 'Manage accommodation' },
-        'FINANCE_OFFICER': { name: 'Finance Officer', color: '#0D9488', desc: 'Manage payments' },
-        'SECURITY_OFFICER': { name: 'Security Officer', color: '#3B82F6', desc: 'Manage security' },
-        'NEWS_EDITOR': { name: 'News Editor', color: '#DB2777', desc: 'Manage announcements' },
-        'AUDITOR': { name: 'Auditor', color: '#64748B', desc: 'Audit logs only' },
-        'EMERGENCY_COORDINATOR': { name: 'Emergency Coordinator', color: '#E11D48', desc: 'Handle emergencies' },
-        'SUPPORT_AGENT': { name: 'Support Agent', color: '#06B6D4', desc: 'Manage student support' },
-        'TVET_DIRECTOR': { name: 'Diploma Coordinator', color: '#D97706', desc: 'TVET management' },
-        'TVET_COORDINATOR': { name: 'TVET Coordinator', color: '#F97316', desc: 'Technical education' },
-        'DEAN_STUDENTS': { name: 'Dean of Students', color: '#78350F', desc: 'Student affairs' },
-        'DEFERMENT_OFFICER': { name: 'Deferment Officer', color: '#15803D', desc: 'Handle deferments' },
-        'DEPT_MCS': { name: 'Dept MCS Coordinator', color: '#4338CA', desc: 'MCS department' },
-        'DVC_ASA': { name: 'DVC ASA', desc: 'Academic affairs' }
+        // ─── Executive Leadership ───────────────────────────────────────────
+        'VC':           { name: 'Vice Chancellor',              color: '#7C3AED', desc: 'Executive oversight of all university operations', category: 'Executive' },
+        'DVC':          { name: 'Deputy Vice Chancellor',       color: '#6D28D9', desc: 'Deputy executive oversight and administration',    category: 'Executive' },
+        'DVC_ASA':      { name: 'DVC ASA',                     color: '#5B21B6', desc: 'Academic and student affairs oversight',           category: 'Executive' },
+        // ─── Registry ────────────────────────────────────────────────────────
+        'REG_ADMIN':    { name: 'Register Admin',              color: '#0284C7', desc: 'Full registrar administration access',             category: 'Registry' },
+        'REG_USER':     { name: 'Register User',               color: '#0369A1', desc: 'View and manage registered staff records',         category: 'Registry' },
+        // ─── Academic ────────────────────────────────────────────────────────
+        'SUPER_ADMIN':  { name: 'Super Admin',                 color: '#1E293B', desc: 'Full system access and configuration',             category: 'Academic' },
+        'DEAN_HHS':     { name: 'Dean of Students',           color: '#78350F', desc: 'Student affairs and welfare oversight',            category: 'Academic' },
+        'DEAN_GRAD':    { name: 'Dean – Graduate School',     color: '#92400E', desc: "Master's and PhD student oversight",               category: 'Academic' },
+        'DEPT_MCS':     { name: 'Dept MCS Coordinator',       color: '#4338CA', desc: 'MCS department coordination',                      category: 'Academic' },
+        'DIR_RESOURCE': { name: 'Director – Resource Mob.',   color: '#0F766E', desc: 'Resource mobilization and facilities',             category: 'Academic' },
+        'DIR_TVET':     { name: 'Director – TVET',            color: '#D97706', desc: 'Technical and vocational education oversight',     category: 'Academic' },
+        'DIPLOMA':      { name: 'Diploma Coordinator',         color: '#F97316', desc: 'Diploma programme coordination',                  category: 'Academic' },
+        // ─── Welfare & Student Services ──────────────────────────────────────
+        'HEALTH_MGR':   { name: 'Health Manager',              color: '#10B981', desc: 'Manage student health records and appointments',  category: 'Welfare' },
+        'MAINT_SUP':    { name: 'Maintenance Supervisor',      color: '#F59E0B', desc: 'Manage maintenance work orders',                  category: 'Welfare' },
+        'WARDEN':       { name: 'Warden',                      color: '#8B5CF6', desc: 'Manage hostel accommodation',                     category: 'Welfare' },
+        'DEFERMENT':    { name: 'Deferment Officer',           color: '#15803D', desc: 'Handle student deferment requests',               category: 'Welfare' },
+        // ─── Operations ──────────────────────────────────────────────────────
+        'FINANCE':      { name: 'Finance Officer',             color: '#0D9488', desc: 'Manage payments and financial records',           category: 'Operations' },
+        'SECURITY':     { name: 'Security Officer',            color: '#3B82F6', desc: 'Manage campus security and incidents',            category: 'Operations' },
+        'EMERGENCY':    { name: 'Emergency Coordinator',       color: '#E11D48', desc: 'Handle emergency broadcast and response',         category: 'Operations' },
+        'SUPPORT':      { name: 'Support Agent',               color: '#06B6D4', desc: 'Manage student support tickets',                  category: 'Operations' },
+        // ─── Media & Communications ──────────────────────────────────────────
+        'NEWS_EDITOR':  { name: 'News Editor',                 color: '#DB2777', desc: 'Create and publish campus announcements',         category: 'Media' },
+        'NEWS_AUDITOR': { name: 'News Auditor',                color: '#BE185D', desc: 'Audit and review university news content',        category: 'Media' },
+        'AUDITOR':      { name: 'Auditor',                     color: '#64748B', desc: 'Read-only access to system audit logs',           category: 'Media' },
     };
 
     let state = {
