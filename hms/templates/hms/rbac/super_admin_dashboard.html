@@ -225,39 +225,41 @@
         margin: 24px 0 40px 0;
     }
 
-    /* Individual Card */
+    /* Individual Card - matches stat-card style exactly */
     .dept-card {
-        background: white;
+        background: #FFFFFF;
         border-radius: 16px;
-        padding: 16px 12px;
+        padding: 20px 12px;
         text-align: center;
-        transition: all 0.2s ease;
         border: 1px solid #E2E8F0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: all 0.2s ease;
         cursor: pointer;
     }
 
     .dept-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     }
 
     /* Card Icon */
     .dept-icon {
-        font-size: 28px;
-        margin-bottom: 8px;
+        font-size: 32px;
+        margin-bottom: 12px;
+        display: block;
     }
 
     /* Card Title */
     .dept-title {
-        font-size: 13px;
-        font-weight: 600;
+        font-size: 14px;
+        font-weight: 700;
         color: #1E293B;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
     }
 
     /* Card Count */
     .dept-count {
-        font-size: 24px;
+        font-size: 28px;
         font-weight: 700;
         color: #0F172A;
         line-height: 1.2;
@@ -265,11 +267,11 @@
 
     /* Card Label */
     .dept-label {
-        font-size: 10px;
+        font-size: 11px;
         color: #64748B;
         margin-top: 4px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.05em;
     }
 
     /* Responsive */
@@ -338,41 +340,41 @@
     <!-- Academic Departments -->
     <h2 class="card-title" style="margin-bottom: 1rem;"><i class="fas fa-university"></i> Academic Departments</h2>
     <div class="department-cards">
-        <div class="dept-card" style="border-top: 4px solid #2563EB;">
-            <div class="dept-icon">🎓</div>
+        <div class="dept-card">
+            <span class="dept-icon">🎓</span>
             <div class="dept-title">Education</div>
-            <div class="dept-count" style="color: #2563EB;">{{ dept_counts.education }}</div>
-            <div class="dept-label">students</div>
+            <div class="dept-count">{{ dept_counts.education }}</div>
+            <div class="dept-label">STUDENTS</div>
         </div>
-        <div class="dept-card" style="border-top: 4px solid #10B981;">
-            <div class="dept-icon">🌾</div>
+        <div class="dept-card">
+            <span class="dept-icon">🌾</span>
             <div class="dept-title">Agriculture</div>
-            <div class="dept-count" style="color: #10B981;">{{ dept_counts.agriculture }}</div>
-            <div class="dept-label">students</div>
+            <div class="dept-count">{{ dept_counts.agriculture }}</div>
+            <div class="dept-label">STUDENTS</div>
         </div>
-        <div class="dept-card" style="border-top: 4px solid #F59E0B;">
-            <div class="dept-icon">💼</div>
+        <div class="dept-card">
+            <span class="dept-icon">💼</span>
             <div class="dept-title">Business</div>
-            <div class="dept-count" style="color: #F59E0B;">{{ dept_counts.business }}</div>
-            <div class="dept-label">students</div>
+            <div class="dept-count">{{ dept_counts.business }}</div>
+            <div class="dept-label">STUDENTS</div>
         </div>
-        <div class="dept-card" style="border-top: 4px solid #059669;">
-            <div class="dept-icon">🌍</div>
+        <div class="dept-card">
+            <span class="dept-icon">🌍</span>
             <div class="dept-title">Environ. Sci</div>
-            <div class="dept-count" style="color: #059669;">{{ dept_counts.environmental }}</div>
-            <div class="dept-label">students</div>
+            <div class="dept-count">{{ dept_counts.environmental }}</div>
+            <div class="dept-label">STUDENTS</div>
         </div>
-        <div class="dept-card" style="border-top: 4px solid #7C3AED;">
-            <div class="dept-icon">🗺️</div>
+        <div class="dept-card">
+            <span class="dept-icon">🗺️</span>
             <div class="dept-title">SPAS</div>
-            <div class="dept-count" style="color: #7C3AED;">{{ dept_counts.spas }}</div>
-            <div class="dept-label">students</div>
+            <div class="dept-count">{{ dept_counts.spas }}</div>
+            <div class="dept-label">STUDENTS</div>
         </div>
-        <div class="dept-card" style="border-top: 4px solid #EF4444;">
-            <div class="dept-icon">🏥</div>
+        <div class="dept-card">
+            <span class="dept-icon">🏥</span>
             <div class="dept-title">Health Sci</div>
-            <div class="dept-count" style="color: #EF4444;">{{ dept_counts.health }}</div>
-            <div class="dept-label">students</div>
+            <div class="dept-count">{{ dept_counts.health }}</div>
+            <div class="dept-label">STUDENTS</div>
         </div>
     </div>
 
