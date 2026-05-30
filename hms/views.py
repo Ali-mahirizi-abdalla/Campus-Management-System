@@ -3688,6 +3688,29 @@ def manage_invitation_action(request, invite_id):
         elif action == 'delete':
             invite.delete()
             messages.success(request, "Invitation deleted successfully.")
+        elif action == 'email':
+            email_address = request.GET.get('email')
+            if email_address:
+                try:
+                    from django.core.mail import send_mail
+                    from django.conf import settings
+                    full_url = request.build_absolute_uri(f"/manage/staff/register/?invite={invite.token}")
+                    
+                    expires_text = invite.expires_at.strftime("%Y-%m-%d %H:%M") if invite.expires_at else "never"
+                    usage_text = str(invite.usage_limit) if invite.usage_limit > 0 else "unlimited"
+                    
+                    send_mail(
+                        subject='Staff Invitation to Campus Care',
+                        message=f'Hello,\n\nYou have been invited to join Campus Care as a {invite.get_role_display()}.\n\nPlease click the link below to register:\n{full_url}\n\nNote: This link expires on {expires_text} and can be used {usage_text} times.\n\nBest regards,\nCampus Care Admin',
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[email_address],
+                        fail_silently=False,
+                    )
+                    messages.success(request, f"Email sent successfully to {email_address}.")
+                except Exception as e:
+                    messages.error(request, f"Failed to send email: {str(e)}")
+            else:
+                messages.error(request, "No email address provided.")
             
     return redirect('hms:generate_staff_link')
 

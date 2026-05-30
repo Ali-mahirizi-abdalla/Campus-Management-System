@@ -853,7 +853,7 @@
             <button type="button" class="btn-secondary" onclick="copyToClipboard('{{ generated_link }}', 'Link copied to clipboard!')">
                 <i class="fas fa-copy"></i> Copy Link
             </button>
-            <button type="button" class="btn-icon" onclick="simulateAction('Email sent successfully!')">
+            <button type="button" class="btn-icon" onclick="sendInviteEmail({{ invitations.0.id }})">
                 <i class="fas fa-envelope"></i> Send Email
             </button>
             <button type="button" class="btn-icon" onclick="simulateAction('SMS sent successfully!')">
@@ -1026,7 +1026,7 @@
                                 <button type="button" class="btn-icon" title="Copy Link" onclick="copyToClipboard('{{ invite.full_url }}', 'Link copied to clipboard!')">
                                     <i class="fas fa-clipboard"></i>
                                 </button>
-                                <button type="button" class="btn-icon" title="Email Link" onclick="simulateAction('Email sent to {{ invite.get_role_display }}')">
+                                <button type="button" class="btn-icon" title="Email Link" onclick="sendInviteEmail({{ invite.id }})">
                                     <i class="fas fa-envelope"></i>
                                 </button>
                                 <button type="button" class="btn-icon" title="Refresh/Renew Link" onclick="simulateAction('Link validity refreshed!')">
@@ -1137,6 +1137,15 @@
     
     function simulateAction(message) {
         showToast(message, 'success');
+    }
+    
+    function sendInviteEmail(inviteId) {
+        const email = prompt("Enter the email address to send this invitation to:");
+        if (email && email.trim() !== "") {
+            // Replace '0' with actual ID dynamically
+            let baseUrl = "{% url 'hms:manage_invitation_action' 0 %}".replace('/0/', '/' + inviteId + '/');
+            window.location.href = baseUrl + "?action=email&email=" + encodeURIComponent(email.trim());
+        }
     }
 
     document.getElementById('genForm').addEventListener('submit', function() {
