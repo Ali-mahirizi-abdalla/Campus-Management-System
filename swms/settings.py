@@ -146,6 +146,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'hms.middleware.AuditMiddleware',
     'hms.middleware.PresenceMiddleware',
+    'hms.middleware.StrictRoleAccessMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
@@ -174,6 +175,7 @@ TEMPLATES = [
                 'hms.context_processors.staff_role_info',
                 'hms.context_processors.unread_notifications',
                 'hms.context_processors.telegram_info',
+                'hms.context_processors.role_permissions',
             ],
             # Explicitly disable template caching in DEBUG mode
             'loaders': [
