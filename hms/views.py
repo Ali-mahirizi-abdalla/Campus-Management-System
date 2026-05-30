@@ -3227,32 +3227,8 @@ def delete_tutoring_post(request, post_id):
 @login_required
 @super_admin_required
 def super_admin_dashboard(request):
-    """Full system analytics and management for Super Admin"""
-    today = date.today()
-    dept_counts = {
-        'education': Student.objects.filter(program_of_study__icontains='Education').count(),
-        'agriculture': Student.objects.filter(program_of_study__icontains='Agriculture').count(),
-        'business': Student.objects.filter(program_of_study__icontains='Business').count(),
-        'environmental': Student.objects.filter(program_of_study__icontains='Environmental').count(),
-        'spas': Student.objects.filter(Q(program_of_study__icontains='SPAS') | Q(program_of_study__icontains='Spatial')).count(),
-        'health': Student.objects.filter(program_of_study__icontains='Health').count(),
-    }
-    
-    context = {
-        'total_students': Student.objects.count(),
-        'total_staff': StaffProfile.objects.count(),
-        'pending_deferments': DefermentRequest.objects.filter(status='pending').count(),
-        'pending_maintenance': MaintenanceRequest.objects.filter(status='pending').count(),
-        'active_announcements': Announcement.objects.filter(is_active=True).count(),
-        'total_rooms': Room.objects.count(),
-        'occupied_rooms': Room.objects.filter(is_available=False).count(),
-        'today_visitors': Visitor.objects.filter(check_in_time__date=today).count(),
-        'recent_logs': AuditLog.objects.order_by('-timestamp')[:10],
-        'recent_students': Student.objects.select_related('user').order_by('-created_at')[:5],
-        'recent_payments': Payment.objects.filter(status='Completed').order_by('-created_at')[:5],
-        'dept_counts': dept_counts,
-    }
-    return render(request, 'hms/rbac/super_admin_dashboard.html', context)
+    """Redirect Super Admin to the main admin dashboard"""
+    return redirect('hms:admin_dashboard')
 
 
 @login_required
