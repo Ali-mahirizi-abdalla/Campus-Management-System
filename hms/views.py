@@ -39,7 +39,124 @@ import json
 from .mpesa import MpesaClient
 
 # ==================== Authentication ====================
-
+ROLE_BANNERS = {
+    'super_admin': {
+        'icon': '👑', 'name': 'Super Administrator',
+        'description': 'Full system access – all modules and features',
+        'restriction': 'FULL ACCESS: No restrictions', 'badge_color': 'navy'
+    },
+    'vice_chancellor': {
+        'icon': '👑', 'name': 'Vice Chancellor',
+        'description': 'Executive oversight of all university operations',
+        'restriction': 'ACCESS RESTRICTED: Executive View Only', 'badge_color': 'amber'
+    },
+    'deputy_vice_chancellor': {
+        'icon': '📚', 'name': 'Deputy Vice Chancellor',
+        'description': 'Deputy executive oversight and administration',
+        'restriction': 'ACCESS RESTRICTED: Executive View Only', 'badge_color': 'amber'
+    },
+    'register_admin': {
+        'icon': '📋', 'name': 'Register Admin',
+        'description': 'Manage staff registrations and student enrollment',
+        'restriction': 'ACCESS RESTRICTED: Registration Only', 'badge_color': 'purple'
+    },
+    'register_user': {
+        'icon': '👤', 'name': 'Register User',
+        'description': 'View all staff members (read-only)',
+        'restriction': 'ACCESS RESTRICTED: Read-Only Staff View', 'badge_color': 'gray'
+    },
+    'dean_of_students': {
+        'icon': '👨‍🎓', 'name': 'Dean of Students',
+        'description': 'Manage student welfare, discipline, and affairs',
+        'restriction': 'ACCESS RESTRICTED: Student Welfare Only', 'badge_color': 'teal'
+    },
+    'dean_graduate_school': {
+        'icon': '🎓', 'name': 'Dean – Graduate School',
+        'description': 'Manage Masters and PhD students only',
+        'restriction': 'ACCESS RESTRICTED: Graduate Students Only', 'badge_color': 'teal'
+    },
+    'director_resource': {
+        'icon': '💰', 'name': 'Director – Resource Mobilization',
+        'description': 'Manage graduate school funding and grants',
+        'restriction': 'ACCESS RESTRICTED: Graduate Funding Only', 'badge_color': 'green'
+    },
+    'director_tvet': {
+        'icon': '🔧', 'name': 'Director – TVET',
+        'description': 'Full TVET department management',
+        'restriction': 'ACCESS RESTRICTED: TVET Department Only', 'badge_color': 'amber'
+    },
+    'deferment_officer': {
+        'icon': '📋', 'name': 'Deferment Officer',
+        'description': 'Process student deferment requests',
+        'restriction': 'ACCESS RESTRICTED: Deferments Only', 'badge_color': 'purple'
+    },
+    'dept_mcs': {
+        'icon': '💻', 'name': 'Dept MCS Coordinator',
+        'description': 'Manage Computer Science department only',
+        'restriction': 'ACCESS RESTRICTED: CS Department Only', 'badge_color': 'teal'
+    },
+    'health_manager': {
+        'icon': '🏥', 'name': 'Health Manager',
+        'description': 'Manage health services and patient records',
+        'restriction': 'ACCESS RESTRICTED: Health Records Only', 'badge_color': 'green'
+    },
+    'maintenance_sup': {
+        'icon': '🔧', 'name': 'Maintenance Supervisor',
+        'description': 'Manage maintenance requests and technicians',
+        'restriction': 'ACCESS RESTRICTED: Maintenance Only', 'badge_color': 'amber'
+    },
+    'warden': {
+        'icon': '🏠', 'name': 'Warden',
+        'description': 'Manage accommodation and room allocation',
+        'restriction': 'ACCESS RESTRICTED: Accommodation Only', 'badge_color': 'purple'
+    },
+    'finance_officer': {
+        'icon': '💰', 'name': 'Finance Officer',
+        'description': 'Manage payments and M-Pesa records',
+        'restriction': 'ACCESS RESTRICTED: Financial Data Only', 'badge_color': 'teal'
+    },
+    'security_officer': {
+        'icon': '👤', 'name': 'Security Officer',
+        'description': 'Manage visitors and entry/exit logs',
+        'restriction': 'ACCESS RESTRICTED: Visitor Logs Only', 'badge_color': 'gray'
+    },
+    'news_editor': {
+        'icon': '📢', 'name': 'News Editor',
+        'description': 'Create and publish news and alerts',
+        'restriction': 'ACCESS RESTRICTED: News & Alerts Only', 'badge_color': 'teal'
+    },
+    'news_auditor': {
+        'icon': '📜', 'name': 'News Auditor',
+        'description': 'Read-only news audit logs',
+        'restriction': 'READ-ONLY ACCESS: Cannot modify news', 'badge_color': 'gray'
+    },
+    'emergency_coord': {
+        'icon': '🚨', 'name': 'Emergency Coordinator',
+        'description': 'Send emergency alerts',
+        'restriction': 'ACCESS RESTRICTED: Emergency Alerts Only', 'badge_color': 'navy'
+    },
+    'support_agent': {
+        'icon': '💬', 'name': 'Support Agent',
+        'description': 'Manage student chats and tickets',
+        'restriction': 'ACCESS RESTRICTED: Student Support Only', 'badge_color': 'teal'
+    },
+    'auditor': {
+        'icon': '📜', 'name': 'Auditor',
+        'description': 'Read-only system audit logs',
+        'restriction': 'READ-ONLY ACCESS: Cannot modify data', 'badge_color': 'gray'
+    },
+    'diploma_coordinator': {
+        'icon': '🎓', 'name': 'Diploma Coordinator (TVET)',
+        'description': 'Limited to Diploma Student Management',
+        'restriction': 'ACCESS RESTRICTED: DIPLOMA STUDENTS ONLY', 'badge_color': 'amber'
+    },
+    'dept_coordinator': {
+        'icon': '🏫', 'name': 'Department Coordinator',
+        'description': 'Manage own department students only',
+        'restriction': 'ACCESS RESTRICTED: Department Only', 'badge_color': 'teal'
+    }
+}
+# ==================== Authentication ====================
 def register_student(request):
     """
     Handle student registration logic.
@@ -739,6 +856,16 @@ def dashboard_admin(request):
         potential_meals = student_on_meals * 2
         meal_completion_rate = round((total_meals_served_today / potential_meals) * 100, 1) if potential_meals > 0 else 0
     
+    # Get the role banner for the logged-in user
+    user_role = staff_role
+    role_banner = ROLE_BANNERS.get(user_role, {
+        'icon': '👤',
+        'name': user_role.replace('_', ' ').title() if user_role else 'Staff',
+        'description': 'No description available',
+        'restriction': 'ACCESS RESTRICTED',
+        'badge_color': 'gray'
+    })
+
     context = {
         'today': today,
         'tomorrow': tomorrow,
@@ -765,6 +892,7 @@ def dashboard_admin(request):
         'level_percentages': level_percentages,
         'total_students_all': total_students,
         'dept_counts': dept_counts,
+        'role_banner': role_banner,
     }
 
     # ==================== ADVANCED DASHBOARD LOGIC ====================
@@ -1051,6 +1179,17 @@ def news_auditor_dashboard(request):
 @admin_only
 def tvet_director_dashboard(request):
     """TVET Director Dashboard view"""
+    # Get the role banner for the logged-in user
+    staff_profile = getattr(request.user, 'staff_profile', None)
+    user_role = staff_profile.role if staff_profile else None
+    role_banner = ROLE_BANNERS.get(user_role, {
+        'icon': '👤',
+        'name': user_role.replace('_', ' ').title() if user_role else 'Staff',
+        'description': 'No description available',
+        'restriction': 'ACCESS RESTRICTED',
+        'badge_color': 'gray'
+    })
+
     context = {
         'dashboard_title': 'Director - TVET Dashboard',
         'dashboard_description': 'Oversight of TVET students, staff, and industrial attachments.',
@@ -1061,7 +1200,8 @@ def tvet_director_dashboard(request):
             {'student': 'Jane Smith', 'course': 'Diploma in Hospitality', 'company': 'Grand Horizon Hotel', 'supervisor': 'M. Roux', 'status': 'Active'},
             {'student': 'Sam Wilson', 'course': 'Diploma in IT Support', 'company': 'TechServe Solutions', 'supervisor': 'P. Patel', 'status': 'Completed'},
             {'student': 'Emily Davis', 'course': 'Diploma in Business Admin', 'company': 'Global Finance Corp', 'supervisor': 'A. Johnson', 'status': 'Pending'},
-        ]
+        ],
+        'role_banner': role_banner,
     }
     return render(request, 'hms/rbac/dashboards/dir_tvet_dashboard.html', context)
 

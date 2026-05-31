@@ -120,15 +120,108 @@
     @media (max-width: 480px) {
         .department-cards { grid-template-columns: repeat(1, 1fr); }
     }
+
+    /* Role Banner - Shows ONLY logged-in user's role */
+    .role-banner {
+        background: white;
+        border-radius: 20px;
+        padding: 20px 24px;
+        margin-bottom: 28px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        border: 1px solid #E2E8F0;
+    }
+
+    .role-banner-icon {
+        font-size: 56px;
+        background: #F8FAFC;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 40px;
+    }
+
+    .role-banner-content {
+        flex: 1;
+    }
+
+    .role-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748B;
+    }
+
+    .role-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1E293B;
+        margin-left: 8px;
+    }
+
+    .role-banner-description {
+        font-size: 14px;
+        color: #475569;
+        margin: 8px 0;
+    }
+
+    .role-banner-restriction {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 12px;
+        border-radius: 40px;
+        display: inline-block;
+    }
+
+    /* Color-coded badges */
+    .role-banner-navy .role-banner-restriction { background: #EFF6FF; color: #1E40AF; }
+    .role-banner-amber .role-banner-restriction { background: #FFFBEB; color: #92400E; }
+    .role-banner-green .role-banner-restriction { background: #ECFDF5; color: #065F46; }
+    .role-banner-teal .role-banner-restriction { background: #F0FDF4; color: #0D9488; }
+    .role-banner-purple .role-banner-restriction { background: #F5F3FF; color: #6B21A8; }
+    .role-banner-gray .role-banner-restriction { background: #F1F5F9; color: #475569; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .role-banner {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .role-name {
+            display: block;
+            margin-left: 0;
+            margin-top: 4px;
+        }
+    }
 </style>
 {% endblock %}
 
 
 {% block content %}
-<!-- Professional Welcome Banner -->
+<!-- Professional Welcome Banner / Role Banner -->
+{% if role_banner %}
+<div class="role-banner role-banner-{{ role_banner.badge_color }}">
+    <div class="role-banner-icon">{{ role_banner.icon }}</div>
+    <div class="role-banner-content">
+        <div class="role-banner-title">
+            <span class="role-label">👑 YOUR ROLE:</span>
+            <span class="role-name">{{ role_banner.name }}</span>
+        </div>
+        <div class="role-banner-description">
+            📋 {{ role_banner.description }}
+        </div>
+        <div class="role-banner-restriction">
+            🔒 {{ role_banner.restriction }}
+        </div>
+    </div>
+</div>
+{% else %}
 <div
     class="mb-3 p-4 rounded-xl shadow-xl relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 border border-indigo-100">
-    <!-- Decorative elements -->
     <div class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-white/5 rounded-full blur-3xl"></div>
     <div class="absolute bottom-0 left-0 -ml-10 -mb-10 w-60 h-60 bg-indigo-500/10 rounded-full blur-2xl"></div>
 
@@ -146,15 +239,9 @@
                 <p class="text-white/70 text-xs">Here's an overview of the system's current status</p>
             </div>
         </div>
-        <div class="flex items-center gap-2 text-white/60 text-xs">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <span>{{ filter_date|date:"l, F d, Y" }}</span>
-        </div>
     </div>
 </div>
+{% endif %}
 
 
 {% if searched_students %}

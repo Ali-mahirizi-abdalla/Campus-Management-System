@@ -48,15 +48,111 @@
     .prog-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 600; color: var(--text-main); }
     .prog-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
     .prog-fill { height: 100%; border-radius: 4px; }
+    .prog-fill { height: 100%; border-radius: 4px; }
+
+    /* Role Banner - Shows ONLY logged-in user's role */
+    .role-banner {
+        background: white;
+        border-radius: 20px;
+        padding: 20px 24px;
+        margin-bottom: 28px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        border: 1px solid #E2E8F0;
+    }
+
+    .role-banner-icon {
+        font-size: 56px;
+        background: #F8FAFC;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 40px;
+    }
+
+    .role-banner-content {
+        flex: 1;
+    }
+
+    .role-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748B;
+    }
+
+    .role-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1E293B;
+        margin-left: 8px;
+    }
+
+    .role-banner-description {
+        font-size: 14px;
+        color: #475569;
+        margin: 8px 0;
+    }
+
+    .role-banner-restriction {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 12px;
+        border-radius: 40px;
+        display: inline-block;
+    }
+
+    /* Color-coded badges */
+    .role-banner-navy .role-banner-restriction { background: #EFF6FF; color: #1E40AF; }
+    .role-banner-amber .role-banner-restriction { background: #FFFBEB; color: #92400E; }
+    .role-banner-green .role-banner-restriction { background: #ECFDF5; color: #065F46; }
+    .role-banner-teal .role-banner-restriction { background: #F0FDF4; color: #0D9488; }
+    .role-banner-purple .role-banner-restriction { background: #F5F3FF; color: #6B21A8; }
+    .role-banner-gray .role-banner-restriction { background: #F1F5F9; color: #475569; }
+
+    @media (max-width: 768px) {
+        .role-banner {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .role-name {
+            display: block;
+            margin-left: 0;
+            margin-top: 4px;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="dashboard-wrapper">
+    <!-- Professional Welcome Banner / Role Banner -->
+    {% if role_banner %}
+    <div class="role-banner role-banner-{{ role_banner.badge_color }}">
+        <div class="role-banner-icon">{{ role_banner.icon }}</div>
+        <div class="role-banner-content">
+            <div class="role-banner-title">
+                <span class="role-label">👑 YOUR ROLE:</span>
+                <span class="role-name">{{ role_banner.name }}</span>
+            </div>
+            <div class="role-banner-description">
+                📋 {{ role_banner.description }}
+            </div>
+            <div class="role-banner-restriction">
+                🔒 {{ role_banner.restriction }}
+            </div>
+        </div>
+    </div>
+    {% else %}
     <div class="header-section">
         <h1>{{ dashboard_title }}</h1>
         <p>{{ dashboard_description }}</p>
     </div>
+    {% endif %}
 
     <!-- TVET Metrics -->
     <div class="stats-grid">
