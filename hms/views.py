@@ -189,42 +189,12 @@ def register_staff(request):
 def user_login(request):
     """Login view for all users with role selection"""
     if request.user.is_authenticated:
-        user = request.user
-        user_groups = user.groups.values_list('name', flat=True)
-        if 'Super Admin' in user_groups or user.is_superuser:
-            return redirect('hms:super_admin_dashboard')
-        elif 'Welfare Officer' in user_groups:
-            return redirect('hms:welfare_officer_dashboard')
-        elif 'Hostel Manager' in user_groups:
-            return redirect('hms:hostel_manager_dashboard')
-        elif 'Kitchen Manager' in user_groups:
-            return redirect('hms:kitchen_manager_dashboard')
-        elif 'Security' in user_groups:
-            return redirect('hms:security_dashboard')
-        elif hasattr(user, 'staff_profile'):
-            role = user.staff_profile.role
-            if role in ['TVET_DIRECTOR', 'TVET_COORDINATOR', 'DIR_TVET']:
-                return redirect('hms:tvet_director_dashboard')
-            elif role == 'VC':
-                return redirect('hms:vc_dashboard')
-            elif role == 'DVC':
-                return redirect('hms:dvc_dashboard')
-            elif role == 'REG_ADMIN':
-                return redirect('hms:reg_admin_dashboard')
-            elif role == 'REG_USER':
-                return redirect('hms:reg_user_dashboard')
-            elif role == 'DEAN_GRAD':
-                return redirect('hms:dean_grad_dashboard')
-            elif role == 'DIR_RESOURCE':
-                return redirect('hms:dir_resource_dashboard')
-            elif role == 'NEWS_AUDITOR':
-                return redirect('hms:news_auditor_dashboard')
-            elif user.staff_profile.get_category() == 'HEALTH_SERVICES':
-                return redirect('hms:manage_health')
-            else:
-                return redirect('hms:admin_dashboard')
+        if hasattr(request.user, 'student_profile'):
+            return redirect('hms:student_dashboard')
+        elif hasattr(request.user, 'staff_profile') or request.user.is_superuser or request.user.is_staff:
+            return redirect('hms:dashboard_redirect')
         else:
-            return redirect('hms:admin_dashboard')
+            return redirect('hms:student_dashboard')
 
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -233,49 +203,11 @@ def user_login(request):
             login(request, user)
             messages.success(request, f'Welcome back, {user.first_name}!')
             
-            # Auto-redirect based on RBAC Group
-            user_groups = user.groups.values_list('name', flat=True)
-            
-            if 'Super Admin' in user_groups or user.is_superuser:
-                return redirect('hms:super_admin_dashboard')
-            elif 'Welfare Officer' in user_groups:
-                return redirect('hms:welfare_officer_dashboard')
-            elif 'Hostel Manager' in user_groups:
-                return redirect('hms:hostel_manager_dashboard')
-            elif 'Kitchen Manager' in user_groups:
-                return redirect('hms:kitchen_manager_dashboard')
-            elif 'Security' in user_groups:
-                return redirect('hms:security_dashboard')
-            elif 'TVET Director' in user_groups:
-                return redirect('hms:tvet_director_dashboard')
-            elif hasattr(user, 'student_profile'):
+            if hasattr(user, 'student_profile'):
                 return redirect('hms:student_dashboard')
-            elif hasattr(user, 'staff_profile'):
-                role = user.staff_profile.role
-                if role in ['TVET_DIRECTOR', 'TVET_COORDINATOR', 'DIR_TVET']:
-                    return redirect('hms:tvet_director_dashboard')
-                elif role == 'VC':
-                    return redirect('hms:vc_dashboard')
-                elif role == 'DVC':
-                    return redirect('hms:dvc_dashboard')
-                elif role == 'REG_ADMIN':
-                    return redirect('hms:reg_admin_dashboard')
-                elif role == 'REG_USER':
-                    return redirect('hms:reg_user_dashboard')
-                elif role == 'DEAN_GRAD':
-                    return redirect('hms:dean_grad_dashboard')
-                elif role == 'DIR_RESOURCE':
-                    return redirect('hms:dir_resource_dashboard')
-                elif role == 'NEWS_AUDITOR':
-                    return redirect('hms:news_auditor_dashboard')
-                elif user.staff_profile.get_category() == 'HEALTH_SERVICES':
-                    return redirect('hms:manage_health')
-                else:
-                    return redirect('hms:admin_dashboard')
+            elif hasattr(user, 'staff_profile') or user.is_superuser or user.is_staff:
+                return redirect('hms:dashboard_redirect')
             else:
-                # Fallback for staff with undefined group or legacy admin
-                if user.is_staff:
-                    return redirect('hms:admin_dashboard')
                 return redirect('hms:student_dashboard')
         else:
             messages.error(request, 'Invalid email or password.')
@@ -348,6 +280,78 @@ def global_search(request):
         context['total_count'] = len(context['students']) + len(context['announcements']) + len(context['maintenance'])
     
     return render(request, 'hms/search_results.html', context)
+
+@login_required
+def dashboard_redirect(request):
+    """Unified redirect for staff dashboards based on role"""
+    role_dashboards = {
+        'super_admin': 'hms/admin/dashboard_super_admin.html',
+        'vice_chancellor': 'hms/executive/dashboard_vc.html',
+        'deputy_vice_chancellor': 'hms/executive/dashboard_dvc.html',
+        'register_admin': 'hms/registration/dashboard_register_admin.html',
+        'register_user': 'hms/registration/dashboard_register_user.html',
+        'dean_of_students': 'hms/student_affairs/dashboard_dean.html',
+        'dean_graduate_school': 'hms/graduate/dashboard_dean_graduate.html',
+        'director_resource': 'hms/graduate/dashboard_resource.html',
+        'director_tvet': 'hms/tvet/dashboard_tvet.html',
+        'deferment_officer': 'hms/academic/dashboard_deferment.html',
+        'dept_mcs': 'hms/departments/dashboard_mcs.html',
+        'health_manager': 'hms/health/dashboard_health.html',
+        'maintenance_sup': 'hms/facilities/dashboard_maintenance.html',
+        'warden': 'hms/accommodation/dashboard_warden.html',
+        'finance_officer': 'hms/finance/dashboard_finance.html',
+        'security_officer': 'hms/security/dashboard_security.html',
+        'news_editor': 'hms/communications/dashboard_news_editor.html',
+        'news_auditor': 'hms/communications/dashboard_news_auditor.html',
+        'emergency_coord': 'hms/safety/dashboard_emergency.html',
+        'support_agent': 'hms/support/dashboard_support.html',
+        'auditor': 'hms/audit/dashboard_auditor.html',
+        'diploma_coordinator': 'hms/diploma/dashboard_diploma.html',
+        'dept_coordinator': 'hms/departments/dashboard_dept_coordinator.html',
+    }
+    
+    if hasattr(request.user, 'staff_profile'):
+        role = request.user.staff_profile.role
+        if role == 'director_tvet':
+            return redirect('hms:director_tvet_dashboard')
+        elif role == 'diploma_coordinator':
+            return redirect('hms:diploma_coordinator_dashboard')
+        template = role_dashboards.get(role, 'hms/dashboard_default.html')
+    elif request.user.is_superuser:
+        template = 'hms/admin/dashboard_super_admin.html'
+    else:
+        template = 'hms/dashboard_default.html'
+        
+    return render(request, template, {'user': request.user})
+
+@login_required
+def director_tvet_dashboard(request):
+    # Ensure user has correct role
+    if not hasattr(request.user, 'staff_profile') or request.user.staff_profile.role != 'director_tvet':
+        return redirect('hms:dashboard_redirect')
+        
+    students = Student.objects.filter(level_of_study='diploma')
+    context = {
+        'user': request.user,
+        'students_count': students.count(),
+        'graduating_count': students.filter(is_graduating=True).count(),
+        'attachment_count': students.filter(is_on_attachment=True).count(),
+    }
+    return render(request, 'hms/tvet/dashboard_tvet.html', context)
+
+@login_required
+def diploma_coordinator_dashboard(request):
+    if not hasattr(request.user, 'staff_profile') or request.user.staff_profile.role != 'diploma_coordinator':
+        return redirect('hms:dashboard_redirect')
+        
+    students = Student.objects.filter(level_of_study='diploma', assigned_coordinator=request.user)
+    context = {
+        'user': request.user,
+        'students_count': students.count(),
+        'graduating_count': students.filter(is_graduating=True).count(),
+        'attachment_count': students.filter(is_on_attachment=True).count(),
+    }
+    return render(request, 'hms/diploma/dashboard_diploma.html', context)
 
 
 # ==================== Student ====================

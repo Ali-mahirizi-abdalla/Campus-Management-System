@@ -1,0 +1,68 @@
+{% extends 'hms/base.html' %}
+
+{% block title %}Director - Resource Mobilization Dashboard - Campus Care{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Director - Resource Mobilization Dashboard</h1>
+            <p class="text-gray-500 dark:text-gray-400">Welcome back, {{ user.get_full_name }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Feature: 💰 Graduate School Funding -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-6 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 flex items-center justify-center mb-4 text-2xl">
+                💰
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Graduate School Funding</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Manage and view details for this module.</p>
+            <button class="mt-4 px-4 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-lg text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors">Access Module</button>
+        </div>
+\n
+        <!-- Feature: 📝 Grant Applications -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-6 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 flex items-center justify-center mb-4 text-2xl">
+                📝
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Grant Applications</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Manage and view details for this module.</p>
+            <button class="mt-4 px-4 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-lg text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors">Access Module</button>
+        </div>
+\n
+        <!-- Feature: 📊 Resource Reports -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-6 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 flex items-center justify-center mb-4 text-2xl">
+                📊
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Resource Reports</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Manage and view details for this module.</p>
+            <button class="mt-4 px-4 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-lg text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors">Access Module</button>
+        </div>
+\n
+        <!-- Feature: 🤝 Donor Management -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-6 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 flex items-center justify-center mb-4 text-2xl">
+                🤝
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Donor Management</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Manage and view details for this module.</p>
+            <button class="mt-4 px-4 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-lg text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors">Access Module</button>
+        </div>
+\n
+        <!-- Feature: 💵 Budget Tracking (Graduate Only) -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-6 hover:shadow-md transition-shadow">
+            <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 flex items-center justify-center mb-4 text-2xl">
+                💵
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Budget Tracking (Graduate Only)</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Manage and view details for this module.</p>
+            <button class="mt-4 px-4 py-2 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-lg text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors">Access Module</button>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

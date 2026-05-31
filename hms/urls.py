@@ -24,21 +24,10 @@ urlpatterns = [
     path('student/early-breakfast/', views.toggle_early_breakfast, name='toggle_early_breakfast'),
     path('student/update-status/', views.update_student_status, name='update_student_status'),
     
-    # RBAC Dashboards
-    path('super-admin/dashboard/', views.super_admin_dashboard, name='super_admin_dashboard'),
-    path('welfare/dashboard/', views.welfare_officer_dashboard, name='welfare_officer_dashboard'),
-    path('hostel/dashboard/', views.hostel_manager_dashboard, name='hostel_manager_dashboard'),
-    path('warden/dashboard/', views.warden_dashboard, name='warden_dashboard'),
-    path('kitchen/dashboard/', views.kitchen_manager_dashboard, name='kitchen_manager_dashboard'),
-    path('security/dashboard/', views.security_dashboard, name='security_dashboard'),
-    path('tvet/dashboard/', views.tvet_director_dashboard, name='tvet_director_dashboard'),
-    path('vc/dashboard/', views.vc_dashboard, name='vc_dashboard'),
-    path('dvc/dashboard/', views.dvc_dashboard, name='dvc_dashboard'),
-    path('reg-admin/dashboard/', views.reg_admin_dashboard, name='reg_admin_dashboard'),
-    path('reg-user/dashboard/', views.reg_user_dashboard, name='reg_user_dashboard'),
-    path('dean-grad/dashboard/', views.dean_grad_dashboard, name='dean_grad_dashboard'),
-    path('dir-resource/dashboard/', views.dir_resource_dashboard, name='dir_resource_dashboard'),
-    path('news-auditor/dashboard/', views.news_auditor_dashboard, name='news_auditor_dashboard'),
+    # Unified Staff Dashboard Redirect
+    path('staff-dashboard/', views.dashboard_redirect, name='dashboard_redirect'),
+    path('staff-dashboard/tvet/', views.director_tvet_dashboard, name='director_tvet_dashboard'),
+    path('staff-dashboard/diploma/', views.diploma_coordinator_dashboard, name='diploma_coordinator_dashboard'),
     
     # Admin Dashboard (Legacy/Generic)
     path('manage/dashboard/', views.dashboard_admin, name='admin_dashboard'),

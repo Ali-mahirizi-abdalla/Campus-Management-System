@@ -91,6 +91,15 @@ class Student(models.Model):
     ]
     level_of_study = models.CharField(max_length=20, choices=LEVEL_OF_STUDY_CHOICES, default='bachelors')
 
+    assigned_coordinator = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        related_name='assigned_diploma_students', 
+        null=True, 
+        blank=True,
+        help_text="Diploma coordinator assigned to this student"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -200,29 +209,29 @@ class MaintenanceRequest(models.Model):
 
 class StaffProfile(models.Model):
     ROLE_CHOICES = [
-        ('SUPER_ADMIN', 'Super Admin'),
-        ('HEALTH_MGR', 'Health Manager'),
-        ('MAINT_SUP', 'Maintenance Supervisor'),
-        ('WARDEN', 'Warden'),
-        ('FINANCE', 'Finance Officer'),
-        ('SECURITY', 'Security Officer'),
-        ('NEWS_EDITOR', 'News Editor'),
-        ('AUDITOR', 'Auditor'),
-        ('EMERGENCY', 'Emergency Coordinator'),
-        ('SUPPORT', 'Support Agent'),
-        ('DIPLOMA', 'Diploma Coordinator'),
-        ('DEAN_HHS', 'Dean of Students'),
-        ('DEFERMENT', 'Deferment Officer'),
-        ('DEPT_MCS', 'Dept MCS Coordinator'),
-        ('DVC_ASA', 'DVC ASA'),
-        ('VC', 'Vice Chancellor'),
-        ('DVC', 'Deputy Vice Chancellor'),
-        ('REG_ADMIN', 'Register Admin'),
-        ('REG_USER', 'Register User'),
-        ('DEAN_GRAD', 'Dean - Graduate School'),
-        ('DIR_RESOURCE', 'Director - Resource Mobilization'),
-        ('DIR_TVET', 'Director - TVET'),
-        ('NEWS_AUDITOR', 'News Auditor'),
+        ('super_admin', 'Super Admin'),
+        ('vice_chancellor', 'Vice Chancellor'),
+        ('deputy_vice_chancellor', 'Deputy Vice Chancellor'),
+        ('register_admin', 'Register Admin'),
+        ('register_user', 'Register User'),
+        ('dean_of_students', 'Dean of Students'),
+        ('dean_graduate_school', 'Dean - Graduate School'),
+        ('director_resource', 'Director - Resource Mobilization'),
+        ('director_tvet', 'Director - TVET'),
+        ('deferment_officer', 'Deferment Officer'),
+        ('dept_mcs', 'Dept MCS Coordinator'),
+        ('health_manager', 'Health Manager'),
+        ('maintenance_sup', 'Maintenance Supervisor'),
+        ('warden', 'Warden'),
+        ('finance_officer', 'Finance Officer'),
+        ('security_officer', 'Security Officer'),
+        ('news_editor', 'News Editor'),
+        ('news_auditor', 'News Auditor'),
+        ('emergency_coord', 'Emergency Coordinator'),
+        ('support_agent', 'Support Agent'),
+        ('auditor', 'Auditor'),
+        ('diploma_coordinator', 'Diploma Coordinator'),
+        ('dept_coordinator', 'Department Coordinator'),
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='staff_profile')
@@ -234,48 +243,48 @@ class StaffProfile(models.Model):
 
     def get_role_color(self):
         colors = {
-            'SUPER_ADMIN': {'name': 'Navy', 'hex': '#1E293B'},
-            'HEALTH_MGR': {'name': 'Emerald', 'hex': '#059669'},
-            'MAINT_SUP': {'name': 'Orange', 'hex': '#EA580C'},
-            'WARDEN': {'name': 'Purple', 'hex': '#7C3AED'},
-            'FINANCE': {'name': 'Teal', 'hex': '#0D9488'},
-            'SECURITY': {'name': 'Blue', 'hex': '#2563EB'},
-            'NEWS_EDITOR': {'name': 'Pink', 'hex': '#DB2777'},
-            'AUDITOR': {'name': 'Gray', 'hex': '#4B5563'},
-            'EMERGENCY': {'name': 'Red', 'hex': '#DC2626'},
-            'SUPPORT': {'name': 'Cyan', 'hex': '#0891B2'},
-            'DIPLOMA': {'name': 'Amber', 'hex': '#D97706'},
-            'DEAN_HHS': {'name': 'Brown', 'hex': '#78350F'},
-            'DEFERMENT': {'name': 'Green', 'hex': '#15803D'},
-            ('DEPT_MCS'): {'name': 'Indigo', 'hex': '#4338CA'},
-            ('DVC_ASA'): {'name': 'Violet', 'hex': '#6B21A8'},
-            ('VC'): {'name': 'Gold', 'hex': '#D4AF37'},
-            ('DVC'): {'name': 'Silver', 'hex': '#C0C0C0'},
-            ('REG_ADMIN'): {'name': 'Blue', 'hex': '#1D4ED8'},
-            ('REG_USER'): {'name': 'Light Blue', 'hex': '#3B82F6'},
-            ('DEAN_GRAD'): {'name': 'Purple', 'hex': '#6D28D9'},
-            ('DIR_RESOURCE'): {'name': 'Green', 'hex': '#047857'},
-            ('DIR_TVET'): {'name': 'Orange', 'hex': '#C2410C'},
-            ('NEWS_AUDITOR'): {'name': 'Gray', 'hex': '#6B7280'},
+            'super_admin': {'name': 'Navy', 'hex': '#1E293B'},
+            'vice_chancellor': {'name': 'Gold', 'hex': '#D4AF37'},
+            'deputy_vice_chancellor': {'name': 'Silver', 'hex': '#C0C0C0'},
+            'register_admin': {'name': 'Blue', 'hex': '#1D4ED8'},
+            'register_user': {'name': 'Light Blue', 'hex': '#3B82F6'},
+            'dean_of_students': {'name': 'Brown', 'hex': '#78350F'},
+            'dean_graduate_school': {'name': 'Purple', 'hex': '#6D28D9'},
+            'director_resource': {'name': 'Green', 'hex': '#047857'},
+            'director_tvet': {'name': 'Orange', 'hex': '#C2410C'},
+            'deferment_officer': {'name': 'Green', 'hex': '#15803D'},
+            'dept_mcs': {'name': 'Indigo', 'hex': '#4338CA'},
+            'health_manager': {'name': 'Emerald', 'hex': '#059669'},
+            'maintenance_sup': {'name': 'Orange', 'hex': '#EA580C'},
+            'warden': {'name': 'Purple', 'hex': '#7C3AED'},
+            'finance_officer': {'name': 'Teal', 'hex': '#0D9488'},
+            'security_officer': {'name': 'Blue', 'hex': '#2563EB'},
+            'news_editor': {'name': 'Pink', 'hex': '#DB2777'},
+            'news_auditor': {'name': 'Gray', 'hex': '#6B7280'},
+            'emergency_coord': {'name': 'Red', 'hex': '#DC2626'},
+            'support_agent': {'name': 'Cyan', 'hex': '#0891B2'},
+            'auditor': {'name': 'Gray', 'hex': '#4B5563'},
+            'diploma_coordinator': {'name': 'Amber', 'hex': '#D97706'},
+            'dept_coordinator': {'name': 'Teal', 'hex': '#14B8A6'},
         }
         return colors.get(self.role, {'name': 'Gray', 'hex': '#4B5563'})
 
     def get_category(self):
         """Categorize roles for permission logic"""
         role = self.role
-        if role in ['SUPER_ADMIN', 'Super Admin', 'VC', 'DVC', 'REG_ADMIN', 'REG_USER']:
+        if role in ['super_admin', 'vice_chancellor', 'deputy_vice_chancellor', 'register_admin', 'register_user']:
             return 'EXECUTIVE'
-        if role in ['DIPLOMA', 'DEAN_HHS', 'DEFERMENT', 'DEPT_MCS', 'DVC_ASA', 'DEAN_GRAD', 'DIR_TVET']:
+        if role in ['dean_of_students', 'dean_graduate_school', 'director_tvet', 'deferment_officer', 'dept_mcs', 'diploma_coordinator', 'dept_coordinator']:
             return 'ACADEMIC_ADMIN'
-        if role in ['FINANCE', 'AUDITOR', 'DIR_RESOURCE', 'NEWS_AUDITOR']:
+        if role in ['finance_officer', 'auditor', 'director_resource', 'news_auditor']:
             return 'FINANCE_ADMIN'
-        if role in ['NEWS_EDITOR', 'SUPPORT']:
+        if role in ['news_editor', 'support_agent']:
             return 'STUDENT_SERVICES'
-        if role in ['MAINT_SUP', 'SECURITY', 'EMERGENCY']:
+        if role in ['maintenance_sup', 'security_officer', 'emergency_coord']:
             return 'TECHNICAL_ESTATES'
-        if role in ['HEALTH_MGR']:
+        if role in ['health_manager']:
             return 'HEALTH_SERVICES'
-        if role in ['WARDEN']:
+        if role in ['warden']:
             return 'ACCOMMODATION'
         return 'GENERAL_STAFF'
 

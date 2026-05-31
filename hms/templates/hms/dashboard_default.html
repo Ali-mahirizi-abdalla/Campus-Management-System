@@ -1,0 +1,18 @@
+{% extends 'hms/base.html' %}
+
+{% block title %}Staff Dashboard - Campus Care{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Staff Dashboard</h1>
+            <p class="text-gray-500 dark:text-gray-400">Welcome back, {{ user.get_full_name }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <p>No specific modules assigned to your role.</p>
+    </div>
+</div>
+{% endblock %}
