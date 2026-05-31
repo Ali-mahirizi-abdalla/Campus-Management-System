@@ -401,45 +401,18 @@ def global_search(request):
 @login_required
 def dashboard_redirect(request):
     """Unified redirect for staff dashboards based on role"""
-    role_dashboards = {
-        'super_admin': 'hms/admin/dashboard_super_admin.html',
-        'vice_chancellor': 'hms/executive/dashboard_vc.html',
-        'deputy_vice_chancellor': 'hms/executive/dashboard_dvc.html',
-        'register_admin': 'hms/registration/dashboard_register_admin.html',
-        'register_user': 'hms/registration/dashboard_register_user.html',
-        'dean_of_students': 'hms/student_affairs/dashboard_dean.html',
-        'dean_graduate_school': 'hms/graduate/dashboard_dean_graduate.html',
-        'director_resource': 'hms/graduate/dashboard_resource.html',
-        'director_tvet': 'hms/tvet/dashboard_tvet.html',
-        'deferment_officer': 'hms/academic/dashboard_deferment.html',
-        'dept_mcs': 'hms/departments/dashboard_mcs.html',
-        'health_manager': 'hms/health/dashboard_health.html',
-        'maintenance_sup': 'hms/facilities/dashboard_maintenance.html',
-        'warden': 'hms/accommodation/dashboard_warden.html',
-        'finance_officer': 'hms/finance/dashboard_finance.html',
-        'security_officer': 'hms/security/dashboard_security.html',
-        'news_editor': 'hms/communications/dashboard_news_editor.html',
-        'news_auditor': 'hms/communications/dashboard_news_auditor.html',
-        'emergency_coord': 'hms/safety/dashboard_emergency.html',
-        'support_agent': 'hms/support/dashboard_support.html',
-        'auditor': 'hms/audit/dashboard_auditor.html',
-        'diploma_coordinator': 'hms/diploma/dashboard_diploma.html',
-        'dept_coordinator': 'hms/departments/dashboard_dept_coordinator.html',
-    }
-    
-    if hasattr(request.user, 'staff_profile'):
-        role = request.user.staff_profile.role
-        if role == 'director_tvet':
-            return redirect('hms:director_tvet_dashboard')
-        elif role == 'diploma_coordinator':
-            return redirect('hms:diploma_coordinator_dashboard')
-        template = role_dashboards.get(role, 'hms/dashboard_default.html')
-    elif request.user.is_superuser:
-        template = 'hms/admin/dashboard_super_admin.html'
-    else:
-        template = 'hms/dashboard_default.html'
-        
-    return render(request, template, {'user': request.user})
+    if not hasattr(request.user, 'staff_profile') and not request.user.is_superuser:
+        return redirect('hms:student_dashboard')
+
+    role = getattr(getattr(request.user, 'staff_profile', None), 'role', None)
+
+    # Roles with dedicated standalone dashboards
+    if role == 'director_tvet':
+        return redirect('hms:tvet_director_dashboard')
+
+    # All other staff roles → single admin_dashboard (shows role-specific banner + filtered sidebar)
+    return redirect('hms:admin_dashboard')
+
 
 @login_required
 def director_tvet_dashboard(request):
