@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from functools import wraps
+from django.contrib import messages
 
 def role_required(allowed_roles=[]):
     """
@@ -29,7 +30,10 @@ def role_required(allowed_roles=[]):
             if any(role in user_groups for role in allowed_roles):
                 return view_func(request, *args, **kwargs)
 
-            raise PermissionDenied(f"Access restricted to: {', '.join(allowed_roles)}")
+            role_name = staff_profile.role if staff_profile else 'student/guest'
+            messages.error(request, f'Access Denied. Your role "{role_name}" does not have permission to access this page.')
+            from django.shortcuts import redirect
+            return redirect('hms:dashboard_redirect')
 
         return _wrapped_view
     return decorator

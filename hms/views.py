@@ -1445,7 +1445,7 @@ def export_students_csv(request):
 
 
 @login_required
-@role_required(allowed_roles=['super_admin', 'Super Admin'])
+@role_required(allowed_roles=['super_admin', 'Super Admin', 'finance_officer'])
 def manage_payments(request):
     """Admin view to manage/view all payments"""
     from django.db import models
@@ -1700,7 +1700,7 @@ def announcements_list(request):
     return render(request, 'hms/student/announcements.html', context)
 
 @login_required
-@role_required(allowed_roles=['super_admin', 'dean_of_students', 'register_admin', 'Super Admin', 'Welfare Officer'])
+@role_required(allowed_roles=['super_admin', 'dean_of_students', 'register_admin', 'Super Admin', 'Welfare Officer', 'news_editor', 'news_auditor'])
 def manage_announcements(request):
     """Manage announcements (admin only)"""
     
@@ -2136,7 +2136,7 @@ def delete_maintenance_request(request, pk):
     return redirect('hms:student_maintenance_list')
 
 @login_required
-@role_required(allowed_roles=['super_admin', 'warden', 'Super Admin', 'Hostel Manager'])
+@role_required(allowed_roles=['super_admin', 'warden', 'Super Admin', 'Hostel Manager', 'maintenance_sup'])
 def manage_maintenance(request):
     """Admin view to manage maintenance tickets"""
         
@@ -3132,7 +3132,7 @@ def global_search(request):
 # ==================== Audit Logs ====================
 
 @login_required
-@role_required(allowed_roles=['Super Admin'])
+@role_required(allowed_roles=['super_admin', 'Super Admin', 'auditor'])
 def audit_log_list(request):
     """
     Admin/Finance view for Audit Logs.
@@ -3678,7 +3678,7 @@ def health_appointment_detail(request, pk):
     })
 
 @login_required
-@role_required(allowed_roles=['HEALTH_ADMIN', 'CAMPUS_NURSE', 'CAMPUS_DOCTOR', 'CAMPUS_COUNSELOR', 'Super Admin'])
+@role_required(allowed_roles=['HEALTH_ADMIN', 'CAMPUS_NURSE', 'CAMPUS_DOCTOR', 'CAMPUS_COUNSELOR', 'Super Admin', 'health_manager', 'super_admin'])
 def manage_health(request):
     """Dashboard for health staff"""
     staff_profile = getattr(request.user, 'staff_profile', None)
