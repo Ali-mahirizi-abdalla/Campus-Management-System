@@ -4063,21 +4063,21 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 @login_required
-@permission_required('view_dashboard') # Just a basic check, we'll enforce super_admin in the view
 def permission_matrix(request):
+    """Permission matrix UI for Super Admins"""
     if not request.user.is_superuser:
-        messages.error(request, 'Only Super Admins can manage the permission matrix.')
-        return redirect('hms:dashboard_redirect')
+        staff_profile = getattr(request.user, 'staff_profile', None)
+        if not staff_profile or staff_profile.role != 'super_admin':
+            messages.error(request, 'Only Super Admins can manage the permission matrix.')
+            return redirect('hms:dashboard_redirect')
         
     from .models import StaffProfile, Permission, RolePermission
     roles = StaffProfile.ROLE_CHOICES
     permissions = Permission.objects.all().order_by('id')
     
-    # Pre-fetch existing RolePermissions
-    existing_rps = RolePermission.objects.all()
-    # Create a fast lookup dict: matrix[role][perm_code] = access_type
+    # Build nested dict: matrix[role][perm_code] = access_type
     matrix = {}
-    for rp in existing_rps:
+    for rp in RolePermission.objects.select_related('permission').all():
         if rp.role not in matrix:
             matrix[rp.role] = {}
         matrix[rp.role][rp.permission.code] = rp.access_type
@@ -4085,44 +4085,52 @@ def permission_matrix(request):
     context = {
         'roles': roles,
         'permissions': permissions,
-        'matrix': matrix,
+        'matrix_json': matrix,  # For json_script in template
         'page_title': 'Role Permission Matrix'
     }
     return render(request, 'hms/admin/permission_matrix.html', context)
 
 @login_required
-@csrf_exempt
 def save_permissions(request):
+    """API endpoint to save permission matrix changes"""
     if not request.user.is_superuser:
-        return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
+        staff_profile = getattr(request.user, 'staff_profile', None)
+        if not staff_profile or staff_profile.role != 'super_admin':
+            return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
         
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            perms_data = data.get('permissions', [])
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        perms_data = data.get('permissions', [])
+        
+        from .models import Permission, RolePermission
+        
+        # Clear all current permissions
+        RolePermission.objects.all().delete()
+        
+        created_count = 0
+        for p in perms_data:
+            role = p.get('role')
+            perm_code = p.get('permission_code')
+            access = p.get('access', 'none')
             
-            from .models import Permission, RolePermission
-            
-            # Clear all current permissions
-            RolePermission.objects.all().delete()
-            
-            # Re-create based on payload
-            for p in perms_data:
-                role = p.get('role')
-                perm_code = p.get('permission_code')
-                access = p.get('access')
-                
-                if access in ['full', 'read']:
-                    try:
-                        perm_obj = Permission.objects.get(code=perm_code)
-                        RolePermission.objects.create(role=role, permission=perm_obj, access_type=access)
-                    except Permission.DoesNotExist:
-                        continue
-                        
-            return JsonResponse({'status': 'success', 'message': 'Permissions saved successfully.'})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-            
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+            # Save full and read entries (skip 'none' as absence = no access)
+            if access in ['full', 'read']:
+                try:
+                    perm_obj = Permission.objects.get(code=perm_code)
+                    RolePermission.objects.create(role=role, permission=perm_obj, access_type=access)
+                    created_count += 1
+                except Permission.DoesNotExist:
+                    continue
+                    
+        return JsonResponse({
+            'status': 'success',
+            'message': f'{created_count} permissions saved successfully.'
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
 
 

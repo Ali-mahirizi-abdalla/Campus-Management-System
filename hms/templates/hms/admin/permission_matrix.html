@@ -4,38 +4,154 @@
 {% block title %}Permission Matrix{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4 mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<style>
+    .permission-matrix { padding: 24px; }
+    .matrix-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    .matrix-header h2 { 
+        font-size: 1.5rem; font-weight: 700; margin: 0; 
+        background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .matrix-header p { color: #64748B; font-size: 0.875rem; margin: 4px 0 0; }
+    .matrix-controls { display: flex; gap: 10px; flex-wrap: wrap; }
+    .matrix-controls button {
+        padding: 10px 20px; border-radius: 40px; font-size: 0.85rem;
+        font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+        border: none; display: flex; align-items: center; gap: 6px;
+    }
+    .btn-save { background: #1E293B; color: white; }
+    .btn-save:hover { background: #0F172A; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(30,41,59,0.3); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-reset { background: white; color: #475569; border: 1px solid #CBD5E1 !important; }
+    .btn-reset:hover { background: #F8FAFC; border-color: #94A3B8 !important; }
+    .btn-export { background: #0D9488; color: white; }
+    .btn-export:hover { background: #0F766E; transform: translateY(-1px); }
+
+    .matrix-card {
+        background: white; border-radius: 16px; overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+        border: 1px solid #E2E8F0;
+    }
+    .matrix-scroll { overflow-x: auto; max-height: 72vh; overflow-y: auto; }
+
+    .permission-table { width: 100%; border-collapse: collapse; min-width: 3600px; }
+    .permission-table thead { position: sticky; top: 0; z-index: 10; }
+    .permission-table thead th {
+        background: #1E293B; color: white; font-size: 0.72rem; font-weight: 600;
+        padding: 14px 8px; text-align: center; border-right: 1px solid #334155;
+        white-space: nowrap; vertical-align: top;
+    }
+    .permission-table thead th:first-child {
+        position: sticky; left: 0; z-index: 12; background: #1E293B;
+        min-width: 200px; text-align: left; padding-left: 20px;
+    }
+    .permission-table thead th .role-name {
+        display: block; margin-bottom: 8px; font-size: 0.72rem;
+        max-width: 120px; margin-left: auto; margin-right: auto;
+        line-height: 1.3;
+    }
+    .permission-table thead th .col-actions {
+        display: flex; justify-content: center; gap: 2px;
+    }
+    .col-actions button {
+        background: transparent; border: 1px solid rgba(255,255,255,0.25);
+        color: white; border-radius: 4px; padding: 2px 6px; cursor: pointer;
+        font-size: 0.65rem; transition: all 0.15s;
+    }
+    .col-actions button:hover { background: rgba(255,255,255,0.15); }
+    .col-actions .btn-col-full:hover { background: rgba(16,185,129,0.4); }
+    .col-actions .btn-col-read:hover { background: rgba(245,158,11,0.4); }
+    .col-actions .btn-col-none:hover { background: rgba(239,68,68,0.4); }
+
+    .permission-table tbody td, .permission-table tbody th {
+        padding: 6px 8px; border-bottom: 1px solid #F1F5F9;
+        border-right: 1px solid #F1F5F9; font-size: 0.8rem;
+    }
+    .permission-table tbody th {
+        position: sticky; left: 0; z-index: 5; background: #F8FAFC;
+        font-weight: 600; color: #1E293B; white-space: nowrap; padding-left: 20px;
+        border-right: 2px solid #E2E8F0;
+    }
+    .permission-table tbody tr:hover td { background: #F8FAFC; }
+
+    .perm-select {
+        width: 100%; padding: 5px 4px; border-radius: 6px; border: 1px solid #CBD5E1;
+        cursor: pointer; font-size: 0.75rem; text-align: center;
+        transition: all 0.15s ease; -webkit-appearance: none; -moz-appearance: none;
+        appearance: none; background-image: none;
+    }
+    .perm-select:focus { outline: none; box-shadow: 0 0 0 2px rgba(59,130,246,0.3); }
+    .perm-full { background: #D1FAE5 !important; color: #065F46 !important; border-color: #A7F3D0 !important; }
+    .perm-read { background: #FEF3C7 !important; color: #92400E !important; border-color: #FDE68A !important; }
+    .perm-none { background: #FEE2E2 !important; color: #991B1B !important; border-color: #FECACA !important; }
+
+    /* Toast notification */
+    .toast-notification {
+        position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+        padding: 14px 28px; border-radius: 12px; color: white;
+        font-size: 0.9rem; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        animation: slideInRight 0.3s ease, fadeOut 0.4s ease 2.6s forwards;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .toast-success { background: linear-gradient(135deg, #059669, #10B981); }
+    .toast-error { background: linear-gradient(135deg, #DC2626, #EF4444); }
+    .toast-info { background: linear-gradient(135deg, #2563EB, #3B82F6); }
+    @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes fadeOut { to { opacity: 0; transform: translateY(10px); } }
+
+    /* Stats bar */
+    .stats-bar {
+        display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .stat-chip {
+        background: white; border: 1px solid #E2E8F0; border-radius: 10px;
+        padding: 10px 18px; font-size: 0.82rem; color: #475569;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .stat-chip strong { color: #1E293B; font-size: 1.1rem; }
+</style>
+
+<div class="permission-matrix">
+    <div class="matrix-header">
         <div>
-            <h2 class="fw-bold mb-0">Role Permission Matrix</h2>
-            <p class="text-muted">Manage granular access controls for all {{ roles|length }} staff roles across {{ permissions|length }} modules.</p>
+            <h2>🔐 Role Permission Matrix</h2>
+            <p>Toggle access levels for each role across all core modules</p>
         </div>
-        <div>
-            <button class="btn btn-outline-secondary me-2" id="exportBtn">
-                <i class="bi bi-download"></i> Export CSV
-            </button>
-            <button class="btn btn-outline-danger me-2" id="resetBtn">
-                <i class="bi bi-arrow-counterclockwise"></i> Reset
-            </button>
-            <button class="btn btn-primary" id="savePermissions">
-                <i class="bi bi-save"></i> Save Permissions
-            </button>
+        <div class="matrix-controls">
+            <button class="btn-export" id="exportBtn">📥 Export CSV</button>
+            <button class="btn-reset" id="resetBtn">↩️ Reset</button>
+            <button class="btn-save" id="saveAllBtn">💾 Save All Changes</button>
         </div>
     </div>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-0" style="overflow-x: auto; max-height: 75vh; overflow-y: auto;">
-            <table class="table table-hover table-bordered mb-0" style="min-width: 1800px; font-size: 0.85rem;" id="permTable">
-                <thead class="table-dark sticky-top">
+    <div class="stats-bar" id="statsBar">
+        <div class="stat-chip">👥 Roles: <strong>{{ roles|length }}</strong></div>
+        <div class="stat-chip">📦 Modules: <strong>{{ permissions|length }}</strong></div>
+        <div class="stat-chip" id="fullCount">✅ Full: <strong>0</strong></div>
+        <div class="stat-chip" id="readCount">📖 Read: <strong>0</strong></div>
+        <div class="stat-chip" id="noneCount">❌ None: <strong>0</strong></div>
+    </div>
+
+    <div class="matrix-card">
+        <div class="matrix-scroll">
+            <table class="permission-table" id="permTable">
+                <thead>
                     <tr>
-                        <th class="align-middle" style="min-width: 180px; position: sticky; left: 0; background: #212529; z-index: 2;">Module \ Role</th>
+                        <th>Module / Role →</th>
                         {% for role_key, role_name in roles %}
-                        <th class="text-center align-middle" style="min-width: 140px;">
-                            <div class="fw-bold mb-2 text-truncate" title="{{ role_name }}">{{ role_name }}</div>
-                            <div class="btn-group w-100" role="group">
-                                <button type="button" class="btn btn-sm btn-outline-success select-all-btn" data-role="{{ role_key }}" data-type="full" title="Full All">✅</button>
-                                <button type="button" class="btn btn-sm btn-outline-warning select-all-btn" data-role="{{ role_key }}" data-type="read" title="Read All">📖</button>
-                                <button type="button" class="btn btn-sm btn-outline-danger select-all-btn" data-role="{{ role_key }}" data-type="none" title="Clear All">❌</button>
+                        <th>
+                            <span class="role-name">{{ role_name }}</span>
+                            <div class="col-actions">
+                                <button class="btn-col-full select-col-btn" data-role="{{ role_key }}" data-type="full" title="Full All">✅</button>
+                                <button class="btn-col-read select-col-btn" data-role="{{ role_key }}" data-type="read" title="Read All">📖</button>
+                                <button class="btn-col-none select-col-btn" data-role="{{ role_key }}" data-type="none" title="None All">❌</button>
                             </div>
                         </th>
                         {% endfor %}
@@ -44,16 +160,15 @@
                 <tbody>
                     {% for p in permissions %}
                     <tr>
-                        <th class="align-middle bg-light" style="position: sticky; left: 0; z-index: 1;">{{ p.name }}</th>
+                        <th>{{ p.name }}</th>
                         {% for role_key, role_name in roles %}
-                        <td class="text-center p-1 align-middle">
-                            <select class="form-select form-select-sm perm-select shadow-none" 
-                                    data-role="{{ role_key }}" 
-                                    data-permission="{{ p.code }}"
-                                    style="cursor: pointer; border-radius: 4px;">
-                                <option value="full">✅ Full Access</option>
-                                <option value="read">📖 Read Only</option>
-                                <option value="none">❌ No Access</option>
+                        <td>
+                            <select class="perm-select"
+                                    data-role="{{ role_key }}"
+                                    data-permission="{{ p.code }}">
+                                <option value="full">✅ Full</option>
+                                <option value="read">📖 Read</option>
+                                <option value="none">❌ None</option>
                             </select>
                         </td>
                         {% endfor %}
@@ -65,155 +180,158 @@
     </div>
 </div>
 
-<!-- Render matrix data safely for JS -->
-{{ matrix|json_script:"matrix-data" }}
+<!-- Matrix data from Django -->
+{{ matrix_json|json_script:"matrix-data" }}
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const matrixDict = JSON.parse(document.getElementById('matrix-data').textContent);
-    const selects = document.querySelectorAll('.perm-select');
-    
-    // Function to set color based on value
-    function updateSelectColor(select) {
-        if (select.value === 'full') {
-            select.style.backgroundColor = '#d1e7dd';
-            select.style.color = '#0f5132';
-            select.style.borderColor = '#badbcc';
-        } else if (select.value === 'read') {
-            select.style.backgroundColor = '#fff3cd';
-            select.style.color = '#664d03';
-            select.style.borderColor = '#ffecb5';
-        } else {
-            select.style.backgroundColor = '#f8d7da';
-            select.style.color = '#842029';
-            select.style.borderColor = '#f5c2c7';
-        }
+(function() {
+    // ─── Helpers ──────────────────────────────────────────────
+    function showToast(message, type) {
+        const existing = document.querySelector('.toast-notification');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification toast-' + (type || 'success');
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     }
 
-    // 1. Initialize selects with matrix data
-    function initializeMatrix() {
-        selects.forEach(select => {
-            const role = select.dataset.role;
-            const perm = select.dataset.permission;
-            
-            // Check dictionary for role, then permission
-            let access = 'none';
-            if (matrixDict[role] && matrixDict[role][perm]) {
-                access = matrixDict[role][perm];
-            }
-            
-            select.value = access;
-            // Store initial value for reset functionality
-            select.dataset.initial = access;
-            updateSelectColor(select);
-        });
-    }
-
-    initializeMatrix();
-
-    // 2. Change Event
-    selects.forEach(select => {
-        select.addEventListener('change', (e) => {
-            updateSelectColor(e.target);
-        });
-    });
-
-    // 3. Select All buttons (Full, Read, None)
-    document.querySelectorAll('.select-all-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const role = e.currentTarget.dataset.role;
-            const type = e.currentTarget.dataset.type;
-            
-            document.querySelectorAll(`.perm-select[data-role="${role}"]`).forEach(select => {
-                select.value = type;
-                updateSelectColor(select);
+    function getCookie(name) {
+        let v = null;
+        if (document.cookie) {
+            document.cookie.split(';').forEach(c => {
+                c = c.trim();
+                if (c.startsWith(name + '=')) v = decodeURIComponent(c.substring(name.length + 1));
             });
+        }
+        return v;
+    }
+
+    function applyColor(sel) {
+        sel.classList.remove('perm-full', 'perm-read', 'perm-none');
+        sel.classList.add('perm-' + sel.value);
+    }
+
+    function updateStats() {
+        let f = 0, r = 0, n = 0;
+        selects.forEach(s => { if (s.value === 'full') f++; else if (s.value === 'read') r++; else n++; });
+        document.querySelector('#fullCount strong').textContent = f;
+        document.querySelector('#readCount strong').textContent = r;
+        document.querySelector('#noneCount strong').textContent = n;
+    }
+
+    // ─── Init ────────────────────────────────────────────────
+    const matrixData = JSON.parse(document.getElementById('matrix-data').textContent);
+    const selects = document.querySelectorAll('.perm-select');
+
+    function loadMatrix() {
+        selects.forEach(sel => {
+            const role = sel.dataset.role;
+            const perm = sel.dataset.permission;
+            let access = 'none';
+            if (matrixData[role] && matrixData[role][perm]) {
+                access = matrixData[role][perm];
+            }
+            sel.value = access;
+            sel.dataset.initial = access;
+            applyColor(sel);
+        });
+        updateStats();
+    }
+    loadMatrix();
+
+    // ─── Change colors on select ─────────────────────────────
+    selects.forEach(sel => {
+        sel.addEventListener('change', () => { applyColor(sel); updateStats(); });
+    });
+
+    // ─── Column select-all buttons ───────────────────────────
+    document.querySelectorAll('.select-col-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const role = btn.dataset.role;
+            const type = btn.dataset.type;
+            document.querySelectorAll('.perm-select[data-role="' + role + '"]').forEach(sel => {
+                sel.value = type;
+                applyColor(sel);
+            });
+            updateStats();
         });
     });
 
-    // 4. Reset Button
+    // ─── Reset ───────────────────────────────────────────────
     document.getElementById('resetBtn').addEventListener('click', () => {
-        if (confirm('Are you sure you want to revert all unsaved changes?')) {
-            initializeMatrix();
+        if (confirm('Revert all unsaved changes?')) {
+            selects.forEach(sel => {
+                sel.value = sel.dataset.initial;
+                applyColor(sel);
+            });
+            updateStats();
+            showToast('↩️ Changes reverted', 'info');
         }
     });
 
-    // 5. Save Permissions
-    document.getElementById('savePermissions').addEventListener('click', () => {
-        const btn = document.getElementById('savePermissions');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+    // ─── SAVE ────────────────────────────────────────────────
+    document.getElementById('saveAllBtn').addEventListener('click', function() {
+        const btn = this;
         btn.disabled = true;
+        btn.textContent = '⏳ Saving...';
 
         const permissions = [];
-        selects.forEach(select => {
-            if (select.value !== 'none') {
-                permissions.push({
-                    role: select.dataset.role,
-                    permission_code: select.dataset.permission,
-                    access: select.value
-                });
-            }
+        selects.forEach(sel => {
+            permissions.push({
+                role: sel.dataset.role,
+                permission_code: sel.dataset.permission,
+                access: sel.value
+            });
         });
 
         fetch('{% url "hms:save_permissions" %}', {
             method: 'POST',
-            body: JSON.stringify({permissions}),
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            }
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ permissions: permissions })
         })
-        .then(response => response.json())
+        .then(resp => resp.json())
         .then(data => {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-            
             if (data.status === 'success') {
-                // Update initial state to newly saved state
-                selects.forEach(select => select.dataset.initial = select.value);
-                alert('Permissions saved successfully!');
+                selects.forEach(sel => sel.dataset.initial = sel.value);
+                showToast('✅ ' + data.message, 'success');
             } else {
-                alert('Error saving permissions: ' + data.message);
+                showToast('❌ ' + data.message, 'error');
             }
         })
-        .catch(error => {
-            btn.innerHTML = originalText;
+        .catch(err => {
+            console.error(err);
+            showToast('❌ Network error. Check console.', 'error');
+        })
+        .finally(() => {
             btn.disabled = false;
-            alert('A network error occurred.');
-            console.error('Error:', error);
+            btn.textContent = '💾 Save All Changes';
         });
     });
 
-    // 6. Export to CSV
+    // ─── Export CSV ───────────────────────────────────────────
     document.getElementById('exportBtn').addEventListener('click', () => {
-        let csvContent = "data:text/csv;charset=utf-8,";
-        
-        // Headers
-        const roles = Array.from(document.querySelectorAll('thead th')).slice(1).map(th => th.innerText.trim().split('\n')[0]);
-        csvContent += "Module," + roles.join(",") + "\n";
-        
-        // Rows
-        const rows = document.querySelectorAll('#permTable tbody tr');
-        rows.forEach(row => {
-            const moduleName = row.querySelector('th').innerText;
-            const rowData = [moduleName];
-            
-            row.querySelectorAll('select').forEach(select => {
-                rowData.push(select.value.toUpperCase());
-            });
-            
-            csvContent += rowData.join(",") + "\n";
+        const headers = ['Module'];
+        document.querySelectorAll('.permission-table thead th .role-name').forEach(el => {
+            headers.push('"' + el.textContent.trim() + '"');
         });
-        
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "permission_matrix_export.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const rows = [headers.join(',')];
+        document.querySelectorAll('#permTable tbody tr').forEach(tr => {
+            const row = ['"' + tr.querySelector('th').textContent.trim() + '"'];
+            tr.querySelectorAll('select').forEach(sel => row.push(sel.value.toUpperCase()));
+            rows.push(row.join(','));
+        });
+        const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'permission_matrix_' + new Date().toISOString().slice(0,10) + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast('📥 CSV exported!', 'success');
     });
-});
+})();
 </script>
 {% endblock %}
