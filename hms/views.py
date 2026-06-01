@@ -306,12 +306,12 @@ def register_staff(request):
 def user_login(request):
     """Login view for all users with role selection"""
     if request.user.is_authenticated:
-        if hasattr(request.user, 'student_profile'):
-            return redirect('hms:student_dashboard')
-        elif hasattr(request.user, 'staff_profile') or request.user.is_superuser or request.user.is_staff:
+        if hasattr(request.user, 'staff_profile') or request.user.is_superuser or request.user.is_staff:
             return redirect('hms:dashboard_redirect')
-        else:
+        elif hasattr(request.user, 'student_profile'):
             return redirect('hms:student_dashboard')
+        else:
+            return redirect('hms:dashboard_redirect')
 
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -320,12 +320,12 @@ def user_login(request):
             login(request, user)
             messages.success(request, f'Welcome back, {user.first_name}!')
             
-            if hasattr(user, 'student_profile'):
-                return redirect('hms:student_dashboard')
-            elif hasattr(user, 'staff_profile') or user.is_superuser or user.is_staff:
+            if hasattr(user, 'staff_profile') or user.is_superuser or user.is_staff:
                 return redirect('hms:dashboard_redirect')
-            else:
+            elif hasattr(user, 'student_profile'):
                 return redirect('hms:student_dashboard')
+            else:
+                return redirect('hms:dashboard_redirect')
         else:
             messages.error(request, 'Invalid email or password.')
     else:
@@ -503,12 +503,14 @@ def student_dashboard(request):
     - Activities
     - Quick actions (Away mode, etc.)
     """
+    # Guard: redirect staff/admin users away from student dashboard
+    if hasattr(request.user, 'staff_profile') or request.user.is_superuser or request.user.is_staff:
+        return redirect('hms:dashboard_redirect')
+
     try:
         student = request.user.student_profile
     except Student.DoesNotExist:
-        if request.user.is_staff:
-            return redirect('hms:admin_dashboard')
-        # Auto-create profile
+        # Auto-create profile for genuine students only
         student = Student.objects.create(user=request.user, university_id=None)
         messages.warning(request, "Profile was missing and has been created.")
         
