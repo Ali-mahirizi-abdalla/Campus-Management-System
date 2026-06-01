@@ -721,3 +721,20 @@ class NotificationPreference(models.Model):
 
     def __str__(self):
         return f"Notification Preferences for {self.user.username}"
+
+
+class Permission(models.Model):
+    code = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
+    module = models.CharField(max_length=50)
+    
+    def __str__(self):
+        return self.name
+
+class RolePermission(models.Model):
+    role = models.CharField(max_length=50)
+    permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
+    
+    class Meta:
+        unique_together = ['role', 'permission']
+

@@ -14,7 +14,7 @@ from .models import (Student, Meal, Activity, AwayPeriod, Announcement, Document
                      Room, RoomAssignment, RoomChangeRequest, Payment, Notification, LoginActivity, LostItem, StaffProfile, StaffInvitation,
                      AdminSubscription, RegistrationPayment, TutoringPost, HealthAppointment)
 from .decorators import (
-    role_required, staff_only, admin_only,
+    role_required, permission_required, staff_only, admin_only,
     super_admin_required, welfare_officer_required,
     hostel_manager_required, kitchen_manager_required, security_required
 )
@@ -1447,7 +1447,7 @@ def export_students_csv(request):
 
 
 @login_required
-@role_required(allowed_roles=['super_admin', 'Super Admin', 'finance_officer'])
+@permission_required('view_payments')
 def manage_payments(request):
     """Admin view to manage/view all payments"""
     from django.db import models
@@ -1702,7 +1702,7 @@ def announcements_list(request):
     return render(request, 'hms/student/announcements.html', context)
 
 @login_required
-@role_required(allowed_roles=['super_admin', 'dean_of_students', 'register_admin', 'Super Admin', 'Welfare Officer', 'news_editor', 'news_auditor'])
+@permission_required('view_news')
 def manage_announcements(request):
     """Manage announcements (admin only)"""
     
@@ -2138,7 +2138,7 @@ def delete_maintenance_request(request, pk):
     return redirect('hms:student_maintenance_list')
 
 @login_required
-@role_required(allowed_roles=['super_admin', 'warden', 'Super Admin', 'Hostel Manager', 'maintenance_sup'])
+@permission_required('view_maintenance')
 def manage_maintenance(request):
     """Admin view to manage maintenance tickets"""
         
@@ -2247,7 +2247,7 @@ def edit_room(request, pk):
 
 @login_required
 @require_POST
-@role_required(['super_admin', 'register_admin', 'Admin'])
+@permission_required('view_accommodation')
 def delete_room(request, pk):
     """Delete a room (admin only)"""
     
@@ -2259,7 +2259,7 @@ def delete_room(request, pk):
 
 
 @login_required
-@role_required(['super_admin', 'warden', 'Admin', 'Warden'])
+@permission_required('view_accommodation')
 def room_assignments(request):
     """View all room assignments (admin only)"""
     
@@ -2274,7 +2274,7 @@ def room_assignments(request):
 
 
 @login_required
-@role_required(['super_admin', 'warden', 'Admin', 'Warden'])
+@permission_required('view_accommodation')
 def assign_room(request):
     """Assign a student to a room (admin only)"""
     from .forms import RoomAssignmentForm
@@ -2306,7 +2306,7 @@ def assign_room(request):
 
 
 @login_required
-@role_required(['super_admin', 'warden', 'Admin', 'Warden'])
+@permission_required('view_accommodation')
 def room_change_requests(request):
     """View all room change requests (admin only)"""
     
@@ -2321,7 +2321,7 @@ def room_change_requests(request):
 
 
 @login_required
-@role_required(['super_admin', 'warden', 'Admin', 'Warden'])
+@permission_required('view_accommodation')
 def approve_room_change(request, pk):
     """Approve/reject a room change request (admin only)"""
     
@@ -2478,7 +2478,7 @@ def delete_leave_request(request, pk):
 # ========== DEFERMENT MANAGEMENT VIEWS ==========
 
 @login_required
-@role_required(allowed_roles=['super_admin', 'dean_of_students', 'register_admin', 'Super Admin', 'Welfare Officer'])
+@permission_required('view_reports')
 def admin_deferment_all(request):
     """Admin views all deferment requests"""
     
@@ -2492,7 +2492,7 @@ def admin_deferment_all(request):
     return render(request, 'hms/admin/deferment_list.html', context)
 
 @login_required
-@role_required(['super_admin', 'warden', 'Admin', 'Warden'])
+@permission_required('view_reports')
 def admin_deferment_pending(request):
     """Admin views pending deferment requests"""
     
@@ -2506,7 +2506,7 @@ def admin_deferment_pending(request):
     return render(request, 'hms/admin/deferment_list.html', context)
 
 @login_required
-@role_required(['super_admin', 'warden', 'Admin', 'Warden'])
+@permission_required('view_reports')
 def admin_deferment_under_review(request):
     """Admin views deferment requests under review"""
     
@@ -2520,7 +2520,7 @@ def admin_deferment_under_review(request):
     return render(request, 'hms/admin/deferment_list.html', context)
 
 @login_required
-@role_required(allowed_roles=['super_admin', 'dean_of_students', 'register_admin', 'Super Admin', 'Welfare Officer'])
+@permission_required('view_reports')
 def admin_deferment_approved(request):
     """Admin views approved deferment requests"""
     
@@ -2534,7 +2534,7 @@ def admin_deferment_approved(request):
     return render(request, 'hms/admin/deferment_list.html', context)
 
 @login_required
-@role_required(allowed_roles=['super_admin', 'dean_of_students', 'register_admin', 'Super Admin', 'Welfare Officer'])
+@permission_required('view_reports')
 def admin_deferment_rejected(request):
     """Admin views rejected deferment requests"""
     
@@ -2548,7 +2548,7 @@ def admin_deferment_rejected(request):
     return render(request, 'hms/admin/deferment_list.html', context)
 
 @login_required
-@role_required(['super_admin', 'warden', 'Admin', 'Warden'])
+@permission_required('view_reports')
 def admin_deferment_resumed(request):
     """Admin views resumed studies deferment requests"""
     
@@ -2562,7 +2562,7 @@ def admin_deferment_resumed(request):
     return render(request, 'hms/admin/deferment_list.html', context)
 
 @login_required
-@role_required(['super_admin', 'warden', 'deferment_officer', 'Admin', 'Warden', 'DEFERMENT'])
+@permission_required('view_reports')
 def review_deferment(request, pk):
     """Admin approves/rejects/updates a deferment request"""
     
@@ -2621,12 +2621,7 @@ approve_leave_request = review_deferment
 # ==================== ANALYTICS DASHBOARD ====================
 
 @login_required
-@role_required(allowed_roles=[
-    'super_admin', 'vice_chancellor', 'deputy_vice_chancellor', 'register_admin',
-    'dean_of_students', 'warden', 'health_manager', 'security_officer',
-    # legacy
-    'Super Admin', 'Welfare Officer', 'Hostel Manager', 'Kitchen Manager', 'Security',
-])
+@permission_required('view_reports')
 def analytics_dashboard(request):
     """Comprehensive analytics dashboard for admins"""
     
@@ -2816,7 +2811,7 @@ def analytics_dashboard(request):
 
 
 @login_required
-@role_required(allowed_roles=['super_admin', 'security_officer', 'emergency_coord', 'Super Admin', 'Security'])
+@permission_required('view_emergency')
 def emergency_broadcast(request):
     """View for sending emergency broadcasts via Telegram"""
     if request.method == 'POST':
@@ -2841,7 +2836,7 @@ def emergency_broadcast(request):
 
 
 @login_required
-@role_required(allowed_roles=['super_admin', 'security_officer', 'emergency_coord', 'Super Admin', 'Security'])
+@permission_required('view_visitors')
 def visitor_management(request):
     """View to list active visitors and check them in/out"""
     # Decorator handles permission
@@ -2873,7 +2868,7 @@ def visitor_management(request):
     return render(request, 'hms/admin/visitor_management.html', context)
 
 @login_required
-@role_required(['super_admin', 'warden', 'security_officer', 'Admin', 'Warden', 'VISITORS'])
+@permission_required('view_visitors')
 def checkout_visitor(request, visitor_id):
     """View to check out a visitor"""
     
@@ -3134,7 +3129,7 @@ def global_search(request):
 # ==================== Audit Logs ====================
 
 @login_required
-@role_required(allowed_roles=['super_admin', 'Super Admin', 'auditor'])
+@permission_required('view_audit')
 def audit_log_list(request):
     """
     Admin/Finance view for Audit Logs.
@@ -3184,7 +3179,7 @@ def audit_log_list(request):
     return render(request, 'hms/admin/audit_logs.html', context)
 
 @login_required
-@role_required(['super_admin', 'finance_officer', 'maintenance_sup', 'Admin', 'Finance', 'MAINTENANCE_HOSTEL'])
+@permission_required('view_audit')
 def audit_log_export(request):
     """
     Export Audit Logs to CSV based on current filters.
@@ -3276,7 +3271,7 @@ def update_student_status(request):
 # ==================== LOST AND FOUND ====================
 
 @login_required
-@role_required(allowed_roles=['Super Admin', 'Welfare Officer', 'Security'])
+@permission_required('view_reports')
 def lost_found_list(request):
     """List all lost and found items"""
     status_filter = request.GET.get('status', 'ALL')
@@ -3579,8 +3574,11 @@ def security_dashboard(request):
 
 
 def access_denied(request, exception=None):
-    """Custom 403 Access Denied page"""
-    return render(request, 'hms/403.html', status=403)
+    """Custom 403 Access Denied page (redirects to safety)"""
+    from django.contrib import messages
+    from django.shortcuts import redirect
+    messages.error(request, 'Access Denied. You do not have permission to view this page.')
+    return redirect('hms:dashboard_redirect')
 
 def page_not_found(request, exception=None):
     """Custom 404 Page Not Found page"""
@@ -3680,7 +3678,7 @@ def health_appointment_detail(request, pk):
     })
 
 @login_required
-@role_required(allowed_roles=['HEALTH_ADMIN', 'CAMPUS_NURSE', 'CAMPUS_DOCTOR', 'CAMPUS_COUNSELOR', 'Super Admin', 'health_manager', 'super_admin'])
+@permission_required('view_health')
 def manage_health(request):
     """Dashboard for health staff"""
     staff_profile = getattr(request.user, 'staff_profile', None)

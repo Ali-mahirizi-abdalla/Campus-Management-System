@@ -219,3 +219,5 @@ urlpatterns = [
     path('notifications/read/<int:notif_id>/', views.mark_notification_read, name='mark_notification_read'),
     path('notifications/preferences/', views.notification_preferences, name='notification_preferences'),
 ]
+
+handler403 = 'hms.views.handler403'

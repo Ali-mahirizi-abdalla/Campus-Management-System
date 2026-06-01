@@ -39,6 +39,40 @@ def role_required(allowed_roles=[]):
     return decorator
 
 
+def permission_required(permission_code):
+    """
+    Decorator to restrict access based on dynamic RolePermission assignments.
+    Superusers always bypass.
+    """
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if not request.user.is_authenticated:
+                from django.contrib.auth.views import redirect_to_login
+                return redirect_to_login(request.get_full_path(), login_url='hms:login')
+
+            if request.user.is_superuser:
+                return view_func(request, *args, **kwargs)
+
+            staff_profile = getattr(request.user, 'staff_profile', None)
+            role = staff_profile.role if staff_profile else None
+            
+            if role == 'super_admin':
+                return view_func(request, *args, **kwargs)
+
+            if role:
+                from .models import RolePermission
+                if RolePermission.objects.filter(role=role, permission__code=permission_code).exists():
+                    return view_func(request, *args, **kwargs)
+
+            messages.error(request, f'Access Denied. Your role does not have the required permission ({permission_code}).')
+            from django.shortcuts import redirect
+            return redirect('hms:dashboard_redirect')
+
+        return _wrapped_view
+    return decorator
+
+
 # Convenience shortcut decorators using actual model keys
 # ─────────────────────────────────────────────────────────
 
