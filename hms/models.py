@@ -732,8 +732,14 @@ class Permission(models.Model):
         return self.name
 
 class RolePermission(models.Model):
+    ACCESS_CHOICES = [
+        ('full', 'Full Access'),
+        ('read', 'Read Only'),
+        ('none', 'No Access')
+    ]
     role = models.CharField(max_length=50)
     permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
+    access_type = models.CharField(max_length=20, choices=ACCESS_CHOICES, default='full')
     
     class Meta:
         unique_together = ['role', 'permission']

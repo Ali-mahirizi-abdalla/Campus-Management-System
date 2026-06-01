@@ -62,7 +62,7 @@ def permission_required(permission_code):
 
             if role:
                 from .models import RolePermission
-                if RolePermission.objects.filter(role=role, permission__code=permission_code).exists():
+                if RolePermission.objects.filter(role=role, permission__code=permission_code, access_type__in=['full', 'read']).exists():
                     return view_func(request, *args, **kwargs)
 
             messages.error(request, f'Access Denied. Your role does not have the required permission ({permission_code}).')

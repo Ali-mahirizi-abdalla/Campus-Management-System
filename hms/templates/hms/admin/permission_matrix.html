@@ -1,0 +1,219 @@
+{% extends 'hms/base.html' %}
+{% load static %}
+
+{% block title %}Permission Matrix{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Role Permission Matrix</h2>
+            <p class="text-muted">Manage granular access controls for all {{ roles|length }} staff roles across {{ permissions|length }} modules.</p>
+        </div>
+        <div>
+            <button class="btn btn-outline-secondary me-2" id="exportBtn">
+                <i class="bi bi-download"></i> Export CSV
+            </button>
+            <button class="btn btn-outline-danger me-2" id="resetBtn">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+            </button>
+            <button class="btn btn-primary" id="savePermissions">
+                <i class="bi bi-save"></i> Save Permissions
+            </button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0" style="overflow-x: auto; max-height: 75vh; overflow-y: auto;">
+            <table class="table table-hover table-bordered mb-0" style="min-width: 1800px; font-size: 0.85rem;" id="permTable">
+                <thead class="table-dark sticky-top">
+                    <tr>
+                        <th class="align-middle" style="min-width: 180px; position: sticky; left: 0; background: #212529; z-index: 2;">Module \ Role</th>
+                        {% for role_key, role_name in roles %}
+                        <th class="text-center align-middle" style="min-width: 140px;">
+                            <div class="fw-bold mb-2 text-truncate" title="{{ role_name }}">{{ role_name }}</div>
+                            <div class="btn-group w-100" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-success select-all-btn" data-role="{{ role_key }}" data-type="full" title="Full All">✅</button>
+                                <button type="button" class="btn btn-sm btn-outline-warning select-all-btn" data-role="{{ role_key }}" data-type="read" title="Read All">📖</button>
+                                <button type="button" class="btn btn-sm btn-outline-danger select-all-btn" data-role="{{ role_key }}" data-type="none" title="Clear All">❌</button>
+                            </div>
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in permissions %}
+                    <tr>
+                        <th class="align-middle bg-light" style="position: sticky; left: 0; z-index: 1;">{{ p.name }}</th>
+                        {% for role_key, role_name in roles %}
+                        <td class="text-center p-1 align-middle">
+                            <select class="form-select form-select-sm perm-select shadow-none" 
+                                    data-role="{{ role_key }}" 
+                                    data-permission="{{ p.code }}"
+                                    style="cursor: pointer; border-radius: 4px;">
+                                <option value="full">✅ Full Access</option>
+                                <option value="read">📖 Read Only</option>
+                                <option value="none">❌ No Access</option>
+                            </select>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Render matrix data safely for JS -->
+{{ matrix|json_script:"matrix-data" }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const matrixDict = JSON.parse(document.getElementById('matrix-data').textContent);
+    const selects = document.querySelectorAll('.perm-select');
+    
+    // Function to set color based on value
+    function updateSelectColor(select) {
+        if (select.value === 'full') {
+            select.style.backgroundColor = '#d1e7dd';
+            select.style.color = '#0f5132';
+            select.style.borderColor = '#badbcc';
+        } else if (select.value === 'read') {
+            select.style.backgroundColor = '#fff3cd';
+            select.style.color = '#664d03';
+            select.style.borderColor = '#ffecb5';
+        } else {
+            select.style.backgroundColor = '#f8d7da';
+            select.style.color = '#842029';
+            select.style.borderColor = '#f5c2c7';
+        }
+    }
+
+    // 1. Initialize selects with matrix data
+    function initializeMatrix() {
+        selects.forEach(select => {
+            const role = select.dataset.role;
+            const perm = select.dataset.permission;
+            
+            // Check dictionary for role, then permission
+            let access = 'none';
+            if (matrixDict[role] && matrixDict[role][perm]) {
+                access = matrixDict[role][perm];
+            }
+            
+            select.value = access;
+            // Store initial value for reset functionality
+            select.dataset.initial = access;
+            updateSelectColor(select);
+        });
+    }
+
+    initializeMatrix();
+
+    // 2. Change Event
+    selects.forEach(select => {
+        select.addEventListener('change', (e) => {
+            updateSelectColor(e.target);
+        });
+    });
+
+    // 3. Select All buttons (Full, Read, None)
+    document.querySelectorAll('.select-all-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const role = e.currentTarget.dataset.role;
+            const type = e.currentTarget.dataset.type;
+            
+            document.querySelectorAll(`.perm-select[data-role="${role}"]`).forEach(select => {
+                select.value = type;
+                updateSelectColor(select);
+            });
+        });
+    });
+
+    // 4. Reset Button
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to revert all unsaved changes?')) {
+            initializeMatrix();
+        }
+    });
+
+    // 5. Save Permissions
+    document.getElementById('savePermissions').addEventListener('click', () => {
+        const btn = document.getElementById('savePermissions');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+        btn.disabled = true;
+
+        const permissions = [];
+        selects.forEach(select => {
+            if (select.value !== 'none') {
+                permissions.push({
+                    role: select.dataset.role,
+                    permission_code: select.dataset.permission,
+                    access: select.value
+                });
+            }
+        });
+
+        fetch('{% url "hms:save_permissions" %}', {
+            method: 'POST',
+            body: JSON.stringify({permissions}),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            
+            if (data.status === 'success') {
+                // Update initial state to newly saved state
+                selects.forEach(select => select.dataset.initial = select.value);
+                alert('Permissions saved successfully!');
+            } else {
+                alert('Error saving permissions: ' + data.message);
+            }
+        })
+        .catch(error => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            alert('A network error occurred.');
+            console.error('Error:', error);
+        });
+    });
+
+    // 6. Export to CSV
+    document.getElementById('exportBtn').addEventListener('click', () => {
+        let csvContent = "data:text/csv;charset=utf-8,";
+        
+        // Headers
+        const roles = Array.from(document.querySelectorAll('thead th')).slice(1).map(th => th.innerText.trim().split('\n')[0]);
+        csvContent += "Module," + roles.join(",") + "\n";
+        
+        // Rows
+        const rows = document.querySelectorAll('#permTable tbody tr');
+        rows.forEach(row => {
+            const moduleName = row.querySelector('th').innerText;
+            const rowData = [moduleName];
+            
+            row.querySelectorAll('select').forEach(select => {
+                rowData.push(select.value.toUpperCase());
+            });
+            
+            csvContent += rowData.join(",") + "\n";
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "permission_matrix_export.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+});
+</script>
+{% endblock %}
