@@ -401,11 +401,13 @@ def global_search(request):
 @login_required
 def dashboard_redirect(request):
     """Unified redirect for staff dashboards based on role"""
-    if not hasattr(request.user, 'staff_profile') and not request.user.is_superuser:
-        return redirect('hms:student_dashboard')
-
     if request.user.is_superuser:
         return redirect('hms:admin_dashboard')
+
+    if not hasattr(request.user, 'staff_profile'):
+        if request.user.is_staff:
+            return redirect('hms:admin_dashboard')
+        return redirect('hms:student_dashboard')
 
     role = getattr(request.user.staff_profile, 'role', None)
 
