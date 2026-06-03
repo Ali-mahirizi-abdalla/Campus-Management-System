@@ -39,3 +39,12 @@ def telegram_info(request):
         'TELEGRAM_CHAT_ID': chat_id,
         'TELEGRAM_JOIN_LINK': f"https://t.me/{clean_handle}" if clean_handle else None
     }
+
+
+def feature_flags_processor(request):
+    """Makes the feature flags helper available in all templates."""
+    from .feature_flags import feature_flags
+    return {
+        'feature_flags': feature_flags
+    }
+

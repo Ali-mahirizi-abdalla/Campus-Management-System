@@ -49,6 +49,8 @@ urlpatterns = [
     # Admin Dashboard (Legacy/Generic)
     path('manage/dashboard/', views.dashboard_admin, name='admin_dashboard'),
     path('manage/super-admin/', views.super_admin_dashboard, name='super_admin_dashboard'),
+    path('manage/feature-flags/', views.feature_flags_control_panel, name='feature_flags'),
+    path('manage/feature-flags/update/', views.update_feature_flags_api, name='update_feature_flags_api'),
     path('manage/payments/', views.manage_payments, name='manage_payments'),
     path('manage/export-csv/', views.export_meals_csv, name='export_meals_csv'),
     path('manage/export-students-csv/', views.export_students_csv, name='export_students_csv'),

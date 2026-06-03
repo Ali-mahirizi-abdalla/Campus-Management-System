@@ -744,3 +744,13 @@ class RolePermission(models.Model):
     class Meta:
         unique_together = ['role', 'permission']
 
+
+class FeatureFlag(models.Model):
+    name = models.CharField(max_length=100, unique=True, help_text="The internal code name of the feature flag")
+    is_enabled = models.BooleanField(default=False, help_text="Status of the feature flag")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name}: {'ON' if self.is_enabled else 'OFF'}"
+
+

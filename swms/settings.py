@@ -177,6 +177,7 @@ TEMPLATES = [
                 'hms.context_processors.staff_role_info',
                 'hms.context_processors.unread_notifications',
                 'hms.context_processors.telegram_info',
+                'hms.context_processors.feature_flags_processor',
             ],
             # Explicitly disable template caching in DEBUG mode
             'loaders': [

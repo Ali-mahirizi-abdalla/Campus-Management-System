@@ -4135,4 +4135,116 @@ def save_permissions(request):
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
 
+@login_required
+@super_admin_required
+def feature_flags_control_panel(request):
+    """View to render the Feature Flags Control Panel for super admins."""
+    from .feature_flags import EXISTING_FEATURES, NEW_FEATURES, feature_flags
+    
+    existing_list = []
+    for f in EXISTING_FEATURES:
+        existing_list.append({
+            'name': f['name'],
+            'label': f['label'],
+            'icon': f['icon'],
+            'description': f['description'],
+            'is_enabled': True
+        })
+        
+    new_list = []
+    for f in NEW_FEATURES:
+        new_list.append({
+            'name': f['name'],
+            'label': f['label'],
+            'icon': f['icon'],
+            'description': f['description'],
+            'is_enabled': feature_flags.is_enabled(f['name'])
+        })
+        
+    context = {
+        'existing_features': existing_list,
+        'new_features': new_list,
+        'page_title': 'Feature Flags Control Panel'
+    }
+    return render(request, 'hms/admin/feature_flags.html', context)
+
+
+@login_required
+@super_admin_required
+def update_feature_flags_api(request):
+    """API endpoint to toggle and update feature flag settings."""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+        
+    try:
+        data = json.loads(request.body)
+        action = data.get('action')
+        
+        from .feature_flags import NEW_FEATURES, feature_flags
+        
+        if action == 'toggle':
+            name = data.get('name')
+            enabled = data.get('enabled')
+            if name is None or enabled is None:
+                return JsonResponse({'status': 'error', 'message': 'Missing name or enabled parameter'}, status=400)
+            
+            feature_flags.set_enabled(name, bool(enabled))
+            
+            # Log to AuditLog
+            AuditLog.objects.create(
+                user=request.user,
+                action='UPDATE',
+                model_name='FeatureFlag',
+                object_repr=f"Feature: {name}",
+                details=json.dumps({'name': name, 'is_enabled': enabled})
+            )
+            return JsonResponse({'status': 'success', 'message': f"Feature '{name}' updated successfully."})
+            
+        elif action == 'enable_all':
+            for f in NEW_FEATURES:
+                feature_flags.set_enabled(f['name'], True)
+            
+            AuditLog.objects.create(
+                user=request.user,
+                action='UPDATE',
+                model_name='FeatureFlag',
+                object_repr="All Features Enabled",
+                details="Enabled all toggleable features"
+            )
+            return JsonResponse({'status': 'success', 'message': 'All toggleable features enabled.'})
+            
+        elif action == 'disable_all':
+            for f in NEW_FEATURES:
+                feature_flags.set_enabled(f['name'], False)
+                
+            AuditLog.objects.create(
+                user=request.user,
+                action='UPDATE',
+                model_name='FeatureFlag',
+                object_repr="All Features Disabled",
+                details="Disabled all toggleable features"
+            )
+            return JsonResponse({'status': 'success', 'message': 'All toggleable features disabled.'})
+            
+        elif action == 'reset':
+            for f in NEW_FEATURES:
+                feature_flags.set_enabled(f['name'], f['default'])
+                
+            AuditLog.objects.create(
+                user=request.user,
+                action='UPDATE',
+                model_name='FeatureFlag',
+                object_repr="Features Reset",
+                details="Reset all toggleable features to defaults"
+            )
+            return JsonResponse({'status': 'success', 'message': 'Reset all toggleable features to default.'})
+            
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Invalid action'}, status=400)
+            
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+
 

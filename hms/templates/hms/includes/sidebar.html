@@ -44,7 +44,8 @@
         </a>
         <a href="{% url 'hms:manage_staff' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Staff Management</a>
         <a href="{% url 'hms:manage_roles' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Role Management</a>
-        <a href="{% url 'hms:permission_matrix' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Permission Matrix</a>
+        <a href="{% url 'hms:permission_matrix' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm {% if request.resolver_match.url_name == 'permission_matrix' %}bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400{% endif %} rounded-xl transition">Permission Matrix</a>
+        <a href="{% url 'hms:feature_flags' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm {% if request.resolver_match.url_name == 'feature_flags' %}bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400{% endif %} rounded-xl transition">Feature Flags</a>
         <a href="{% url 'hms:manage_students' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Students</a>
         <a href="{% url 'hms:manage_health' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Health</a>
         <a href="{% url 'hms:manage_maintenance' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Maintenance</a>
