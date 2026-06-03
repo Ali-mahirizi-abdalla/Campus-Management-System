@@ -157,6 +157,7 @@ ROLE_BANNERS = {
     }
 }
 # ==================== Authentication ====================
+@login_required
 def register_student(request):
     """
     Handle student registration logic.
@@ -190,6 +191,7 @@ def register_student(request):
     return render(request, 'hms/register.html', {'form': form})
 
 
+@login_required
 def check_registration_status(request, checkout_id):
     """AJAX view to poll registration payment status"""
     payment = get_object_or_404(RegistrationPayment, checkout_request_id=checkout_id)
@@ -220,6 +222,7 @@ def check_registration_status(request, checkout_id):
     return JsonResponse({'status': 'Pending'})
 
 @csrf_exempt
+@login_required
 def mpesa_callback(request):
     """Handle STK Push callbacks from Safaricom"""
     try:
@@ -303,6 +306,7 @@ def register_staff(request):
     })
 
 
+@login_required
 def user_login(request):
     """Login view for all users with role selection"""
     if request.user.is_authenticated:
@@ -333,6 +337,7 @@ def user_login(request):
     
     return render(request, 'hms/login.html', {'form': form})
 
+@login_required
 def user_logout(request):
     logout(request)
     return redirect('hms:login')
@@ -797,6 +802,7 @@ def toggle_early_breakfast(request):
     # legacy names
     'Super Admin', 'Welfare Officer', 'Hostel Manager', 'Kitchen Manager', 'Security',
 ])
+@login_required
 def dashboard_admin(request):
     """Kitchen/Admin Dashboard"""
     # Auto-redirect for student attempting to access admin url handled by decorator (or 403)
@@ -1169,20 +1175,23 @@ def dir_resource_dashboard(request):
     if not hasattr(request.user, 'staff_profile') or request.user.staff_profile.role != 'director_resource':
         return redirect('hms:dashboard_redirect')
     context = {
-        'dashboard_title': 'Director - Resource Mobilization Dashboard',
-        'dashboard_description': 'Manage university resources, grants, and donors.',
-        'mock_grants': [
-            {'title': 'Green Energy Initiative', 'agency': 'National Science Foundation', 'amount': '$500,000', 'status': 'Under Review'},
-            {'title': 'Rural Education Outreach', 'agency': 'Global Education Fund', 'amount': '$120,000', 'status': 'Approved'},
-            {'title': 'AI in Healthcare Research', 'agency': 'Tech Innovations Corp', 'amount': '$850,000', 'status': 'Under Review'},
+        'dashboard_title': 'Director – Resource Mobilization',
+        'dashboard_description': 'Manage university resources, grants, and donor relationships.',
+        'grants': [
+            {'title': 'Green Energy Initiative',    'agency': 'National Science Foundation', 'amount': '$0', 'status': 'review'},
+            {'title': 'Rural Education Outreach',   'agency': 'Global Education Fund',       'amount': '$0', 'status': 'approved'},
+            {'title': 'AI in Healthcare Research',  'agency': 'Tech Innovations Corp',       'amount': '$0', 'status': 'review'},
+            {'title': 'Water Conservation Project', 'agency': 'UNESCO',                      'amount': '$0', 'status': 'pending'},
+            {'title': 'Digital Literacy Program',   'agency': 'World Bank',                  'amount': '$0', 'status': 'pending'},
         ],
-        'mock_donors': [
-            {'name': 'Bill & Melinda Foundation', 'type': 'Philanthropy', 'total': '$1.2M'},
-            {'name': 'Tech Innovations Corp', 'type': 'Corporate Partner', 'total': '$850K'},
-            {'name': 'Alumni Association (Class of 2010)', 'type': 'Alumni Group', 'total': '$150K'},
-        ]
+        'total_grants': '$0',
+        'active_donors': 0,
+        'pending_applications': 0,
+        'ytd_utilization': '0%',
+        'ytd_performance': '0% vs Last Year',
+        'active_partners': 0,
     }
-    return render(request, 'hms/rbac/dashboards/dir_resource_dashboard.html', context)
+    return render(request, 'hms/resource_mobilization/dashboard_resource_mobilization.html', context)
 
 @login_required
 def news_auditor_dashboard(request):
@@ -1321,6 +1330,7 @@ def tvet_director_dashboard(request):
     # legacy
     'Admin', 'Warden', 'Finance', 'DEFERMENT', 'MAINTENANCE_HOSTEL', 'ACTIVITIES_ROOMS', 'NEWS_ALERT', 'VISITORS', 'AUDIT_LOGS'
 ])
+@login_required
 def export_meals_csv(request):
     """Export confirmed meals to CSV"""
     
@@ -1365,6 +1375,7 @@ def export_meals_csv(request):
     # legacy
     'Admin', 'Warden', 'Finance', 'DEFERMENT', 'MAINTENANCE_HOSTEL', 'ACTIVITIES_ROOMS', 'NEWS_ALERT', 'VISITORS', 'AUDIT_LOGS'
 ])
+@login_required
 def export_students_csv(request):
     """Export comprehensive student data to CSV including all details"""
     
@@ -3359,6 +3370,7 @@ def admin_subscription_pay(request):
         'subscription': subscription
     })
 
+@login_required
 def system_locked(request):
     """View to display the system-wide lock notice"""
     return render(request, 'hms/system_locked.html')
@@ -3575,6 +3587,7 @@ def security_dashboard(request):
     return render(request, 'hms/rbac/security_dashboard.html', context)
 
 
+@login_required
 def access_denied(request, exception=None):
     """Custom 403 Access Denied page (redirects to safety)"""
     from django.contrib import messages
@@ -3582,6 +3595,7 @@ def access_denied(request, exception=None):
     messages.error(request, 'Access Denied. You do not have permission to view this page.')
     return redirect('hms:dashboard_redirect')
 
+@login_required
 def page_not_found(request, exception=None):
     """Custom 404 Page Not Found page"""
     return render(request, 'hms/404.html', status=404)
