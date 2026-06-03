@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ============================================
 SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True # Temporarily enabled to catch the 500 error trace
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # ✅ ALLOWED HOSTS — controlled via ALLOWED_HOSTS env var on Render
 _allowed_hosts_env = os.getenv('ALLOWED_HOSTS', '')

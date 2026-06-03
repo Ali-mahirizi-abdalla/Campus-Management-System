@@ -79,7 +79,7 @@
 
         <!-- 5. WARDEN -->
         {% elif user.staff_profile.role == 'warden' %}
-        <a href="{% url 'hms:hostel_manager_dashboard' %}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl transition">My Dashboard</a>
+        <a href="{% url 'hms:admin_dashboard' %}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl transition">My Dashboard</a>
         <a href="{% url 'hms:room_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Room Allocation</a>
         <a href="{% url 'hms:room_change_requests' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Room Changes</a>
         <a href="{% url 'hms:student_profile' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Profile</a>
@@ -92,13 +92,13 @@
 
         <!-- 7. SECURITY OFFICER -->
         {% elif user.staff_profile.role == 'security_officer' %}
-        <a href="{% url 'hms:security_dashboard' %}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl transition">My Dashboard</a>
+        <a href="{% url 'hms:admin_dashboard' %}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl transition">My Dashboard</a>
         <a href="{% url 'hms:visitor_management' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Visitor Log</a>
         <a href="{% url 'hms:student_profile' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Profile</a>
 
         <!-- 8. DEAN OF STUDENTS -->
         {% elif user.staff_profile.role == 'dean_of_students' %}
-        <a href="{% url 'hms:welfare_officer_dashboard' %}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl transition">My Dashboard</a>
+        <a href="{% url 'hms:admin_dashboard' %}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl transition">My Dashboard</a>
         <a href="{% url 'hms:manage_students' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">All Students</a>
         <a href="{% url 'hms:admin_deferment_pending' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Welfare / Deferments</a>
         <a href="{% url 'hms:student_profile' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Profile</a>
@@ -181,7 +181,7 @@
 
         <!-- 22. DIRECTOR TVET -->
         {% elif user.staff_profile.role == 'director_tvet' %}
-        <a href="{% url 'hms:tvet_director_dashboard' %}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl transition">My Dashboard</a>
+        <a href="{% url 'hms:director_tvet_dashboard' %}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl transition">My Dashboard</a>
         <a href="{% url 'hms:manage_students' %}?level=diploma" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">TVET Students</a>
         <a href="{% url 'hms:student_profile' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Profile</a>
 
