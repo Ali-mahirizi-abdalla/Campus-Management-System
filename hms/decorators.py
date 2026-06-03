@@ -31,7 +31,10 @@ def role_required(allowed_roles=[]):
                 return view_func(request, *args, **kwargs)
 
             role_name = staff_profile.role if staff_profile else 'student/guest'
-            messages.error(request, f'Access Denied. Your role "{role_name}" does not have permission to access this page.')
+            try:
+                messages.error(request, f'Access Denied. Your role "{role_name}" does not have permission to access this page.')
+            except Exception:
+                pass # Ignore MessageFailure for API requests
             from django.shortcuts import redirect
             return redirect('hms:dashboard_redirect')
 
@@ -65,7 +68,10 @@ def permission_required(permission_code):
                 if RolePermission.objects.filter(role=role, permission__code=permission_code, access_type__in=['full', 'read']).exists():
                     return view_func(request, *args, **kwargs)
 
-            messages.error(request, f'Access Denied. Your role does not have the required permission ({permission_code}).')
+            try:
+                messages.error(request, f'Access Denied. Your role does not have the required permission ({permission_code}).')
+            except Exception:
+                pass
             from django.shortcuts import redirect
             return redirect('hms:dashboard_redirect')
 

@@ -423,13 +423,13 @@ def dashboard_redirect(request):
     elif role == 'register_user':
         return redirect('hms:reg_user_dashboard')
     elif role == 'dean_of_students':
-        return redirect('hms:welfare_officer_dashboard') # Dean of Students maps to student welfare dashboard
+        return redirect('hms:admin_dashboard') # Fallback to admin_dashboard
     elif role == 'dean_graduate_school':
         return redirect('hms:dean_grad_dashboard')
     elif role == 'director_resource':
         return redirect('hms:dir_resource_dashboard')
     elif role == 'director_tvet':
-        return redirect('hms:tvet_director_dashboard')
+        return redirect('hms:director_tvet_dashboard')
     elif role == 'deferment_officer':
         return redirect('hms:deferment_officer_dashboard')
     elif role == 'dept_mcs':
@@ -439,11 +439,11 @@ def dashboard_redirect(request):
     elif role == 'maintenance_sup':
         return redirect('hms:maintenance_supervisor_dashboard')
     elif role == 'warden':
-        return redirect('hms:hostel_manager_dashboard')
+        return redirect('hms:admin_dashboard') # Fallback to admin_dashboard
     elif role == 'finance_officer':
         return redirect('hms:finance_officer_dashboard')
     elif role == 'security_officer':
-        return redirect('hms:security_dashboard')
+        return redirect('hms:admin_dashboard') # Fallback to admin_dashboard
     elif role == 'news_editor':
         return redirect('hms:news_editor_dashboard')
     elif role == 'news_auditor':
