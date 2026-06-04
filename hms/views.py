@@ -3828,35 +3828,37 @@ def manage_roles(request):
     
     # Static data to simulate dynamic roles until full DB migration
     role_meta = {
-        'SUPER_ADMIN': {'desc': 'Full system access – all modules', 'dept': 'Administration', 'perms': ['FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL']},
-        'HEALTH_MGR': {'desc': 'Manage appointments, patients', 'dept': 'Medical', 'perms': ['NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
-        'MAINT_SUP': {'desc': 'Manage work orders, technicians', 'dept': 'Maintenance', 'perms': ['NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
-        'WARDEN': {'desc': 'Manage accommodation, deferments', 'dept': 'Student Affairs', 'perms': ['NO', 'NO', 'NO', 'FULL', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO']},
-        'FINANCE': {'desc': 'Manage payments, M-Pesa records', 'dept': 'Finance', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO']},
-        'SECURITY': {'desc': 'Manage visitors, entry/exit logs', 'dept': 'Security', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO']},
-        'NEWS_EDITOR': {'desc': 'Create news, schedule posts', 'dept': 'Communications', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO']},
-        'AUDITOR': {'desc': 'View audit logs only (read-only)', 'dept': 'Administration', 'perms': ['READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']},
-        'EMERGENCY': {'desc': 'Send emergency alerts', 'dept': 'Security', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO']},
-        'SUPPORT': {'desc': 'Manage student chats, tickets', 'dept': 'IT Support', 'perms': ['READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'NO', 'NO', 'NO']},
-        'DIPLOMA': {'desc': 'Manage diploma (TVET) students only', 'dept': 'Academic', 'perms': ['FULL', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO']},
-        'DEAN_HHS': {'desc': 'Manage student affairs and welfare', 'dept': 'Student Affairs', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'NO', 'NO', 'READ', 'NO', 'NO']},
-        'DEFERMENT': {'desc': 'Process student deferment requests', 'dept': 'Academic', 'perms': ['READ', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO']},
-        'DEPT_MCS': {'desc': 'Manage computer science department', 'dept': 'Academic', 'perms': ['FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
-        'DVC_ASA': {'desc': 'Deputy Vice Chancellor – Academic', 'dept': 'Administration', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']},
-        'VC': {'desc': 'Vice Chancellor – Full staff view', 'dept': 'Executive', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']},
-        'DVC': {'desc': 'Deputy Vice Chancellor – Full staff view', 'dept': 'Executive', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']},
-        'REG_ADMIN': {'desc': 'Register Admin – View registered staff', 'dept': 'Administration', 'perms': ['READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']},
-        'REG_USER': {'desc': 'Register User – View registered staff', 'dept': 'Administration', 'perms': ['READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ']},
-        'DEAN_GRAD': {'desc': 'Dean Graduate School – Manage grad students', 'dept': 'Graduate School', 'perms': ['FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
-        'DIR_RESOURCE': {'desc': 'Director Resource Mobilization – Funding', 'dept': 'Graduate School', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO']},
-        'DIR_TVET': {'desc': 'Director TVET – Manage TVET department', 'dept': 'TVET', 'perms': ['FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
-        'NEWS_AUDITOR': {'desc': 'News Auditor – Audit news/announcements', 'dept': 'Audit', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'READ', 'NO', 'READ']}
+        'SUPER_ADMIN': {'desc': 'Full system access – all modules', 'dept': 'Administration', 'perms': ['FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL', 'FULL']},
+        'HEALTH_MGR': {'desc': 'Manage appointments, patients', 'dept': 'Medical', 'perms': ['NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'MAINT_SUP': {'desc': 'Manage work orders, technicians', 'dept': 'Maintenance', 'perms': ['NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'WARDEN': {'desc': 'Manage accommodation, deferments', 'dept': 'Student Affairs', 'perms': ['NO', 'NO', 'NO', 'FULL', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'FINANCE': {'desc': 'Manage payments, M-Pesa records', 'dept': 'Finance', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'SECURITY': {'desc': 'Manage visitors, entry/exit logs', 'dept': 'Security', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO']},
+        'NEWS_EDITOR': {'desc': 'Create news, schedule posts', 'dept': 'Communications', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO']},
+        'AUDITOR': {'desc': 'View audit logs only (read-only)', 'dept': 'Administration', 'perms': ['READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'NO']},
+        'EMERGENCY': {'desc': 'Send emergency alerts', 'dept': 'Security', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO']},
+        'SUPPORT': {'desc': 'Manage student chats, tickets', 'dept': 'IT Support', 'perms': ['READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'NO', 'NO', 'NO', 'NO']},
+        'DIPLOMA': {'desc': 'Manage diploma (TVET) students only', 'dept': 'Academic', 'perms': ['FULL', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'DEAN_HHS': {'desc': 'Manage student affairs and welfare', 'dept': 'Student Affairs', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'NO', 'NO', 'READ', 'NO', 'NO', 'NO']},
+        'DEFERMENT': {'desc': 'Process student deferment requests', 'dept': 'Academic', 'perms': ['READ', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'DEPT_MCS': {'desc': 'Manage computer science department', 'dept': 'Academic', 'perms': ['FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'DVC_ASA': {'desc': 'Deputy Vice Chancellor – Academic', 'dept': 'Administration', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'NO']},
+        'VC': {'desc': 'Vice Chancellor – Full staff view', 'dept': 'Executive', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'NO']},
+        'DVC': {'desc': 'Deputy Vice Chancellor – Full staff view', 'dept': 'Executive', 'perms': ['FULL', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'NO']},
+        'REG_ADMIN': {'desc': 'Register Admin – View registered staff', 'dept': 'Administration', 'perms': ['READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'NO']},
+        'REG_USER': {'desc': 'Register User – View registered staff', 'dept': 'Administration', 'perms': ['READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'READ', 'NO']},
+        'DEAN_GRAD': {'desc': 'Dean Graduate School – Manage grad students', 'dept': 'Graduate School', 'perms': ['FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'DIR_RESOURCE': {'desc': 'Director Resource Mobilization – Funding', 'dept': 'Graduate School', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'FULL', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'DIR_TVET': {'desc': 'Director TVET – Manage TVET department', 'dept': 'TVET', 'perms': ['FULL', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO']},
+        'NEWS_AUDITOR': {'desc': 'News Auditor – Audit news/announcements', 'dept': 'Audit', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'READ', 'NO', 'READ', 'NO']},
+        'librarian': {'desc': 'Manage library operations and books', 'dept': 'Library', 'perms': ['NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'NO', 'FULL']}
     }
 
     modules = [
         'Student Management', 'Health Management', 'Maintenance Requests',
         'Accommodation', 'Deferment Management', 'Payments & M-Pesa',
-        'Visitors Log', 'News & Alerts', 'Emergency Alerts', 'Audit Logs'
+        'Visitors Log', 'News & Alerts', 'Emergency Alerts', 'Audit Logs',
+        'Library Management'
     ]
 
     roles = StaffProfile.ROLE_CHOICES
@@ -3871,7 +3873,7 @@ def manage_roles(request):
         if count > 0:
             assigned_roles += 1
 
-        meta = role_meta.get(role_code, {'desc': '', 'dept': '', 'perms': ['NO']*10})
+        meta = role_meta.get(role_code, {'desc': '', 'dept': '', 'perms': ['NO']*11})
         total_permissions += sum(1 for p in meta['perms'] if p != 'NO')
         
         role_stats.append({
