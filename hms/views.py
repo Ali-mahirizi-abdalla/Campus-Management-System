@@ -157,7 +157,6 @@ ROLE_BANNERS = {
     }
 }
 # ==================== Authentication ====================
-@login_required
 def register_student(request):
     """
     Handle student registration logic.
@@ -191,7 +190,6 @@ def register_student(request):
     return render(request, 'hms/register.html', {'form': form})
 
 
-@login_required
 def check_registration_status(request, checkout_id):
     """AJAX view to poll registration payment status"""
     payment = get_object_or_404(RegistrationPayment, checkout_request_id=checkout_id)
@@ -222,7 +220,6 @@ def check_registration_status(request, checkout_id):
     return JsonResponse({'status': 'Pending'})
 
 @csrf_exempt
-@login_required
 def mpesa_callback(request):
     """Handle STK Push callbacks from Safaricom"""
     try:
@@ -306,7 +303,6 @@ def register_staff(request):
     })
 
 
-@login_required
 def user_login(request):
     """Login view for all users with role selection"""
     if request.user.is_authenticated:
