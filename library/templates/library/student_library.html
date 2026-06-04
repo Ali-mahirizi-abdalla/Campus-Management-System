@@ -1,46 +1,96 @@
-{% extends 'base.html' %}
+{% extends 'hms/base.html' %}
+{% block title %}My Library{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h1>📚 My Library</h1>
-    
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-value">{{ library_user.library_card_number|default:"Not Registered" }}</div>
-            <div class="stat-label">Library Card</div>
+<div class="space-y-8">
+    <div class="flex flex-col md:flex-row justify-between items-end border-b border-slate-200 dark:border-slate-700 pb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800 dark:text-white">📚 My Library</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1 text-lg">Manage your library account and borrowed books.</p>
         </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ borrowed_books|length }}</div>
-            <div class="stat-label">Books Borrowed</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">KES {{ total_fines|default:"0" }}</div>
-            <div class="stat-label">Pending Fines</div>
+        <div class="mt-4 md:mt-0 flex flex-col items-end gap-3">
+            <a href="{% url 'library:myloft_redirect' %}" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition shadow">
+                🔗 Go to MyLOFT
+            </a>
         </div>
     </div>
-    
-    <div class="card">
-        <h3>Currently Borrowed</h3>
-        <table>
-            <thead>
-                <tr><th>Book Title</th><th>Borrowed Date</th><th>Due Date</th><th>Status</th></tr>
-            </thead>
-            <tbody>
-                {% for book in borrowed_books %}
-                <tr>
-                    <td>{{ book.book.title }}</td>
-                    <td>{{ book.borrowed_date }}</td>
-                    <td>{{ book.due_date }}</td>
-                    <td>{% if book.days_overdue > 0 %}⚠️ Overdue{% else %}🟢 Active{% endif %}</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="4">No borrowed books</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Library Card</p>
+                <h3 class="text-2xl font-bold text-slate-800 dark:text-white">{{ library_user.library_card_number|default:"Not Registered" }}</h3>
+            </div>
+            <div class="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path></svg>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Books Borrowed</p>
+                <h3 class="text-2xl font-bold text-slate-800 dark:text-white">{{ borrowed_books|length }}</h3>
+            </div>
+            <div class="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg text-green-600 dark:text-green-400">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Pending Fines</p>
+                <h3 class="text-2xl font-bold text-slate-800 dark:text-white">KES {{ total_fines|default:"0" }}</h3>
+            </div>
+            <div class="p-3 bg-red-50 dark:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+        </div>
     </div>
-    
-    <div class="quick-links">
-        <a href="{% url 'library:myloft_redirect' %}" class="btn">🔗 Go to MyLOFT</a>
+
+    <!-- Borrowed Books -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+            <h2 class="text-xl font-bold text-slate-800 dark:text-white">Currently Borrowed</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 text-sm uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+                        <th class="p-4 font-semibold">Book Title</th>
+                        <th class="p-4 font-semibold">Borrowed Date</th>
+                        <th class="p-4 font-semibold">Due Date</th>
+                        <th class="p-4 font-semibold text-right">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-700 text-sm">
+                    {% for book in borrowed_books %}
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition">
+                        <td class="p-4 text-slate-800 dark:text-slate-200 font-medium">{{ book.book.title }}</td>
+                        <td class="p-4 text-slate-600 dark:text-slate-400">{{ book.borrowed_date|date:"d M Y" }}</td>
+                        <td class="p-4 text-slate-600 dark:text-slate-400">{{ book.due_date|date:"d M Y" }}</td>
+                        <td class="p-4 text-right">
+                            {% if book.days_overdue > 0 %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                ⚠️ Overdue
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                🟢 Active
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="p-8 text-center text-slate-500 dark:text-slate-400 italic">
+                            You haven't borrowed any books yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}
