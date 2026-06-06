@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
+from hms.decorators import librarian_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
@@ -49,7 +49,7 @@ def pay_fine(request, fine_id):
     return redirect('library:student_library')
 
 # Librarian Views (Staff Only)
-@staff_member_required
+@librarian_required
 def librarian_dashboard(request):
     """Librarian main dashboard"""
     total_books = Book.objects.count()
@@ -71,13 +71,13 @@ def librarian_dashboard(request):
     }
     return render(request, 'library/librarian_dashboard.html', context)
 
-@staff_member_required
+@librarian_required
 def book_list(request):
     """List all books"""
     books = Book.objects.all()
     return render(request, 'library/book_list.html', {'books': books})
 
-@staff_member_required
+@librarian_required
 def add_book(request):
     """Add new book"""
     if request.method == 'POST':
@@ -90,7 +90,7 @@ def add_book(request):
         form = BookForm()
     return render(request, 'library/book_form.html', {'form': form, 'title': 'Add New Book'})
 
-@staff_member_required
+@librarian_required
 def edit_book(request, book_id):
     """Edit book details"""
     book = get_object_or_404(Book, id=book_id)
@@ -104,7 +104,7 @@ def edit_book(request, book_id):
         form = BookForm(instance=book)
     return render(request, 'library/book_form.html', {'form': form, 'book': book, 'title': f'Edit: {book.title}'})
 
-@staff_member_required
+@librarian_required
 def delete_book(request, book_id):
     """Delete a book"""
     book = get_object_or_404(Book, id=book_id)
@@ -119,7 +119,7 @@ def delete_book(request, book_id):
         'back_url': 'library:book_list',
     })
 
-@staff_member_required
+@librarian_required
 def category_list(request):
     """List book categories"""
     # Categories are defined as choices on the Book model
@@ -130,7 +130,7 @@ def category_list(request):
         books_by_category.append({'name': name, 'code': code, 'count': count})
     return render(request, 'library/category_list.html', {'categories': books_by_category})
 
-@staff_member_required
+@librarian_required
 def issue_book(request):
     """Issue a book to a student"""
     if request.method == 'POST':
@@ -151,7 +151,7 @@ def issue_book(request):
         form = IssueBookForm()
     return render(request, 'library/issue_book.html', {'form': form})
 
-@staff_member_required
+@librarian_required
 def return_book(request, borrow_id=None):
     """Return a borrowed book"""
     if borrow_id:
@@ -210,13 +210,13 @@ def return_book(request, borrow_id=None):
     borrowed_books = BorrowedBook.objects.filter(status='BORROWED')
     return render(request, 'library/return_book.html', {'borrowed_books': borrowed_books})
 
-@staff_member_required
+@librarian_required
 def librarian_borrowed_books(request):
     """List all borrowed books for librarian"""
     borrowed_books = BorrowedBook.objects.all().order_by('-borrowed_date')
     return render(request, 'library/borrowed_list.html', {'borrowed_books': borrowed_books})
 
-@staff_member_required
+@librarian_required
 def renew_book(request, borrow_id):
     """Renew a borrowed book"""
     borrowed = get_object_or_404(BorrowedBook, id=borrow_id, status='BORROWED')
@@ -234,13 +234,13 @@ def renew_book(request, borrow_id):
             messages.success(request, f'Book renewed. New due date: {borrowed.due_date}')
     return redirect('library:librarian_borrowed_books')
 
-@staff_member_required
+@librarian_required
 def library_users(request):
     """List all library users"""
     users = LibraryUser.objects.all()
     return render(request, 'library/users_list.html', {'users': users})
 
-@staff_member_required
+@librarian_required
 def user_profile(request, user_id):
     """View a library user's profile"""
     lib_user = get_object_or_404(LibraryUser, id=user_id)
@@ -254,7 +254,7 @@ def user_profile(request, user_id):
     }
     return render(request, 'library/user_profile.html', context)
 
-@staff_member_required
+@librarian_required
 def restrict_action(request, pk, action):
     """Suspend, block, or reinstate a library user"""
     lib_user = get_object_or_404(LibraryUser, id=pk)
@@ -280,13 +280,13 @@ def restrict_action(request, pk, action):
             messages.success(request, f'{lib_user.user.username} has been reinstated')
     return redirect('library:user_profile', user_id=pk)
 
-@staff_member_required
+@librarian_required
 def fine_list(request):
     """List all fines"""
     fines = LibraryFine.objects.filter(paid=False)
     return render(request, 'library/fine_list.html', {'fines': fines})
 
-@staff_member_required
+@librarian_required
 def collect_fine(request, fine_id):
     """Collect/mark a fine as paid"""
     fine = get_object_or_404(LibraryFine, id=fine_id)
@@ -298,7 +298,7 @@ def collect_fine(request, fine_id):
         return redirect('library:fine_list')
     return render(request, 'library/collect_fine.html', {'fine': fine})
 
-@staff_member_required
+@librarian_required
 def restricted_users(request):
     """List suspended, expelled, blocked users"""
     suspended = LibraryUser.objects.filter(is_suspended=True)
@@ -312,13 +312,13 @@ def restricted_users(request):
     }
     return render(request, 'library/restricted_users.html', context)
 
-@staff_member_required
+@librarian_required
 def library_reports(request):
     """Generate library reports"""
     # Report generation logic
     return render(request, 'library/reports.html')
 
-@staff_member_required
+@librarian_required
 def library_settings(request):
     """Library settings management"""
     settings_obj = LibrarySettings.objects.first()

@@ -112,3 +112,7 @@ def staff_only(view_func):
         return user.is_staff or hasattr(user, 'staff_profile') or user.is_superuser
     return user_passes_test(check_staff)(view_func)
 
+def librarian_required(view_func):
+    """Only librarian and super admin can access"""
+    return role_required(allowed_roles=['super_admin', 'librarian'])(view_func)
+
