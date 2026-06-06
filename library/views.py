@@ -342,4 +342,4 @@ def library_settings(request):
 
 def myloft_redirect(request):
     """Redirect to MyLOFT portal"""
-    return redirect('https://myloft.campus-care.co.ke')
+    return redirect('https://app.myloft.xyz/user/login?fromPreference=true&institute=cmhn0rx7009fjv001ogwo37pk')
