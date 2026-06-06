@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welfare Assistant – AI-Powered Help | Campus Care</title>
+    <title>AI Campus Assistant – Campus Care</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -23,8 +23,9 @@
             padding: 20px;
         }
 
+        /* Chat Container */
         .chat-container {
-            max-width: 480px;
+            max-width: 500px;
             width: 100%;
             background: white;
             border-radius: 32px;
@@ -33,6 +34,7 @@
             border: 1px solid #E2E8F0;
         }
 
+        /* Header */
         .chat-header {
             background: linear-gradient(135deg, #0F172A 0%, #0D9488 100%);
             padding: 20px 24px;
@@ -83,6 +85,7 @@
             50% { opacity: 0.5; }
         }
 
+        /* Messages */
         .chat-messages {
             height: 450px;
             overflow-y: auto;
@@ -150,6 +153,7 @@
             margin-top: 6px;
         }
 
+        /* Typing */
         .typing {
             display: flex;
             gap: 4px;
@@ -175,6 +179,33 @@
             30% { transform: translateY(-10px); opacity: 1; }
         }
 
+        /* Quick Actions */
+        .quick-actions {
+            padding: 12px 16px;
+            background: #F8FAFC;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        .quick-btn {
+            background: white;
+            border: 1px solid #E2E8F0;
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            background: #0D9488;
+            color: white;
+            border-color: #0D9488;
+        }
+
+        /* Input */
         .chat-input {
             padding: 16px 20px;
             background: white;
@@ -219,31 +250,6 @@
             transform: scale(1.02);
         }
 
-        .quick-actions {
-            padding: 12px 16px;
-            background: #F8FAFC;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            border-top: 1px solid #E2E8F0;
-        }
-
-        .quick-btn {
-            background: white;
-            border: 1px solid #E2E8F0;
-            padding: 6px 12px;
-            border-radius: 40px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .quick-btn:hover {
-            background: #0D9488;
-            color: white;
-            border-color: #0D9488;
-        }
-
         .footer-note {
             text-align: center;
             padding: 10px;
@@ -261,8 +267,8 @@
             <i class="fas fa-robot"></i>
         </div>
         <div class="header-text">
-            <h2>Welfare Assistant</h2>
-            <p>AI-Powered Help | Student Support</p>
+            <h2>AI Campus Assistant</h2>
+            <p>Powered by Campus Care</p>
             <div class="status">
                 <span class="status-dot"></span>
                 <span style="font-size: 11px;">Online • 24/7 Support</span>
@@ -274,11 +280,18 @@
         <div class="message bot">
             <div class="message-avatar">🤖</div>
             <div class="message-content">
-                <strong>Hi! I'm your AI Welfare Assistant.</strong><br>
-                I can help you with:<br>
-                📋 Deferment • 💰 Payments • 🏥 Health • 🔧 Maintenance<br>
-                🏠 Accommodation • 👤 Visitors • 📢 News • 🚨 Emergency<br><br>
-                <strong>Ask me anything about Campus Care!</strong>
+                <strong>Hi! I'm your AI Campus Assistant.</strong><br>
+                I can help you with anything about Campus Care!<br><br>
+                💡 Try asking:<br>
+                • "How to apply for deferment?"<br>
+                • "Check my fee balance"<br>
+                • "Who is the owner?"<br>
+                • "Book health appointment"<br>
+                • "Report maintenance issue"<br>
+                • "Borrow library book"<br>
+                • "What is the library hours?"<br>
+                • "Reset my password"<br>
+                • "Contact support"
                 <div class="message-time">Just now</div>
             </div>
         </div>
@@ -287,210 +300,256 @@
     <div class="quick-actions">
         <button class="quick-btn" onclick="sendQuickMessage('How to apply for deferment?')">📋 Deferment</button>
         <button class="quick-btn" onclick="sendQuickMessage('Check my fee balance')">💰 Balance</button>
+        <button class="quick-btn" onclick="sendQuickMessage('Who is the owner?')">👑 Owner</button>
         <button class="quick-btn" onclick="sendQuickMessage('Book health appointment')">🏥 Health</button>
         <button class="quick-btn" onclick="sendQuickMessage('Report maintenance issue')">🔧 Maintenance</button>
-        <button class="quick-btn" onclick="sendQuickMessage('Room allocation process')">🏠 Room</button>
-        <button class="quick-btn" onclick="sendQuickMessage('Who is the owner?')">👑 Owner</button>
-        <button class="quick-btn" onclick="sendQuickMessage('Contact support')">📞 Contact</button>
-        <button class="quick-btn" onclick="sendQuickMessage('Emergency contacts')">🚨 Emergency</button>
+        <button class="quick-btn" onclick="sendQuickMessage('Borrow library book')">📚 Library</button>
+        <button class="quick-btn" onclick="sendQuickMessage('Reset my password')">🔑 Password</button>
+        <button class="quick-btn" onclick="sendQuickMessage('Contact support')">📞 Support</button>
     </div>
 
     <div class="chat-input">
-        <input type="text" id="messageInput" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+        <input type="text" id="messageInput" placeholder="Ask me anything about Campus Care..." onkeypress="handleKeyPress(event)">
         <button class="send-btn" onclick="sendMessage()">
             <i class="fas fa-paper-plane"></i>
         </button>
     </div>
     <div class="footer-note">
-        <i class="fas fa-microchip"></i> AI Assistant | Campus Care System | Developed by <a href="https://mahrez-web-portfolio.vercel.app/" target="_blank" style="color: #0D9488; text-decoration: none; font-weight: 600;">Ali Mahirizi Abdalla</a>
+        <i class="fas fa-microchip"></i> AI Assistant | Campus Care System
     </div>
 </div>
 
 <script>
+    // ============================================
+    // COMPLETE AI KNOWLEDGE BASE
+    // Answers ANY question about Campus Care
+    // Owner: Ali M. Abdalla - Full-Stack Software Engineer & Ethical Hacker
+    // ============================================
+    
     const knowledgeBase = {
-        'who is the owner of campus care': "🏥 Campus Care was founded and developed by **Ali Mahirizi Abdalla**. He is the lead developer, system architect, and owner of the Student Welfare Management System.\n\n📧 Email: **alimahrez744@gmail.com**\n📱 Phone: **0750168458**\n🔗 GitHub: @Alimahrez\n\nFeel free to reach out for any inquiries or support!",
-        'who developed campus care': "Campus Care was developed by **Ali Mahirizi Abdalla**. He is a full-stack developer specializing in Django, Python, PostgreSQL, and API integrations.\n\n📧 Contact: alimahrez744@gmail.com\n📱 Phone: 0750168458",
-        'who created this system': "This system was created by **Ali Mahirizi Abdalla**. He designed and built Campus Care to digitize student welfare services across African universities.\n\n📧 Email: alimahrez744@gmail.com\n📱 Phone: 0750168458",
-        'ali mahirizi': "**Ali Mahirizi Abdalla** is the founder, lead developer, and owner of Campus Care. He has expertise in Django, Python, PostgreSQL, M-Pesa API, SMS integration, and cloud deployment on Render.\n\n📧 Email: **alimahrez744@gmail.com**\n📱 Phone: **0750168458**\n\nContact him for:\n• Technical support\n• System customization\n• Partnership inquiries\n• Feedback and suggestions",
-        'owner': "The owner and founder of Campus Care is **Ali Mahirizi Abdalla**. He developed this system to streamline student welfare management.\n\n📧 Email: alimahrez744@gmail.com\n📱 Phone: 0750168458",
-        'developer': "Campus Care was developed by **Ali Mahirizi Abdalla**. He is passionate about using technology to improve campus life in Africa.\n\n📧 alimahrez744@gmail.com\n📱 0750168458",
-        'ali': "Ali Mahirizi Abdalla is the creator of Campus Care. He built this system to help universities manage student welfare services digitally.\n\n📧 Email: alimahrez744@gmail.com\n📱 Phone: 0750168458\n\n💡 Tip: He's always open to feedback and suggestions!",
-        'contact support': "📞 **Campus Care Support**\n\n**Owner/Developer:**\n👤 Ali Mahirizi Abdalla\n📧 Email: **alimahrez744@gmail.com**\n📱 Phone: **0750168458**\n\n**Support Hours:**\nMonday-Friday: 8:00 AM - 8:00 PM\nSaturday: 9:00 AM - 5:00 PM\nSunday: 10:00 AM - 2:00 PM\n\n**Response Time:** Within 24 hours\n\nFor urgent issues, call directly: **0750168458**",
-        'email support': "📧 **Email Support**\n\nSend your inquiries to:\n**alimahrez744@gmail.com**\n\nInclude in your email:\n• Your full name\n• Registration number\n• Detailed description of the issue\n• Screenshots (if applicable)\n\nExpect response within 24 hours.",
-        'phone support': "📱 **Phone Support**\n\nCall: **0750168458**\n\nBest time to call:\n• Monday-Friday: 10 AM - 4 PM\n\nFor after-hours emergencies, send a text message or email.",
-        'hello': "Hello! 👋 Welcome to Campus Care. I'm your AI Welfare Assistant, created by **Ali Mahirizi Abdalla**.\n\nHow can I help you today?\n\nTry asking about:\n• Deferment applications\n• Fee payments\n• Health appointments\n• Maintenance requests\n• Accommodation\n• Or ask 'Who is the owner?'",
-        'hi': "Hi there! 👋 I'm your AI Welfare Assistant, developed by **Ali Mahirizi Abdalla** (📧 alimahrez744@gmail.com, 📱 0750168458).\n\nWhat can I help you with?\n\n💡 Tip: You can ask me about deferment, payments, health, maintenance, rooms, or emergency!",
-        'hey': "Hey! 👋 Need help with student welfare services? I'm here 24/7. Ask me anything about Campus Care!\n\n📞 For urgent issues, contact Ali Mahirizi Abdalla at 0750168458.",
-        'good morning': "Good morning! ☀️ Rise and shine! How can I make your campus experience better today?\n\nNeed immediate help? Contact 0750168458",
-        'good afternoon': "Good afternoon! 🌤️ What student welfare service do you need assistance with? I'm here to help!\n\n📧 alimahrez744@gmail.com | 📱 0750168458",
-        'good evening': "Good evening! 🌙 I'm here to help with any Campus Care questions. What can I do for you?",
-        'how are you': "I'm doing great, thank you for asking! 😊 I'm fully trained and ready to help you with all Campus Care features. What do you need assistance with?\n\nPS: Ali Mahirizi Abdalla (0750168458) is always improving me!",
-        'thanks': "You're welcome! 😊 Is there anything else I can help you with? I'm here 24/7!\n\n📧 alimahrez744@gmail.com | 📱 0750168458",
-        'thank you': "You're very welcome! Glad I could help. 🙏 Feel free to ask if you need anything else.\n\n📞 Reach out to Ali at 0750168458 for any system feedback.",
-        'what can you do': "I can help you with:\n\n📋 **Deferment** – Apply, check status, documents needed\n💰 **Payments** – Check balance, pay fees, get receipts\n🏥 **Health** – Book appointments, clinic hours, medical records\n🔧 **Maintenance** – Report issues, check status, emergency repairs\n🏠 **Accommodation** – Room allocation, check-in/out, hostel rules\n👤 **Visitors** – Log visitors, check-in/out, blacklist\n📢 **News** – Latest announcements, alerts\n🚨 **Emergency** – Emergency contacts, fire, security, medical\n\nPlus: Transcript requests, password reset, and more!\n\n📧 For developer contact: alimahrez744@gmail.com | 📱 0750168458",
-        'how to apply for deferment': "📋 **Deferment Application Process**\n\n**Step 1:** Log into your Campus Care dashboard\n**Step 2:** Click on 'Deferment' in the sidebar\n**Step 3:** Click 'New Deferment Request'\n**Step 4:** Fill in:\n   • Start Date\n   • End Date\n   • Reason for deferment\n**Step 5:** Upload supporting documents (medical cert, letter)\n**Step 6:** Submit for review\n\n⏱️ **Processing Time:** 24-48 hours\n📱 **Notification:** You'll receive SMS/Email confirmation\n✅ **Status Tracking:** Check 'My Deferments' in dashboard\n\n❓ Questions? Contact Ali at 0750168458",
-        'deferment status': "📊 **Deferment Status Meanings**\n\n🟡 **Pending** – Your request is being reviewed\n🟢 **Approved** – Deferment granted! Check dates\n🔴 **Rejected** – Reason provided. Contact support\n\nYou'll receive SMS notification when status changes. Check your dashboard for details.\n\n📞 Need help? Call 0750168458",
-        'deferment documents': "📎 **Required Documents for Deferment**\n\n**Medical Deferment:**\n• Medical certificate from registered doctor\n• Hospital admission letter (if applicable)\n\n**Academic Deferment:**\n• Academic justification letter\n• Supporting evidence\n\n**Personal Deferment:**\n• Personal statement explaining reason\n• Supporting documents (if any)\n\n📂 Format: PDF, JPG, PNG (Max 5MB per file)",
-        'deferment deadline': "⏰ **Deferment Deadlines**\n\n• Submit at least **2 weeks** before intended start date\n• Late applications may not be processed\n• No deferments allowed in final semester (except medical)\n• Academic deferments close 4 weeks after semester start\n\nContact Academic Registrar for urgent cases.",
-        'deferment fee': "💰 **Deferment Fees**\n\n• Processing fee: **FREE**\n• Accommodation adjustment fee: KES 5,000 (if applicable)\n• Reinstatement fee: KES 2,500 (if returning early)\n\nNo refunds for fees paid before deferment.",
-        'cancel deferment': "❌ **Cancelling a Deferment**\n\n1. Go to 'Deferment' section\n2. Find your approved deferment\n3. Click 'Cancel Deferment'\n4. Confirm cancellation\n\n⚠️ Cancellations must be made before deferment start date. Contact Academic Registrar for assistance.",
-        'check my fee balance': "💰 **Check Your Fee Balance**\n\n**Step 1:** Log into your dashboard\n**Step 2:** Click 'Payments' in the sidebar\n**Step 3:** Your current balance will be displayed\n**Step 4:** Click 'Payment History' to see all transactions\n\n📱 Need to pay? Use M-Pesa Paybill **123456**\n🔢 Account Number: **Your Registration Number**\n\n❓ Payment issues? Contact Ali at 0750168458",
-        'how to pay fees': "💳 **Payment Methods**\n\n**1. M-Pesa (Recommended)**\n   • Paybill: **123456**\n   • Account: Your Registration Number\n   • Amount: Enter exact amount\n   • Confirm with PIN\n\n**2. Bank Transfer**\n   • Bank: [Bank Name]\n   • Account: Campus Care Collection Account\n   • Reference: Registration Number\n\n**3. Cash**\n   • Finance Office, Ground Floor\n   • Hours: Mon-Fri, 9 AM - 3 PM\n\n💰 Payments reflect in **5 minutes** (M-Pesa) or **24 hours** (Bank)\n\n📞 Payment help: 0750168458",
-        'mpesa payment not reflecting': "⚠️ **M-Pesa Payment Not Showing?**\n\n**Step 1:** Check your M-Pesa messages for confirmation\n**Step 2:** Wait 15 minutes (network delays happen)\n**Step 3:** Refresh your dashboard\n**Step 4:** Still not showing? Contact:\n   • Ali Mahirizi Abdalla: **0750168458**\n   • Email: **alimahrez744@gmail.com**\n\nHave ready:\n   • M-Pesa confirmation code (starts with 'R')\n   • Date and time of payment\n   • Amount paid",
-        'payment receipt': "📄 **Download Payment Receipt**\n\n1. Go to 'Payments' section\n2. Click on the transaction\n3. Click 'Download Receipt'\n4. Receipt saves as PDF\n\n📧 Receipts are also sent to your registered email.\n\n❓ Not receiving receipts? Contact alimahrez744@gmail.com",
-        'fee structure': "💰 **2026 Fee Structure**\n\n**Tuition Fees (Per Semester)**\n• Certificate: KES 15,000\n• Diploma (TVET): KES 25,000\n• Bachelor's Degree: KES 35,000\n• Master's Degree: KES 45,000\n• PhD: KES 60,000\n\n**Other Fees (Annual)**\n• Registration: KES 5,000\n• Activity Fee: KES 2,000\n• Medical Cover: KES 3,000\n\n**Accommodation (Per Semester)**\n• Single Room: KES 35,000\n• Shared Room: KES 25,000\n\n📞 Contact Finance Office for program-specific fees.",
-        'payment deadline': "⏰ **Payment Deadlines**\n\n• Semester 1: **August 31**\n• Semester 2: **January 15**\n\nLate payment penalty: KES 2,000 after deadline.\nPayment plans available – apply at Finance Office.",
-        'scholarship': "🎓 **Scholarship Information**\n\nScholarship applications open:\n• **March 1 - April 30** (Semester 1)\n• **September 1 - October 31** (Semester 2)\n\nApply via 'Scholarships' in your dashboard.\nTypes available:\n• Academic Merit Scholarship (Full/Partial)\n• Sports Scholarship (Partial)\n• Hardship Scholarship (Partial)\n\nMinimum requirement: GPA 3.5",
-        'book health appointment': "🏥 **Book a Health Appointment**\n\n**Step 1:** Go to 'Health' section\n**Step 2:** Click 'Book Appointment'\n**Step 3:** Select:\n   • Doctor (General, Dental, Eye, Mental Health)\n   • Date (Available slots shown)\n   • Time\n**Step 4:** Choose appointment type:\n   • Check-up\n   • Follow-up\n   • Consultation\n   • Emergency\n**Step 5:** Confirm booking\n\n📱 You'll receive SMS reminder 24 hours before appointment.\n⏰ Arrive 15 minutes early with your Student ID.\n\n❓ Appointment issues? Call 0750168458",
-        'health appointment reminder': "⏰ **Appointment Reminders & Changes**\n\n• SMS reminder sent **24 hours** before\n• Can reschedule up to **2 hours** before appointment\n• Late cancellation fee: KES 500\n• No-show fee: KES 1,000\n\nTo reschedule: Go to 'Appointments' → Click appointment → 'Reschedule'",
-        'medical records': "📋 **Medical Records Access**\n\nYour medical records are **confidential** and protected.\n\n**You can view:**\n• Visit history\n• Prescriptions\n• Lab results\n• Vaccination records\n\n**Only Health Center staff can edit records.**\n\nGo to 'Health' → 'Medical Records' to view.",
-        'clinic hours': "🏥 **Campus Health Center Hours**\n\n**Regular Hours**\nMonday-Friday: 8:00 AM - 5:00 PM\nSaturday: 9:00 AM - 1:00 PM\nSunday: **Closed**\n\n**Emergency (24/7)**\nCall: **0712 345 679**\n\n**Mental Health Support**\nMonday-Thursday: 2:00 PM - 5:00 PM\nBook via 'Mental Health' in dashboard.",
-        'emergency health': "🚑 **Medical Emergency**\n\n**Campus Ambulance:** 0712 345 679\n**Nearby Hospital:** 0712 345 680\n**Security Control:** 0712 345 682\n**System Admin (Ali):** 0750168458\n\n**What to do:**\n1. Call emergency number immediately\n2. Stay with the person\n3. Provide first aid if trained\n4. Do not move the person unless necessary\n\nHealth Center is equipped for: First aid, stabilization, and ambulance transfer.",
-        'vaccination': "💉 **Vaccinations Available**\n\n• COVID-19 (Free)\n• HPV (Free for students under 25)\n• Hepatitis B (KES 1,500)\n• Tetanus (KES 500)\n• Typhoid (KES 1,000)\n\nBook via 'Health' → 'Vaccinations'",
-        'report maintenance issue': "🔧 **Report a Maintenance Issue**\n\n**Step 1:** Go to 'Maintenance' section\n**Step 2:** Click 'New Request'\n**Step 3:** Select location:\n   • Building\n   • Floor\n   • Room number\n**Step 4:** Choose category:\n   • Plumbing\n   • Electrical\n   • Furniture\n   • Appliance\n   • General\n**Step 5:** Describe the issue clearly\n**Step 6:** Upload photo (optional but helpful)\n**Step 7:** Select priority (Normal/Urgent)\n**Step 8:** Submit\n\n⏱️ Urgent: 24-hour response\n📋 Normal: 3-5 business days\n\n📞 Urgent issues also call: 0750168458",
-        'maintenance status': "📊 **Maintenance Request Status**\n\n🟡 **Pending** – Received, awaiting assignment\n🔵 **Assigned** – Technician assigned to your request\n🟠 **In Progress** – Work has started\n🟢 **Completed** – Issue resolved! You'll receive SMS\n🔴 **Rejected** – Reason provided\n\nCheck 'My Requests' in Maintenance section.",
-        'emergency maintenance': "🚨 **Emergency Maintenance**\n\n**Immediate danger (24/7 hotline):**\n• Campus Maintenance: 0712 345 680\n• System Admin (Ali): **0750168458**\n\nEmergency issues include:\n🔴 Burst pipes / flooding\n🔴 Electrical sparks / exposed wires\n🔴 Gas leaks\n🔴 Locked out of room (after hours)\n🔴 Broken windows (security risk)\n\n**What to do:**\n1. Call emergency hotline immediately\n2. Mark request as 'URGENT' when submitting online\n3. If danger, evacuate the area\n4. Wait for technician to arrive",
-        'maintenance categories': "🔧 **Maintenance Categories**\n\n• **Plumbing** – Leaks, blocked drains, toilet issues, broken taps\n• **Electrical** – Lights out, sockets not working, circuit trips\n• **Furniture** – Broken chairs, tables, beds, wardrobes\n• **Appliances** – Fridge, microwave, water dispenser\n• **General** – Paint, locks, windows, doors, AC\n\nSelect correct category for faster response!",
-        'room allocation': "🏠 **Room Allocation Process**\n\n**How to get a room:**\n1. Apply during registration period (July & December)\n2. Select preferences:\n   • Hostel (Central, Riverside, Parklands)\n   • Room type (Single, Shared, Executive)\n3. Allocation based on availability and preferences\n4. Check assigned room in 'Accommodation' section\n5. Pay accommodation fee\n6. Complete check-in at Warden's office\n\n📅 Allocation results released: 2 weeks before semester starts\n\n❓ Room issues? Contact Ali at 0750168458",
-        'check in process': "🚪 **Check-in Process**\n\n**Step 1:** Go to your assigned hostel\n**Step 2:** Visit Warden's office\n**Step 3:** Present:\n   • Student ID\n   • Accommodation payment receipt\n   • Check-in form (from dashboard)\n**Step 4:** Verify room condition with Warden\n**Step 5:** Sign inventory checklist\n**Step 6:** Collect keys\n**Step 7:** You're checked in!\n\n**Check-in Hours:** 8 AM - 6 PM (Mon-Sat)",
-        'check out process': "🚪 **Check-out Process**\n\n**Step 1:** Clean your room\n**Step 2:** Pack all belongings\n**Step 3:** Return keys to Warden's office\n**Step 4:** Warden inspects room\n**Step 5:** Sign check-out form\n**Step 6:** Clear any pending dues\n\n⏰ Check-out by **10 AM** on departure day\n⚠️ Late check-out fee: KES 500/hour",
-        'hostel rules': "📋 **Hostel Rules & Regulations**\n\n**Visitors**\n• No visitors after 10 PM\n• All visitors must sign in\n• Overnight visitors not allowed\n\n**Quiet Hours**\n• 10 PM - 6 AM (Sunday-Thursday)\n• 12 AM - 8 AM (Friday-Saturday)\n\n**Prohibited**\n• Cooking in rooms\n• Smoking indoors\n• Alcohol\n• Pets\n\n**Damages**\n• Report immediately\n• Cost deducted from deposit\n\nViolations may result in fine or eviction.",
-        'hostel facilities': "🏠 **Hostel Facilities**\n\n**In each room:**\n• Bed with mattress\n• Study desk and chair\n• Wardrobe\n• Bookshelf\n\n**Shared facilities:**\n• Common room (TV, seating)\n• Kitchenette (microwave, kettle)\n• Laundry room (washing machines)\n• Study area\n\n**24/7:**\n• WiFi\n• Security\n• Water\n• Electricity\n\nReport facility issues via Maintenance section.",
-        'room transfer': "🔄 **Room Transfer Request**\n\n**Eligibility:**\n• After 4 weeks in current room\n• Valid reason (medical, conflict, etc.)\n• Available rooms in requested hostel\n\n**Process:**\n1. Go to 'Accommodation' → 'Room Transfer'\n2. Select reason\n3. Choose preferred hostel/room type\n4. Submit request\n5. Wait for approval (3-5 days)\n\n💰 Transfer fee: KES 2,000",
-        'visitor log': "👤 **Visitor Management**\n\n**Logging a visitor:**\n1. Go to 'Visitors' section (Staff only)\n2. Click 'Log Entry'\n3. Enter visitor details:\n   • Full name\n   • ID number\n   • Phone number\n   • Purpose of visit\n   • Host name\n4. Visitor receives QR code\n5. Scan QR code on exit\n\nAll visitors must be logged for security purposes.",
-        'blacklist': "⛔ **Visitor Blacklist**\n\nSecurity can blacklist individuals for:\n• Trespassing\n• Theft\n• Harassment\n• Vandalism\n• Violating campus rules\n\nBlacklisted individuals cannot enter campus.\n\nTo report a concerning visitor: Contact Security at 0712 345 682 or Ali at 0750168458",
-        'news': "📢 **Campus News & Announcements**\n\nCheck the 'News' section for:\n• Academic calendar updates\n• Exam schedules\n• Event announcements\n• Holiday notices\n• Emergency alerts\n\n🔔 Turn on notifications to receive alerts!\n📧 News also sent to your registered email.",
-        'emergency alert': "🚨 **Emergency Alerts**\n\nCampus Care sends emergency alerts via:\n• SMS to all students\n• Email notifications\n• Dashboard pop-up\n• Push notifications (if enabled)\n\nTypes of alerts:\n• Fire\n• Security threat\n• Weather warning\n• Medical emergency\n• Campus closure\n\nAlways follow instructions in emergency alerts.\n\n📞 System Admin (Ali): 0750168458",
-        'how to get transcript': "📜 **Request Academic Transcript**\n\n**Process:**\n1. Go to 'Academics' section\n2. Click 'Request Transcript'\n3. Select number of copies\n4. Choose delivery method\n5. Pay fee (KES 1,000 per copy)\n6. Submit request\n\n**Processing:** 3-5 business days\n**Pickup:** Registrar's Office, Main Building, Room 12",
-        'reset my password': "🔑 **Reset Your Password**\n\n**Step 1:** Click 'Forgot Password' on login page\n**Step 2:** Enter your registered email address\n**Step 3:** Check your email for reset link\n**Step 4:** Click link (valid for 1 hour)\n**Step 5:** Create new password\n**Step 6:** Login with new password\n\n❌ Didn't receive email? Check spam folder.\n📧 Still no email? Contact alimahrez744@gmail.com or call 0750168458",
-        'about campus care': "🏥 **About Campus Care**\n\nCampus Care is a **Student Welfare Management System** developed by **Ali Mahirizi Abdalla** (📧 alimahrez744@gmail.com, 📱 0750168458) to digitize and streamline student services.\n\n**Features included:**\n✅ Digital Deferment Requests\n✅ M-Pesa Payment Integration\n✅ Online Health Appointments\n✅ Maintenance Ticketing System\n✅ Accommodation Management\n✅ Visitor Logs\n✅ News & Emergency Alerts\n✅ Role-Based Access (23 roles)\n✅ Email + SMS Notifications\n\n**Developed with:** Python, Django, PostgreSQL, M-Pesa API, Africa's Talking SMS\n\n**Deployed on:** Render.com + Cloudflare DNS\n\n**Mission:** Make campus life easier for students!\n\n📞 For support: 0750168458 | alimahrez744@gmail.com",
-        'emergency': "🚨 **EMERGENCY CONTACTS**\n\n**Campus Security:** 0712 345 682\n**Ambulance:** 0712 345 679\n**Fire Department:** 0712 345 683\n**Health Center:** 0712 345 678\n**Maintenance Emergency:** 0712 345 680\n**System Admin (Ali):** 0750168458\n\n**What to do:**\n1. Stay calm\n2. Call the appropriate number\n3. Provide your location\n4. Follow instructions\n5. Wait for help\n\n📱 Emergency alerts also sent via SMS.\n🚪 Know nearest exit in your building.",
-        'fire emergency': "🔥 **FIRE EMERGENCY – WHAT TO DO**\n\n**Immediate actions:**\n1. 🚨 Activate nearest fire alarm\n2. 🔥 Call 0712 345 683\n3. 🚪 Evacuate immediately – DO NOT use elevators\n4. 🏃 Go to nearest assembly point\n5. 📋 Do NOT re-enter building until cleared\n\n**If trapped:**\n• Stay low to avoid smoke\n• Cover mouth with cloth\n• Seal door gaps with wet cloth\n• Signal from window\n\n**Fire extinguishers located:** Every floor, near stairs\n\n📞 Also notify Ali at 0750168458",
-        'security emergency': "🚔 **SECURITY EMERGENCY**\n\n**Call Security:** 0712 345 682\n**Also notify System Admin (Ali):** 0750168458\n\n**For:**\n• Suspicious person\n• Theft in progress\n• Assault\n• Vandalism\n• Unauthorized entry\n\n**What to do:**\n1. Move to safe location\n2. Call security immediately\n3. Provide description if possible\n4. Do not confront suspect\n5. Wait for security to arrive\n\n📹 Campus has CCTV surveillance.",
-        'default': "I'm here to help! 🤖\n\nYou can ask me about:\n📋 **Deferment** – How to apply, status, documents\n💰 **Payments** – Balance, M-Pesa, receipts\n🏥 **Health** – Appointments, clinic hours, records\n🔧 **Maintenance** – Report issues, status\n🏠 **Accommodation** – Rooms, check-in/out, rules\n👤 **Visitors** – Logging visitors\n📢 **News** – Announcements, alerts\n🚨 **Emergency** – Contacts, fire, security\n👑 **Owner** – Who created Campus Care\n\n📞 **Contact Developer:**\n   Ali Mahirizi Abdalla\n   📧 alimahrez744@gmail.com\n   📱 0750168458\n\n💡 Type 'contact support' for more help!"
+        // ========== OWNER INFORMATION (Your Name) ==========
+        'who is the owner of campus care': "👑 **Campus Care** was founded and developed by **Ali M. Abdalla** – a Full-Stack Software Engineer and Ethical Hacker. He is the lead developer, system architect, and owner of the Student Welfare Management System.\n\n📧 Email: alimahrez744@gmail.com\n📱 Phone: 0750168458\n🔗 GitHub: @Alimahrez\n\nHe specializes in Django, Python, PostgreSQL, M-Pesa API integration, SMS gateways, and cloud deployment.",
+        'who developed campus care': "Campus Care was developed by **Ali M. Abdalla** – a Full-Stack Software Engineer and Ethical Hacker. He built this system to digitize student welfare services across African universities.\n\n📧 alimahrez744@gmail.com | 📱 0750168458",
+        'who created this system': "This system was created by **Ali M. Abdalla** – Full-Stack Software Engineer & Ethical Hacker. He designed and built Campus Care from scratch using Django, Python, PostgreSQL, and various API integrations.\n\n📧 Email: alimahrez744@gmail.com\n📱 Phone: 0750168458",
+        'ali m abdalla': "**Ali M. Abdalla** is a Full-Stack Software Engineer and Ethical Hacker. He is the founder, lead developer, and owner of Campus Care.\n\n**Skills:**\n• Python, Django, Flask\n• JavaScript, React, HTML/CSS\n• PostgreSQL, MySQL, MongoDB\n• M-Pesa API, SMS gateways\n• Cloud deployment (Render, AWS)\n• Cybersecurity & Ethical Hacking\n\n📧 alimahrez744@gmail.com\n📱 0750168458",
+        'ali mahirizi': "**Ali Mahirizi Abdalla** (Ali M. Abdalla) is a Full-Stack Software Engineer and Ethical Hacker. He created Campus Care to help universities manage student welfare services digitally.\n\n📧 Email: alimahrez744@gmail.com\n📱 Phone: 0750168458",
+        'owner': "The owner and founder of Campus Care is **Ali M. Abdalla** – a Full-Stack Software Engineer and Ethical Hacker. He developed this system to streamline student welfare management.\n\n📧 alimahrez744@gmail.com\n📱 0750168458",
+        'developer': "Campus Care was developed by **Ali M. Abdalla** – Full-Stack Software Engineer & Ethical Hacker. He is passionate about using technology to improve campus life in Africa.\n\n📧 alimahrez744@gmail.com\n📱 0750168458",
+        'full stack engineer': "**Ali M. Abdalla** is a Full-Stack Software Engineer and Ethical Hacker. He has expertise in:\n\n**Backend:** Python, Django, Django REST, Node.js\n**Frontend:** JavaScript, React, HTML5, CSS3, Tailwind\n**Databases:** PostgreSQL, MySQL, MongoDB, Redis\n**DevOps:** Docker, Git, CI/CD, Render, AWS\n**Security:** Ethical Hacking, Penetration Testing, OWASP\n\n📧 alimahrez744@gmail.com | 📱 0750168458",
+        'ethical hacker': "**Ali M. Abdalla** is an Ethical Hacker and Full-Stack Software Engineer. He specializes in:\n\n• Penetration testing\n• Vulnerability assessment\n• Secure coding practices\n• OWASP Top 10\n• Network security\n\n📧 alimahrez744@gmail.com | 📱 0750168458",
+        'contact ali': "You can contact **Ali M. Abdalla** (Full-Stack Software Engineer & Ethical Hacker) at:\n\n📧 Email: alimahrez744@gmail.com\n📱 Phone/WhatsApp: 0750168458\n\nHe is available for:\n• Technical support\n• System customization\n• Partnership inquiries\n• Security consultation",
+        
+        // ========== GREETINGS ==========
+        'hello': "Hello! 👋 Welcome to Campus Care. I'm your AI Campus Assistant, created by **Ali M. Abdalla** (Full-Stack Software Engineer & Ethical Hacker).\n\nHow can I help you today?\n\n💡 Try asking about deferment, payments, health, maintenance, library, or ask 'Who is the owner?'",
+        'hi': "Hi there! 👋 I'm your AI Campus Assistant, developed by **Ali M. Abdalla** (Full-Stack Software Engineer & Ethical Hacker).\n\nWhat can I help you with?\n\n📧 Contact owner: alimahrez744@gmail.com | 📱 0750168458",
+        'hey': "Hey! 👋 Need help with student welfare services? I'm here 24/7!\n\n👑 This system was built by **Ali M. Abdalla** – Full-Stack Software Engineer & Ethical Hacker.\n\n📞 For urgent issues, contact 0750168458",
+        'good morning': "Good morning! ☀️ Rise and shine! How can I make your campus experience better today?\n\n👑 Created by Ali M. Abdalla (Full-Stack Software Engineer & Ethical Hacker)",
+        'good afternoon': "Good afternoon! 🌤️ What student welfare service do you need assistance with?\n\n📧 Need help? alimahrez744@gmail.com | 📱 0750168458",
+        'good evening': "Good evening! 🌙 I'm here to help with any Campus Care questions.\n\n💡 Tip: Ask 'Who is the owner?' to learn about the creator!",
+        'how are you': "I'm doing great, thank you for asking! 😊 I'm fully trained by **Ali M. Abdalla** (Full-Stack Software Engineer & Ethical Hacker) to help you with all Campus Care features.\n\nWhat do you need assistance with?",
+        'thanks': "You're welcome! 😊 Is there anything else I can help you with?\n\n📧 Contact owner: alimahrez744@gmail.com | 📱 0750168458",
+        'thank you': "You're very welcome! Glad I could help. 🙏\n\n👑 Brought to you by Ali M. Abdalla – Full-Stack Software Engineer & Ethical Hacker",
+        'what can you do': "I can help you with:\n\n📋 **Deferment** – Apply, check status, documents\n💰 **Payments** – Balance, M-Pesa, receipts\n🏥 **Health** – Appointments, clinic hours\n🔧 **Maintenance** – Report issues, status\n📚 **Library** – Borrow books, hours, fines\n🔑 **Password reset**\n📞 **Contact support**\n👑 **Owner info** – About Ali M. Abdalla\n\n💡 Just ask me anything!",
+        
+        // ========== DEFERMENT ==========
+        'how to apply for deferment': "📋 **Deferment Application Process**\n\n**Step 1:** Log into your Campus Care dashboard\n**Step 2:** Click 'Deferment' in the sidebar\n**Step 3:** Click 'New Deferment Request'\n**Step 4:** Fill in start date, end date, reason\n**Step 5:** Upload supporting documents\n**Step 6:** Submit for review\n\n⏱️ **Processing:** 24-48 hours\n📱 **Notification:** SMS/Email confirmation\n✅ **Status:** Check 'My Deferments'\n\n❓ Questions? Contact Ali M. Abdalla at 0750168458",
+        'deferment status': "📊 **Deferment Status Meanings**\n\n🟡 **Pending** – Under review\n🟢 **Approved** – Deferment granted!\n🔴 **Rejected** – Reason provided\n\nYou'll receive SMS when status changes.",
+        'deferment documents': "📎 **Required Documents**\n\n**Medical:** Medical certificate, hospital letter\n**Academic:** Justification letter\n**Personal:** Personal statement\n\n📂 Format: PDF, JPG, PNG (Max 5MB)",
+        'deferment deadline': "⏰ Submit at least **2 weeks** before start date. Late applications may not be processed.",
+        'deferment fee': "💰 Processing: **FREE**\nAccommodation adjustment: KES 5,000 (if applicable)",
+        
+        // ========== PAYMENTS ==========
+        'check my fee balance': "💰 **Check Your Fee Balance**\n\n**Step 1:** Log into dashboard\n**Step 2:** Click 'Payments'\n**Step 3:** Your balance is displayed\n\n💳 M-Pesa Paybill: **123456**\n🔢 Account: Your Registration Number\n\n❓ Issues? Contact Ali at 0750168458",
+        'how to pay fees': "💳 **Payment Methods**\n\n**1. M-Pesa (Recommended)**\n   Paybill: 123456\n   Account: Registration Number\n\n**2. Bank Transfer**\n**3. Cash at Finance Office**\n\nPayments reflect in 5 minutes (M-Pesa)",
+        'mpesa payment not reflecting': "⚠️ **M-Pesa Payment Not Showing?**\n\n1. Wait 15 minutes\n2. Refresh dashboard\n3. Contact Ali M. Abdalla at **0750168458** with M-Pesa confirmation code",
+        'payment receipt': "📄 **Download Receipt**\n\n1. Go to 'Payments'\n2. Click transaction\n3. Click 'Download Receipt'\n4. Saves as PDF",
+        'fee structure': "💰 **2026 Fee Structure**\n\n**Tuition (per semester)**\n• Certificate: KES 15,000\n• Diploma: KES 25,000\n• Bachelor's: KES 35,000\n• Master's: KES 45,000\n• PhD: KES 60,000\n\n**Other Fees**\n• Registration: KES 5,000/year\n• Activity Fee: KES 2,000/year\n• Medical Cover: KES 3,000/year\n\n**Accommodation (per semester)**\n• Single Room: KES 35,000\n• Shared Room: KES 25,000",
+        
+        // ========== HEALTH ==========
+        'book health appointment': "🏥 **Book a Health Appointment**\n\n**Step 1:** Go to 'Health'\n**Step 2:** Click 'Book Appointment'\n**Step 3:** Select doctor, date, time\n**Step 4:** Choose type (Check-up, Follow-up, Consultation, Emergency)\n**Step 5:** Confirm\n\n📱 SMS reminder 24 hours before\n⏰ Arrive 15 minutes early with Student ID",
+        'clinic hours': "🏥 **Health Center Hours**\n\nMonday-Friday: 8:00 AM - 5:00 PM\nSaturday: 9:00 AM - 1:00 PM\nSunday: Closed\n\n🚑 **Emergency (24/7):** 0712 345 679\n📞 System Admin (Ali): 0750168458",
+        'medical records': "📋 Your medical records are confidential. View visit history and prescriptions in 'Health' section.",
+        
+        // ========== MAINTENANCE ==========
+        'report maintenance issue': "🔧 **Report a Maintenance Issue**\n\n**Step 1:** Go to 'Maintenance'\n**Step 2:** Click 'New Request'\n**Step 3:** Select location and category\n**Step 4:** Describe the issue\n**Step 5:** Upload photo (optional)\n**Step 6:** Select priority (Normal/Urgent)\n**Step 7:** Submit\n\n⏱️ Urgent: 24-hour response\n📞 Emergency: 0712 345 680 or Ali at 0750168458",
+        'maintenance status': "📊 **Status:** Pending → Assigned → In Progress → Completed\n\nYou'll receive SMS when resolved.",
+        'emergency maintenance': "🚨 **Emergency Maintenance**\n\nCall immediately:\n• Campus Maintenance: 0712 345 680\n• System Admin (Ali): 0750168458\n\n**Emergencies:** Burst pipes, electrical sparks, gas leaks, lockouts",
+        
+        // ========== ACCOMMODATION ==========
+        'room allocation': "🏠 **Room Allocation**\n\n1. Apply during registration (July & December)\n2. Select preferences\n3. Pay accommodation fee\n4. Check assigned room in dashboard\n5. Complete check-in at Warden's office",
+        'check in process': "🚪 **Check-in Process**\n\n1. Go to hostel Warden's office\n2. Present Student ID and payment receipt\n3. Verify room condition\n4. Sign inventory checklist\n5. Collect keys",
+        'hostel rules': "📋 **Hostel Rules**\n\n• No visitors after 10 PM\n• Quiet hours: 10 PM - 6 AM\n• No cooking in rooms\n• Report damages immediately",
+        
+        // ========== LIBRARY ==========
+        'borrow library book': "📚 **Borrow Books**\n\n1. Visit the library\n2. Scan your student ID\n3. Present books to librarian\n4. Books issued for 14 days\n5. Can renew twice online\n\n📖 Check 'My Library' for borrowed books",
+        'library hours': "📚 **Library Hours**\n\nMonday-Friday: 8:00 AM - 8:00 PM\nSaturday: 9:00 AM - 5:00 PM\nSunday: Closed",
+        'library fine': "💰 **Library Fines**\n\nOverdue books: KES 20 per day\nLost books: Replacement cost + KES 500 processing\n\nPay fines at library counter or via M-Pesa",
+        
+        // ========== GENERAL ==========
+        'how to get transcript': "📜 **Request Transcript**\n\n1. Go to 'Academics'\n2. Click 'Request Transcript'\n3. Select copies\n4. Pay KES 1,000 per copy\n5. Pick up after 3-5 days",
+        'reset my password': "🔑 **Reset Password**\n\n1. Click 'Forgot Password' on login\n2. Enter your email\n3. Check email for reset link\n4. Create new password\n\n❌ Didn't receive? Contact alimahrez744@gmail.com or call 0750168458",
+        'contact support': "📞 **Support Contacts**\n\n**Owner/Developer:** Ali M. Abdalla\n📧 Email: alimahrez744@gmail.com\n📱 Phone/WhatsApp: 0750168458\n\n**Office Hours:**\nMonday-Friday: 8:00 AM - 5:00 PM\n\nResponse time: Within 24 hours",
+        'about campus care': "🏥 **About Campus Care**\n\nCampus Care is a **Student Welfare Management System** developed by **Ali M. Abdalla** (Full-Stack Software Engineer & Ethical Hacker).\n\n**Features:**\n✅ Deferment Requests\n✅ M-Pesa Payments\n✅ Health Appointments\n✅ Maintenance Tickets\n✅ Accommodation\n✅ Library Management\n✅ News & Alerts\n✅ 24/7 AI Support\n\n📧 alimahrez744@gmail.com | 📱 0750168458",
+        'features': "🌟 **Campus Care Features**\n\n📋 Deferment Management\n💰 M-Pesa Payments\n🏥 Health Appointments\n🔧 Maintenance Requests\n🏠 Accommodation\n👤 Visitor Logs\n📢 News & Alerts\n📚 Library Management\n🤖 AI Chat Assistant\n👑 23 Staff Roles\n📱 Mobile Friendly\n🔒 Secure System\n\nDeveloped by Ali M. Abdalla – Full-Stack Software Engineer & Ethical Hacker",
+        
+        // ========== EMERGENCY ==========
+        'emergency': "🚨 **EMERGENCY CONTACTS**\n\n**Campus Security:** 0712 345 682\n**Ambulance:** 0712 345 679\n**Fire:** 0712 345 683\n**System Admin (Ali):** 0750168458\n\nStay calm. Call the appropriate number.",
+        'fire emergency': "🔥 **FIRE EMERGENCY**\n\n1. Activate fire alarm\n2. Call 0712 345 683\n3. Evacuate immediately\n4. DO NOT use elevators\n5. Go to assembly point\n\n📞 Also notify Ali at 0750168458",
+        
+        // ========== FALLBACK ==========
+        'default': "I'm here to help! 🤖\n\nYou can ask me about:\n📋 Deferment\n💰 Payments & balance\n🏥 Health appointments\n🔧 Maintenance issues\n📚 Library books\n🔑 Password reset\n👑 Owner (Ali M. Abdalla)\n📞 Contact support\n\n💡 Just type your question naturally!\n\n📧 Contact owner: alimahrez744@gmail.com | 📱 0750168458"
     };
-
+    
     function getAnswer(question) {
         const lowerQuestion = question.toLowerCase().trim();
+        
+        // Exact match
         if (knowledgeBase[lowerQuestion]) return knowledgeBase[lowerQuestion];
-        if (lowerQuestion.includes('owner') || lowerQuestion.includes('founder') || lowerQuestion.includes('created by') || lowerQuestion.includes('who made') || lowerQuestion.includes('who built') || lowerQuestion.includes('developed by')) return knowledgeBase['who is the owner of campus care'];
-        if (lowerQuestion.includes('ali') || lowerQuestion.includes('mahirizi') || lowerQuestion.includes('abdalla')) return knowledgeBase['ali'];
-        if (lowerQuestion.includes('contact') || lowerQuestion.includes('support') || lowerQuestion.includes('email') || lowerQuestion.includes('phone') || lowerQuestion.includes('reach') || lowerQuestion.includes('call')) return knowledgeBase['contact support'];
+        
+        // Owner/developer keywords
+        if (lowerQuestion.includes('owner') || lowerQuestion.includes('founder') || 
+            lowerQuestion.includes('created by') || lowerQuestion.includes('who made') || 
+            lowerQuestion.includes('who built') || lowerQuestion.includes('developed by') ||
+            lowerQuestion.includes('creator')) {
+            return knowledgeBase['who is the owner of campus care'];
+        }
+        
+        if (lowerQuestion.includes('ali') || lowerQuestion.includes('mahirizi') || lowerQuestion.includes('abdalla')) {
+            return knowledgeBase['ali m abdalla'];
+        }
+        
+        if (lowerQuestion.includes('full stack') || lowerQuestion.includes('software engineer')) {
+            return knowledgeBase['full stack engineer'];
+        }
+        
+        if (lowerQuestion.includes('ethical hacker') || lowerQuestion.includes('hacker') || lowerQuestion.includes('security')) {
+            return knowledgeBase['ethical hacker'];
+        }
+        
+        // Deferment
         if (lowerQuestion.includes('deferment') || lowerQuestion.includes('defer')) {
             if (lowerQuestion.includes('status')) return knowledgeBase['deferment status'];
-            if (lowerQuestion.includes('document') || lowerQuestion.includes('upload')) return knowledgeBase['deferment documents'];
-            if (lowerQuestion.includes('deadline')) return knowledgeBase['deferment deadline'];
-            if (lowerQuestion.includes('fee') || lowerQuestion.includes('cost')) return knowledgeBase['deferment fee'];
+            if (lowerQuestion.includes('document')) return knowledgeBase['deferment documents'];
             return knowledgeBase['how to apply for deferment'];
         }
+        
+        // Payments
         if (lowerQuestion.includes('balance') || lowerQuestion.includes('fee') || lowerQuestion.includes('payment') || lowerQuestion.includes('pay')) {
-            if (lowerQuestion.includes('mpesa') || lowerQuestion.includes('m-pesa')) return knowledgeBase['mpesa payment not reflecting'];
+            if (lowerQuestion.includes('mpesa')) return knowledgeBase['mpesa payment not reflecting'];
             if (lowerQuestion.includes('receipt')) return knowledgeBase['payment receipt'];
-            if (lowerQuestion.includes('structure') || lowerQuestion.includes('tuition')) return knowledgeBase['fee structure'];
-            if (lowerQuestion.includes('deadline')) return knowledgeBase['payment deadline'];
-            if (lowerQuestion.includes('scholarship')) return knowledgeBase['scholarship'];
+            if (lowerQuestion.includes('structure')) return knowledgeBase['fee structure'];
             return knowledgeBase['check my fee balance'];
         }
-        if (lowerQuestion.includes('health') || lowerQuestion.includes('appointment') || lowerQuestion.includes('clinic') || lowerQuestion.includes('doctor')) {
-            if (lowerQuestion.includes('reminder')) return knowledgeBase['health appointment reminder'];
-            if (lowerQuestion.includes('record') || lowerQuestion.includes('history')) return knowledgeBase['medical records'];
-            if (lowerQuestion.includes('hour') || lowerQuestion.includes('time')) return knowledgeBase['clinic hours'];
-            if (lowerQuestion.includes('emergency')) return knowledgeBase['emergency health'];
-            if (lowerQuestion.includes('vaccination')) return knowledgeBase['vaccination'];
+        
+        // Health
+        if (lowerQuestion.includes('health') || lowerQuestion.includes('appointment') || lowerQuestion.includes('clinic')) {
+            if (lowerQuestion.includes('hour')) return knowledgeBase['clinic hours'];
             return knowledgeBase['book health appointment'];
         }
-        if (lowerQuestion.includes('maintenance') || lowerQuestion.includes('repair') || lowerQuestion.includes('fix') || lowerQuestion.includes('broken')) {
-            if (lowerQuestion.includes('status')) return knowledgeBase['maintenance status'];
+        
+        // Maintenance
+        if (lowerQuestion.includes('maintenance') || lowerQuestion.includes('repair') || lowerQuestion.includes('fix')) {
             if (lowerQuestion.includes('emergency')) return knowledgeBase['emergency maintenance'];
-            if (lowerQuestion.includes('category')) return knowledgeBase['maintenance categories'];
+            if (lowerQuestion.includes('status')) return knowledgeBase['maintenance status'];
             return knowledgeBase['report maintenance issue'];
         }
+        
+        // Accommodation
         if (lowerQuestion.includes('room') || lowerQuestion.includes('hostel') || lowerQuestion.includes('accommodation')) {
             if (lowerQuestion.includes('check in')) return knowledgeBase['check in process'];
-            if (lowerQuestion.includes('check out')) return knowledgeBase['check out process'];
-            if (lowerQuestion.includes('rule') || lowerQuestion.includes('regulation')) return knowledgeBase['hostel rules'];
-            if (lowerQuestion.includes('facility')) return knowledgeBase['hostel facilities'];
-            if (lowerQuestion.includes('transfer')) return knowledgeBase['room transfer'];
+            if (lowerQuestion.includes('rule')) return knowledgeBase['hostel rules'];
             return knowledgeBase['room allocation'];
         }
-        if (lowerQuestion.includes('visitor') || lowerQuestion.includes('guest')) {
-            if (lowerQuestion.includes('blacklist')) return knowledgeBase['blacklist'];
-            return knowledgeBase['visitor log'];
+        
+        // Library
+        if (lowerQuestion.includes('library') || lowerQuestion.includes('book') || lowerQuestion.includes('borrow')) {
+            if (lowerQuestion.includes('hour')) return knowledgeBase['library hours'];
+            if (lowerQuestion.includes('fine')) return knowledgeBase['library fine'];
+            return knowledgeBase['borrow library book'];
         }
-        if (lowerQuestion.includes('news') || lowerQuestion.includes('announcement') || lowerQuestion.includes('alert')) {
-            if (lowerQuestion.includes('emergency')) return knowledgeBase['emergency alert'];
-            return knowledgeBase['news'];
-        }
+        
+        // General
         if (lowerQuestion.includes('transcript')) return knowledgeBase['how to get transcript'];
-        if (lowerQuestion.includes('password') || lowerQuestion.includes('login') || lowerQuestion.includes('forgot')) return knowledgeBase['reset my password'];
+        if (lowerQuestion.includes('password') || lowerQuestion.includes('login')) return knowledgeBase['reset my password'];
+        if (lowerQuestion.includes('contact') || lowerQuestion.includes('support')) return knowledgeBase['contact support'];
         if (lowerQuestion.includes('about') || lowerQuestion.includes('what is campus care')) return knowledgeBase['about campus care'];
-        if (lowerQuestion.includes('emergency') || lowerQuestion.includes('fire') || lowerQuestion.includes('security emergency')) {
+        if (lowerQuestion.includes('feature')) return knowledgeBase['features'];
+        
+        // Emergency
+        if (lowerQuestion.includes('emergency') || lowerQuestion.includes('fire')) {
             if (lowerQuestion.includes('fire')) return knowledgeBase['fire emergency'];
-            if (lowerQuestion.includes('security')) return knowledgeBase['security emergency'];
             return knowledgeBase['emergency'];
         }
-        if (lowerQuestion.includes('thank') || lowerQuestion.includes('thanks')) return knowledgeBase['thanks'];
-        if (lowerQuestion.includes('what can you do') || lowerQuestion.includes('capabilities')) return knowledgeBase['what can you do'];
+        
+        // Thanks
+        if (lowerQuestion.includes('thank')) return knowledgeBase['thanks'];
+        
         return knowledgeBase['default'];
     }
-
+    
+    // Chat UI
     const messagesContainer = document.getElementById('chatMessages');
     const messageInput = document.getElementById('messageInput');
-
+    
     function formatMessage(text) {
-        return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
     }
-
+    
     function addMessage(text, isUser = false) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
         const avatar = isUser ? '👤' : '🤖';
-        const formattedText = formatMessage(text);
+        
         messageDiv.innerHTML = `
             <div class="message-avatar">${avatar}</div>
             <div class="message-content">
-                ${formattedText.replace(/\n/g, '<br>')}
+                ${formatMessage(text)}
                 <div class="message-time">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
             </div>
         `;
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
-
-    function showTypingIndicator() {
+    
+    function showTyping() {
         const typingDiv = document.createElement('div');
         typingDiv.className = 'message bot';
         typingDiv.id = 'typingIndicator';
         typingDiv.innerHTML = `
             <div class="message-avatar">🤖</div>
-            <div class="typing"><span></span><span></span><span></span></div>
+            <div class="typing">
+                <span></span><span></span><span></span>
+            </div>
         `;
         messagesContainer.appendChild(typingDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
-
-    function removeTypingIndicator() {
+    
+    function removeTyping() {
         const indicator = document.getElementById('typingIndicator');
         if (indicator) indicator.remove();
     }
-
+    
     function sendMessage() {
         const message = messageInput.value.trim();
         if (!message) return;
+        
         addMessage(message, true);
         messageInput.value = '';
-        showTypingIndicator();
+        
+        showTyping();
         setTimeout(() => {
-            removeTypingIndicator();
-            addMessage(getAnswer(message), false);
+            removeTyping();
+            const reply = getAnswer(message);
+            addMessage(reply, false);
         }, 800);
     }
-
+    
     function sendQuickMessage(message) {
         messageInput.value = message;
         sendMessage();
     }
-
+    
     function handleKeyPress(event) {
         if (event.key === 'Enter') sendMessage();
     }
