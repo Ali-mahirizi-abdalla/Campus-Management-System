@@ -54,8 +54,8 @@ class DocumentAdmin(admin.ModelAdmin):
 
 @admin.register(AdminSubscription)
 class AdminSubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('status', 'amount', 'expiry_date', 'transaction_id')
-    list_filter = ('status', 'expiry_date')
+    list_display = ('plan', 'billing_cycle', 'student_count', 'status', 'amount', 'expiry_date', 'transaction_id')
+    list_filter = ('plan', 'billing_cycle', 'status', 'expiry_date')
 
 @admin.register(RegistrationPayment)
 class RegistrationPaymentAdmin(admin.ModelAdmin):

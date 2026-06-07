@@ -247,7 +247,8 @@ def mpesa_callback(request):
                 admin_sub.status = 'Active'
                 admin_sub.transaction_id = transaction_id
                 admin_sub.last_payment_date = timezone.now()
-                admin_sub.expiry_date = timezone.now() + timedelta(days=30)
+                expiry_days = 365 if admin_sub.billing_cycle == 'annual' else 30
+                admin_sub.expiry_date = timezone.now() + timedelta(days=expiry_days)
                 admin_sub.save()
                 # Clear system lock cache if implemented
                 from django.core.cache import cache
@@ -3331,42 +3332,116 @@ def report_lost_item(request):
 @login_required
 @admin_only
 def admin_subscription_pay(request):
-    """Admin page to initiate KES 3,000 subscription payment"""
+    """Admin page to initiate subscription payment"""
     # Get current subscription status
-    subscription = AdminSubscription.objects.last()
+    subscription = AdminSubscription.objects.order_by('-created_at').first()
     
     if request.method == 'POST':
-        phone = request.POST.get('phone')
-        if not phone:
-            messages.error(request, "Phone number is required.")
+        plan = request.POST.get('plan', 'pro').lower()
+        billing_cycle = request.POST.get('billing_cycle', 'monthly').lower()
+        
+        try:
+            student_count = int(request.POST.get('student_count', 1000))
+        except ValueError:
+            student_count = 1000
+            
+        method = request.POST.get('method', 'mpesa').lower()
+        
+        # Calculate dynamic price on backend
+        prices = {
+            'basic': {'monthly': 3000, 'annual': 30000},
+            'standard': {'monthly': 6000, 'annual': 60000},
+            'pro': {'monthly': 10000, 'annual': 100000},
+            'enterprise': {'monthly': 15000, 'annual': 150000},
+        }
+        
+        plan_prices = prices.get(plan, prices['pro'])
+        base_price = plan_prices.get(billing_cycle, plan_prices['monthly'])
+        
+        if student_count <= 250:
+            multiplier = 0.8
+        elif student_count <= 500:
+            multiplier = 0.9
+        elif student_count <= 2000:
+            multiplier = 1.0
+        elif student_count <= 5000:
+            multiplier = 1.2
         else:
-            try:
-                client = MpesaClient()
-                callback_url = request.build_absolute_uri(reverse('hms:mpesa_callback'))
-                response = client.stk_push(
-                    phone_number=phone,
-                    amount=3000,
-                    reference='subscription',
-                    callback_url=callback_url,
-                    description="Admin Subscription"
-                )
+            multiplier = 1.5
+            
+        amount = int(round(base_price * multiplier))
+        
+        if method == 'card':
+            # Card payment simulation: immediately activate
+            expiry_days = 365 if billing_cycle == 'annual' else 30
+            expiry_date = timezone.now() + timedelta(days=expiry_days)
+            
+            AdminSubscription.objects.create(
+                plan=plan,
+                billing_cycle=billing_cycle,
+                student_count=student_count,
+                amount=amount,
+                status='Active',
+                last_payment_date=timezone.now(),
+                expiry_date=expiry_date,
+                transaction_id=f"CARD-{int(timezone.now().timestamp())}",
+                phone_number="Card Payment"
+            )
+            
+            # Clear lock cache
+            from django.core.cache import cache
+            cache.delete('system_subscription_active')
+            
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'Success', 'message': 'Card payment successful!'})
                 
-                if response.get('ResponseCode') == '0':
-                    AdminSubscription.objects.create(
+            messages.success(request, f"Payment Successful! Your {plan.title()} plan has been activated.")
+            return redirect('hms:dashboard_redirect')
+            
+        else: # mpesa
+            phone = request.POST.get('phone')
+            if not phone:
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'status': 'Error', 'message': 'Phone number is required.'})
+                messages.error(request, "Phone number is required.")
+            else:
+                try:
+                    client = MpesaClient()
+                    callback_url = request.build_absolute_uri(reverse('hms:mpesa_callback'))
+                    response = client.stk_push(
                         phone_number=phone,
-                        amount=3000,
-                        checkout_request_id=response.get('CheckoutRequestID'),
-                        status='Pending'
+                        amount=amount,
+                        reference='subscription',
+                        callback_url=callback_url,
+                        description=f"Admin {plan.title()} Subscription"
                     )
-                    messages.success(request, "STK Push sent! Please check your phone to complete payment.")
-                else:
-                    messages.error(request, f"M-Pesa Error: {response.get('ResponseDescription')}")
-            except Exception as e:
-                messages.error(request, f"Payment failed: {str(e)}")
-                
-    return render(request, 'hms/admin/subscription_pay.html', {
-        'subscription': subscription
-    })
+                    
+                    if response.get('ResponseCode') == '0':
+                        AdminSubscription.objects.create(
+                            plan=plan,
+                            billing_cycle=billing_cycle,
+                            student_count=student_count,
+                            phone_number=phone,
+                            amount=amount,
+                            checkout_request_id=response.get('CheckoutRequestID'),
+                            status='Pending'
+                        )
+                        msg = "STK Push sent! Please check your phone to complete payment."
+                        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                            return JsonResponse({'status': 'Success', 'message': msg})
+                        messages.success(request, msg)
+                    else:
+                        err = f"M-Pesa Error: {response.get('ResponseDescription')}"
+                        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                            return JsonResponse({'status': 'Error', 'message': err})
+                        messages.error(request, err)
+                except Exception as e:
+                    err_msg = f"Payment failed: {str(e)}"
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return JsonResponse({'status': 'Error', 'message': err_msg})
+                    messages.error(request, err_msg)
+                    
+        return redirect('hms:admin_subscription_pay')
 
 @login_required
 def system_locked(request):

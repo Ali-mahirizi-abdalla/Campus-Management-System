@@ -534,6 +534,16 @@ class AdminSubscription(models.Model):
     STATUS_CHOICES = [
         ('Active', 'Active'), ('Expired', 'Expired'), ('Pending', 'Pending')
     ]
+    PLAN_CHOICES = [
+        ('basic', 'Basic'),
+        ('standard', 'Standard'),
+        ('pro', 'Pro'),
+        ('enterprise', 'Enterprise'),
+    ]
+    BILLING_CHOICES = [
+        ('monthly', 'Monthly'),
+        ('annual', 'Annual'),
+    ]
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     last_payment_date = models.DateTimeField(null=True, blank=True)
     expiry_date = models.DateTimeField(null=True, blank=True)
@@ -541,6 +551,12 @@ class AdminSubscription(models.Model):
     checkout_request_id = models.CharField(max_length=100, null=True, blank=True)
     phone_number = models.CharField(max_length=15, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=3000.00)
+    
+    # New fields
+    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='pro')
+    billing_cycle = models.CharField(max_length=10, choices=BILLING_CHOICES, default='monthly')
+    student_count = models.IntegerField(default=1000)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,90 +1,865 @@
-{% extends 'hms/base.html' %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Management – Campus Care</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-{% block content %}
-<div class="max-w-4xl mx-auto py-8 px-4">
-    <div class="mb-8 flex items-center justify-between">
-        <div>
-            <h1 class="text-3xl font-bold text-slate-900 dark:text-white">System Subscription</h1>
-            <p class="text-slate-500">Manage your monthly service payments to keep Campus Care active.</p>
-            
-            <!-- Scheduled Activation Notice -->
-            <div class="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-xl flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-800 flex items-center justify-center text-amber-600 dark:text-amber-400 flex-shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <p class="text-[11px] text-amber-800 dark:text-amber-300 text-left leading-tight">
-                    <span class="font-bold">Scheduled Activation:</span> System-wide lock and mandatory payments are bypassed until <span class="font-bold">May 1st, 2026</span>. No payment is required for full access until then.
-                </p>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #090D16;
+            color: #F8FAFC;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .subscription-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #0D9488, #1E293B);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #F8FAFC;
+            box-shadow: 0 4px 20px rgba(13,148,136,0.3);
+        }
+
+        .logo-text h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #F8FAFC, #0D9488);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: #94A3B8;
+            letter-spacing: 0.05em;
+        }
+
+        .header h2 {
+            font-size: 36px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: #94A3B8;
+            font-size: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Billing Toggle */
+        .billing-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 48px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 6px;
+            border-radius: 60px;
+            backdrop-filter: blur(8px);
+        }
+
+        .billing-option {
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #94A3B8;
+        }
+
+        .billing-option.active {
+            background: #0D9488;
+            color: white;
+            box-shadow: 0 4px 12px rgba(13,148,136,0.35);
+        }
+
+        .save-badge {
+            background: #10B981;
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 40px;
+            margin-left: 6px;
+            font-weight: 700;
+        }
+
+        /* Plans Grid */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .plan-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            cursor: pointer;
+            backdrop-filter: blur(12px);
+        }
+
+        .plan-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(13,148,136,0.4);
+            background: rgba(30, 41, 59, 0.6);
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+        }
+
+        .plan-card.selected {
+            border-color: #0D9488;
+            background: rgba(13, 148, 136, 0.08);
+            box-shadow: 0 8px 30px rgba(13,148,136,0.15);
+        }
+
+        .plan-card.popular {
+            border: 1.5px solid #F59E0B;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #F59E0B;
+            color: #090D16;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 6px 16px;
+            border-radius: 0 0 0 16px;
+            letter-spacing: 0.03em;
+        }
+
+        .plan-header {
+            padding: 32px 24px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .plan-icon {
+            font-size: 44px;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        .plan-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .plan-price {
+            font-size: 32px;
+            font-weight: 800;
+            color: #F8FAFC;
+        }
+
+        .plan-price span {
+            font-size: 14px;
+            font-weight: 400;
+            color: #94A3B8;
+        }
+
+        .plan-features {
+            padding: 24px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 13px;
+            color: #CBD5E1;
+        }
+
+        .feature-item i {
+            width: 18px;
+            font-size: 14px;
+        }
+
+        .feature-item .check {
+            color: #10B981;
+        }
+
+        .feature-item .minus {
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Student Section */
+        .student-section {
+            background: rgba(30, 41, 59, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 32px;
+            backdrop-filter: blur(12px);
+        }
+
+        .student-section h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .student-section p {
+            color: #94A3B8;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .slider-container {
+            margin-bottom: 24px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #0D9488;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(13,148,136,0.5);
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .price-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(9, 13, 22, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 20px 24px;
+            border-radius: 16px;
+            margin-top: 20px;
+        }
+
+        .price-display span:first-child {
+            font-weight: 600;
+            color: #E2E8F0;
+        }
+
+        .price-display span:last-child {
+            font-size: 32px;
+            font-weight: 800;
+            color: #0D9488;
+            text-shadow: 0 0 15px rgba(13,148,136,0.2);
+        }
+
+        /* Payment Section */
+        .payment-section {
+            background: rgba(30, 41, 59, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 40px 32px;
+            margin-bottom: 32px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+        }
+
+        .payment-section h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .phone-container {
+            margin-bottom: 24px;
+            max-width: 320px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+
+        .phone-container label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94A3B8;
+            margin-bottom: 8px;
+        }
+
+        .phone-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .phone-prefix {
+            position: absolute;
+            left: 16px;
+            color: #64748B;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .phone-input {
+            width: 100%;
+            background: rgba(9, 13, 22, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: white;
+            padding: 14px 16px 14px 60px;
+            border-radius: 14px;
+            outline: none;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .phone-input:focus {
+            border-color: #0D9488;
+            box-shadow: 0 0 0 2px rgba(13,148,136,0.2);
+        }
+
+        .payment-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-pay {
+            background: #0D9488;
+            color: white;
+            border: none;
+            padding: 16px 36px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(13,148,136,0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-pay:hover {
+            background: #0F766E;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13,148,136,0.4);
+        }
+
+        .btn-pay:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-mpesa {
+            background: #6B2E7E;
+            box-shadow: 0 4px 15px rgba(107,46,126,0.3);
+        }
+
+        .btn-mpesa:hover {
+            background: #5a1e6b;
+            box-shadow: 0 6px 20px rgba(107,46,126,0.4);
+        }
+
+        .subscription-note {
+            margin-top: 24px;
+            font-size: 12px;
+            color: #64748B;
+            line-height: 1.6;
+        }
+
+        /* Active Subscription Banner */
+        .limited-access-banner {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-left: 4px solid #10B981;
+            padding: 16px 24px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .limited-access-banner span {
+            color: #A7F3D0;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-renew {
+            background: #10B981;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.25);
+        }
+
+        .btn-renew:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px 20px;
+            color: #475569;
+            font-size: 12px;
+            line-height: 1.8;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            margin-top: 48px;
+        }
+
+        .footer p strong {
+            color: #94A3B8;
+        }
+
+        /* Success Modal */
+        .success-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1E293B;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 28px;
+            padding: 40px;
+            text-align: center;
+            z-index: 2100;
+            max-width: 440px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
+        }
+
+        .success-modal i {
+            font-size: 72px;
+            color: #10B981;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px rgba(16,185,129,0.3));
+        }
+
+        .success-modal h3 {
+            font-size: 26px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .success-modal p {
+            color: #94A3B8;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(6px);
+            z-index: 2050;
+        }
+
+        /* Django Message Box styling */
+        .alert-messages {
+            max-width: 1400px;
+            margin: 0 auto 24px auto;
+        }
+
+        .alert-item {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #A7F3D0;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #FCA5A5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .plans-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 640px) {
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h2 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="subscription-container">
+    
+    <!-- Active Status Banner (if active) -->
+    {% if subscription and subscription.is_active %}
+    <div class="limited-access-banner">
+        <span>
+            <i class="fas fa-check-circle"></i>
+            <strong>Subscription Active</strong> – Your <strong>{{ subscription.plan|upper }}</strong> plan is active until {{ subscription.expiry_date|date:"M d, Y" }}.
+        </span>
+        <div style="display: flex; gap: 12px;">
+            <button class="btn-renew" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #E2E8F0;" onclick="window.location.href='{% url 'hms:manage_subscriptions' %}'">
+                View History
+            </button>
+            <button class="btn-renew" onclick="window.location.href='{% url 'hms:dashboard_redirect' %}'">
+                Go to Dashboard →
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Messages Block -->
+    {% if messages %}
+    <div class="alert-messages">
+        {% for message in messages %}
+        <div class="alert-item {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-hands-helping"></i></div>
+            <div class="logo-text">
+                <h1>CAMPUS CARE</h1>
+                <p>Student Welfare Management System</p>
             </div>
         </div>
-        {% if subscription and subscription.is_active %}
-        <span class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold flex items-center">
-            <span class="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></span>
-            ACTIVE
-        </span>
-        {% else %}
-        <span class="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-semibold flex items-center">
-            <span class="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse"></span>
-            EXPIRED
-        </span>
-        {% endif %}
+        <h2>Choose Your Subscription Plan</h2>
+        <p>Select a plan that fits your institution. Keep features unlocked seamlessly.</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <p class="text-sm font-medium text-slate-500 mb-1">Monthly Fee</p>
-            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">KES 3,000/-</h3>
-            <p class="text-xs text-slate-400">Regular billing</p>
+    <div class="billing-toggle" id="billingToggle">
+        <div class="billing-option active" data-billing="monthly">Monthly</div>
+        <div class="billing-option" data-billing="annual">Annual <span class="save-badge">Save 20%</span></div>
+    </div>
+
+    <div class="plans-grid" id="plansGrid"></div>
+
+    <div class="student-section">
+        <h3>📊 Student Population</h3>
+        <p>Select your total student count for accurate pricing</p>
+        <div class="slider-container">
+            <input type="range" id="studentSlider" min="0" max="10000" step="100" value="1000">
         </div>
-        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <p class="text-sm font-medium text-slate-500 mb-1">Expiry Date</p>
-            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">
-                {% if subscription %}{{ subscription.expiry_date|date:"M d, Y" }}{% else %}N/A{% endif %}
-            </h3>
-            <p class="text-xs text-slate-400">Next payment due</p>
-        </div>
-        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <p class="text-sm font-medium text-slate-500 mb-1">Last Payment</p>
-            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">
-                {% if subscription %}{{ subscription.last_payment_date|date:"M d, Y" }}{% else %}None{% endif %}
-            </h3>
-            <p class="text-xs text-slate-400">Transaction record</p>
+        <div class="price-display">
+            <span>Total Students: <span id="studentCount">1,000</span></span>
+            <span id="totalPrice">KES 10,000/month</span>
         </div>
     </div>
 
-    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div class="p-8">
-            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6">Make Payment</h2>
-            <form method="POST" class="max-w-md">
-                {% csrf_token %}
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">M-Pesa Phone Number</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">+254</span>
-                        <input type="text" name="phone" placeholder="712345678" required
-                               class="w-full pl-14 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition">
-                    </div>
-                    <p class="text-xs text-slate-400 mt-2">Enter the Safaricom number to receive the STK Push.</p>
-                </div>
-                <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-4 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-2xl transition shadow-lg shadow-primary-500/25">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Pay KES 3,000 Now
-                </button>
-            </form>
-        </div>
-        <div class="bg-slate-50 dark:bg-slate-800/50 p-6 border-t border-slate-200 dark:border-slate-800">
-            <div class="flex items-start">
-                <svg class="w-5 h-5 text-primary-500 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <p class="text-sm text-slate-600 dark:text-slate-400">
-                    Once payment is completed, the system will automatically unlock for all students and staff members in real-time.
-                </p>
+    <div class="payment-section">
+        <h3>💳 Complete Subscription</h3>
+        
+        <div class="phone-container" id="phoneContainer">
+            <label for="phoneInput">M-Pesa Phone Number</label>
+            <div class="phone-wrapper">
+                <span class="phone-prefix">+254</span>
+                <input type="text" id="phoneInput" class="phone-input" placeholder="712345678" value="{{ subscription.phone_number|default:'' }}">
             </div>
         </div>
+
+        <div class="payment-buttons">
+            <button class="btn-pay" id="payCardBtn" type="button"><i class="fas fa-credit-card"></i> Pay with Card</button>
+            <button class="btn-pay btn-mpesa" id="payMpesaBtn" type="button"><i class="fas fa-mobile-alt"></i> Pay with M-Pesa</button>
+        </div>
+        <div class="subscription-note">
+            <i class="fas fa-lock" style="color: #0D9488; margin-right: 4px;"></i> Secure payment processing. System activates immediately after payment confirmation.<br>
+            Billing starts from activation date. Cancel anytime.
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2026 Campus Care | Student Welfare Management System | Developed by Ali Mahirizi Abdalla</p>
+        <p>📧 alimahrez744@gmail.com | 📱 0750168458</p>
     </div>
 </div>
-{% endblock %}
+
+<script>
+    // Selected states
+    let selectedPlan = 'pro';
+    let currentBilling = 'monthly';
+    let currentStudentCount = 1000;
+
+    // Plans data
+    const plans = {
+        basic: { 
+            name: 'Basic', 
+            icon: '📋', 
+            priceMonthly: 3000, 
+            priceAnnual: 30000,
+            features: ['Deferment Management', 'M-Pesa Payments', 'News & Announcements', 'Basic Reports', '5 Staff Roles'],
+            notFeatures: ['Health Management', 'Maintenance Requests', 'Library Management', 'Email Support'] 
+        },
+        standard: { 
+            name: 'Standard', 
+            icon: '📚', 
+            priceMonthly: 6000, 
+            priceAnnual: 60000,
+            features: ['Everything in Basic', 'Health Management', 'Maintenance Requests', 'SMS Notifications', '10 Staff Roles', 'Email Support (24h)'],
+            notFeatures: ['Accommodation', 'Library Management', 'Priority Support'] 
+        },
+        pro: { 
+            name: 'Pro', 
+            icon: '🏆', 
+            priceMonthly: 10000, 
+            priceAnnual: 100000,
+            features: ['Everything in Standard', 'Accommodation Management', 'Visitor Logs', 'Library Management', '23 Staff Roles', 'Advanced Reports', 'Priority Support (12h)'],
+            notFeatures: ['AI Assistant', 'WhatsApp Integration'] 
+        },
+        enterprise: { 
+            name: 'Enterprise', 
+            icon: '👑', 
+            priceMonthly: 15000, 
+            priceAnnual: 150000,
+            features: ['Everything in Pro', 'AI Chat Assistant', 'WhatsApp Integration', 'Custom Features', 'Dedicated Account Manager', '24/7 Priority Support', 'Custom Reports', 'SLA Guarantee', 'On-site Training'],
+            notFeatures: [] 
+        }
+    };
+
+    function getPriceForStudentCount(basePrice) {
+        let multiplier = 1;
+        if (currentStudentCount <= 250) multiplier = 0.8;
+        else if (currentStudentCount <= 500) multiplier = 0.9;
+        else if (currentStudentCount <= 2000) multiplier = 1;
+        else if (currentStudentCount <= 5000) multiplier = 1.2;
+        else multiplier = 1.5;
+        return Math.round(basePrice * multiplier);
+    }
+
+    function calculateTotalPrice() {
+        const plan = plans[selectedPlan];
+        const basePrice = currentBilling === 'monthly' ? plan.priceMonthly : plan.priceAnnual;
+        const adjusted = getPriceForStudentCount(basePrice);
+        const period = currentBilling === 'monthly' ? 'month' : 'year';
+        const currency = 'KES';
+        return { amount: adjusted, period, currency };
+    }
+
+    function renderPlans() {
+        const grid = document.getElementById('plansGrid');
+        grid.innerHTML = '';
+        for (const [key, plan] of Object.entries(plans)) {
+            const isPopular = key === 'standard';
+            const isSelected = selectedPlan === key;
+            const basePrice = currentBilling === 'monthly' ? plan.priceMonthly : plan.priceAnnual;
+            const displayPrice = getPriceForStudentCount(basePrice);
+            const periodText = currentBilling === 'monthly' ? 'per month' : 'per year';
+            const priceText = `KES ${displayPrice.toLocaleString()}`;
+            
+            const card = document.createElement('div');
+            card.className = `plan-card ${isPopular ? 'popular' : ''} ${isSelected ? 'selected' : ''}`;
+            card.onclick = () => { selectedPlan = key; renderPlans(); updateTotalPrice(); };
+            card.innerHTML = `
+                ${isPopular ? '<div class="popular-badge">⭐ MOST POPULAR</div>' : ''}
+                <div class="plan-header">
+                    <div class="plan-icon">${plan.icon}</div>
+                    <div class="plan-name">${plan.name}</div>
+                    <div class="plan-price">${priceText}<span> / ${periodText}</span></div>
+                </div>
+                <div class="plan-features">
+                    ${plan.features.map(f => `<div class="feature-item"><i class="fas fa-check-circle check"></i> ${f}</div>`).join('')}
+                    ${plan.notFeatures.map(f => `<div class="feature-item"><i class="fas fa-minus-circle minus"></i> ${f}</div>`).join('')}
+                </div>
+            `;
+            grid.appendChild(card);
+        }
+    }
+
+    function updateTotalPrice() {
+        const total = calculateTotalPrice();
+        document.getElementById('totalPrice').innerHTML = `KES ${total.amount.toLocaleString()}/${total.period}`;
+    }
+
+    function updateStudentCount() {
+        const slider = document.getElementById('studentSlider');
+        const studentSpan = document.getElementById('studentCount');
+        currentStudentCount = parseInt(slider.value);
+        studentSpan.innerText = currentStudentCount.toLocaleString();
+        renderPlans();
+        updateTotalPrice();
+    }
+
+    function processPayment(method) {
+        const total = calculateTotalPrice();
+        const plan = plans[selectedPlan];
+        
+        const payBtn = method === 'card' ? document.getElementById('payCardBtn') : document.getElementById('payMpesaBtn');
+        const originalText = payBtn.innerHTML;
+        payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        payBtn.disabled = true;
+
+        // Form details
+        const formData = new FormData();
+        formData.append('plan', selectedPlan);
+        formData.append('billing_cycle', currentBilling);
+        formData.append('student_count', currentStudentCount);
+        formData.append('method', method);
+        
+        if (method === 'mpesa') {
+            const phoneVal = document.getElementById('phoneInput').value.trim();
+            if (!phoneVal) {
+                alert('Please enter your M-Pesa phone number.');
+                payBtn.innerHTML = originalText;
+                payBtn.disabled = false;
+                return;
+            }
+            formData.append('phone', phoneVal);
+        }
+        
+        fetch("{% url 'hms:admin_subscription_pay' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            payBtn.innerHTML = originalText;
+            payBtn.disabled = false;
+            
+            if (data.status === 'Success') {
+                if (method === 'card') {
+                    // Show success modal
+                    const overlay = document.createElement('div');
+                    overlay.className = 'overlay';
+                    const modal = document.createElement('div');
+                    modal.className = 'success-modal';
+                    modal.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Payment Successful!</h3>
+                        <p>Your ${plan.name} plan has been activated.</p>
+                        <p style="margin-top: 12px; font-size: 13px; color: #94A3B8;">Amount paid: KES ${total.amount.toLocaleString()}<br>Valid until: ${new Date(new Date().setDate(new Date().getDate() + (currentBilling === 'annual' ? 365 : 30))).toLocaleDateString()}</p>
+                        <button onclick="window.location.href='{% url 'hms:dashboard_redirect' %}'" style="margin-top: 24px; background:#0D9488; color:white; border:none; padding:12px 32px; border-radius:40px; cursor:pointer; font-weight:700; transition:all 0.2s;">Access Dashboard →</button>
+                    `;
+                    document.body.appendChild(overlay);
+                    document.body.appendChild(modal);
+                } else {
+                    // Show standard alert/message for M-Pesa STK push success
+                    alert(data.message);
+                }
+            } else {
+                alert(data.message || 'Payment initiation failed. Please try again.');
+            }
+        })
+        .catch(err => {
+            payBtn.innerHTML = originalText;
+            payBtn.disabled = false;
+            console.error(err);
+            alert('An error occurred. Check your connection and try again.');
+        });
+    }
+
+    document.getElementById('studentSlider').addEventListener('input', updateStudentCount);
+    document.getElementById('payCardBtn').addEventListener('click', () => processPayment('card'));
+    document.getElementById('payMpesaBtn').addEventListener('click', () => processPayment('mpesa'));
+    
+    document.querySelectorAll('.billing-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            document.querySelectorAll('.billing-option').forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            currentBilling = opt.dataset.billing;
+            renderPlans();
+            updateTotalPrice();
+        });
+    });
+
+    // Initialize display
+    renderPlans();
+    updateTotalPrice();
+</script>
+</body>
+</html>
