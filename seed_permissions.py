@@ -26,7 +26,7 @@ for p_data in PERMISSIONS:
 # Matrix mapping (Role -> List of allowed permissions)
 ROLE_MATRIX = {
     'super_admin': ['view_dashboard', 'view_students', 'view_health', 'view_payments', 'view_accommodation', 'view_maintenance', 'view_visitors', 'view_news', 'view_audit', 'view_emergency', 'view_reports', 'library_dashboard', 'borrowed_books', 'fine_management', 'student_library_accounts', 'library_reports'],
-    'vice_chancellor': ['view_dashboard', 'view_students', 'view_reports'],
+    'vice_chancellor': ['view_dashboard', 'view_students', 'view_health', 'view_payments', 'view_accommodation', 'view_maintenance', 'view_visitors', 'view_news', 'view_audit', 'view_emergency', 'view_reports', 'library_dashboard', 'borrowed_books', 'fine_management', 'student_library_accounts', 'library_reports'],
     'deputy_vice_chancellor': ['view_dashboard', 'view_students', 'view_reports'],
     'register_admin': ['view_dashboard', 'view_students', 'view_reports'],
     'register_user': ['view_dashboard', 'view_students'],

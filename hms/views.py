@@ -48,7 +48,7 @@ ROLE_BANNERS = {
     'vice_chancellor': {
         'icon': '👑', 'name': 'Vice Chancellor',
         'description': 'Executive oversight of all university operations',
-        'restriction': 'ACCESS RESTRICTED: Executive View Only', 'badge_color': 'amber'
+        'restriction': 'FULL ACCESS: Restricted (No DB/Control Access)', 'badge_color': 'amber'
     },
     'deputy_vice_chancellor': {
         'icon': '📚', 'name': 'Deputy Vice Chancellor',
@@ -417,7 +417,7 @@ def dashboard_redirect(request):
     if role == 'super_admin':
         return redirect('hms:admin_dashboard')
     elif role == 'vice_chancellor':
-        return redirect('hms:vc_dashboard')
+        return redirect('hms:admin_dashboard')
     elif role == 'deputy_vice_chancellor':
         return redirect('hms:dvc_dashboard')
     elif role == 'register_admin':
@@ -1101,17 +1101,7 @@ def render_role_dashboard(request, title, desc):
 
 @login_required
 def vc_dashboard(request):
-    if not hasattr(request.user, 'staff_profile') or request.user.staff_profile.role != 'vice_chancellor':
-        return redirect('hms:dashboard_redirect')
-    context = {
-        'dashboard_title': 'Vice Chancellor Dashboard',
-        'dashboard_description': 'Executive oversight of all staff and operations.',
-        'total_staff': StaffProfile.objects.count(),
-        'active_staff_count': StaffProfile.objects.filter(is_approved=True).count(),
-        'staff_list': StaffProfile.objects.all().select_related('user')[:50],
-        'total_students': Student.objects.count(),
-    }
-    return render(request, 'hms/rbac/dashboards/executive_dashboard.html', context)
+    return redirect('hms:admin_dashboard')
 
 @login_required
 def dvc_dashboard(request):

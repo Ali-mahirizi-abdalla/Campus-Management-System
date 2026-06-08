@@ -1,5 +1,6 @@
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
-from django.urls import reverse, NoReverseMatch
+from django.urls import reverse, NoReverseMatch, resolve
 from django.core.cache import cache
 from django.utils import timezone
 import threading
@@ -104,5 +105,60 @@ class SubscriptionLockMiddleware:
                         return redirect(lock_url)
                 except NoReverseMatch:
                     pass
+
+        return self.get_response(request)
+
+class ViceChancellorRestrictionMiddleware:
+    """
+    Middleware to restrict Vice Chancellor role from accessing:
+    1. Django Admin (Database access) at /admin/
+    2. Control system pages (Feature flags, permission matrix, role management, staff management)
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.user.is_authenticated:
+            staff_profile = getattr(request.user, 'staff_profile', None)
+            if staff_profile and staff_profile.role == 'vice_chancellor':
+                path = request.path
+                
+                # 1. Block access to django admin (db access)
+                if path.startswith('/admin/'):
+                    raise PermissionDenied("Database access is restricted for Vice Chancellor.")
+                
+                # 2. Block access to control system paths
+                if any(x in path for x in ['/manage/feature-flags/', '/manage/permissions/', '/manage/roles/', '/manage/staff/']):
+                    raise PermissionDenied("Control system access is restricted for Vice Chancellor.")
+                
+                # 3. Block by resolved URL name
+                try:
+                    resolved = resolve(path)
+                    url_name = resolved.url_name
+                    namespace = resolved.namespace
+                    full_url_name = f"{namespace}:{url_name}" if namespace else url_name
+                    
+                    control_system_url_names = [
+                        'hms:feature_flags',
+                        'hms:update_feature_flags_api',
+                        'hms:permission_matrix',
+                        'hms:save_permissions',
+                        'hms:manage_roles',
+                        'hms:manage_staff',
+                        'hms:edit_staff',
+                        'hms:delete_staff',
+                        'hms:generate_staff_link',
+                        'hms:manage_invitation_action',
+                        'hms:manual_register_staff',
+                    ]
+                    if full_url_name in control_system_url_names or url_name in [
+                        'feature_flags', 'permission_matrix', 'manage_roles', 'manage_staff',
+                        'edit_staff', 'delete_staff', 'generate_staff_link', 'manage_invitation_action',
+                        'manual_register_staff'
+                    ]:
+                        raise PermissionDenied("Control system access is restricted for Vice Chancellor.")
+                except Exception as e:
+                    if isinstance(e, PermissionDenied):
+                        raise e
 
         return self.get_response(request)

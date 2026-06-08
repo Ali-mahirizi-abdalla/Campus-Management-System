@@ -36,16 +36,18 @@
     <nav id="sidebar-nav" tabindex="0" class="space-y-1.5 flex-grow overflow-y-auto min-h-0 pr-2 custom-scrollbar focus:outline-none">
         {% if user.is_staff or user.is_superuser %}
         
-        <!-- 1. SUPER ADMIN -->
-        {% if user.is_superuser or user.staff_profile.role == 'super_admin' %}
+        <!-- 1. SUPER ADMIN / VICE CHANCELLOR -->
+        {% if user.is_superuser or user.staff_profile.role == 'super_admin' or user.staff_profile.role == 'vice_chancellor' %}
         <a href="{% url 'hms:admin_dashboard' %}" class="flex items-center gap-3 px-4 py-3 text-sm {% if request.resolver_match.url_name == 'admin_dashboard' %}bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium{% endif %} rounded-xl transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v1a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
             Dashboard
         </a>
+        {% if user.staff_profile.role != 'vice_chancellor' %}
         <a href="{% url 'hms:manage_staff' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Staff Management</a>
         <a href="{% url 'hms:manage_roles' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Role Management</a>
         <a href="{% url 'hms:permission_matrix' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm {% if request.resolver_match.url_name == 'permission_matrix' %}bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400{% endif %} rounded-xl transition">Permission Matrix</a>
         <a href="{% url 'hms:feature_flags' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm {% if request.resolver_match.url_name == 'feature_flags' %}bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400{% endif %} rounded-xl transition">Feature Flags</a>
+        {% endif %}
         <a href="{% url 'hms:manage_students' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Students</a>
         <a href="{% url 'hms:manage_health' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Health</a>
         <a href="{% url 'hms:manage_maintenance' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Maintenance</a>
@@ -107,11 +109,7 @@
         <a href="{% url 'hms:admin_deferment_pending' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Welfare / Deferments</a>
         <a href="{% url 'hms:student_profile' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Profile</a>
 
-        <!-- 9. VICE CHANCELLOR -->
-        {% elif user.staff_profile.role == 'vice_chancellor' %}
-        <a href="{% url 'hms:vc_dashboard' %}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl transition">My Dashboard</a>
-        <a href="{% url 'hms:manage_staff' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">All Staff (Read-Only)</a>
-        <a href="{% url 'hms:student_profile' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Profile</a>
+
 
         <!-- 10. DEPUTY VICE CHANCELLOR -->
         {% elif user.staff_profile.role == 'deputy_vice_chancellor' %}
