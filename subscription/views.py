@@ -3,6 +3,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import Subscription
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     # Check if already active

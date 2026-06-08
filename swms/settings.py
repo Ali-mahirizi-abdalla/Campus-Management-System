@@ -111,6 +111,7 @@ INSTALLED_APPS = [
 
     'hms',  # Your app
     'library',  # Library module
+    'subscription',  # Subscription app
 
 
     # Allauth
