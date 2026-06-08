@@ -3,10 +3,14 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from subscription.views import intasend_webhook
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('library/', include('library.urls')),
+    path('v1/events/', intasend_webhook, name='intasend_webhook'),
+    path('v1/events', intasend_webhook),  # Handle without trailing slash too
     path('', include('hms.urls', namespace='hms')),
 ]
 
