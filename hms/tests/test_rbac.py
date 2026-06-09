@@ -88,45 +88,46 @@ class RBACTestCase(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('role', form.errors)
 
-    def test_vice_chancellor_full_access_restricted(self):
-        """Test that Vice Chancellor has full admin access except DB/Control System"""
+    def test_executive_full_access_restricted(self):
+        """Test that Vice Chancellor and Deputy VC have full admin access except DB/Control System"""
         from hms.decorators import super_admin_required
-        from hms.middleware import ViceChancellorRestrictionMiddleware
+        from hms.middleware import ExecutiveRestrictionMiddleware
         from django.http import HttpResponse
         
         @super_admin_required
         def dummy_admin_view(request):
             return HttpResponse("Admin Success")
 
-        # 1. VC has access to super_admin_required views
-        self.profile.role = 'vice_chancellor'
-        self.profile.save()
-        
-        request = HttpRequest()
-        request.user = self.user
-        
-        # Mock requests framework expects request to have path/method
-        request.path = '/manage/dashboard/'
-        request.method = 'GET'
-        
-        # Test decorator allowing VC
-        response = dummy_admin_view(request)
-        self.assertEqual(response.content.decode(), "Admin Success")
-        
-        # 2. Test middleware restrictions
-        middleware = ViceChancellorRestrictionMiddleware(get_response=lambda req: HttpResponse("Success"))
-        
-        # Should raise PermissionDenied for /admin/
-        request.path = '/admin/auth/user/'
-        with self.assertRaises(PermissionDenied):
-            middleware(request)
+        # Test for both VC and Deputy VC
+        for exec_role in ['vice_chancellor', 'deputy_vice_chancellor']:
+            self.profile.role = exec_role
+            self.profile.save()
             
-        # Should raise PermissionDenied for control system
-        request.path = '/manage/feature-flags/'
-        with self.assertRaises(PermissionDenied):
-            middleware(request)
+            request = HttpRequest()
+            request.user = self.user
             
-        # Should pass for other admin views (like dashboard)
-        request.path = '/manage/dashboard/'
-        response = middleware(request)
-        self.assertEqual(response.content.decode(), "Success")
+            # Mock requests framework expects request to have path/method
+            request.path = '/manage/dashboard/'
+            request.method = 'GET'
+            
+            # Test decorator allowing Executive
+            response = dummy_admin_view(request)
+            self.assertEqual(response.content.decode(), "Admin Success")
+            
+            # 2. Test middleware restrictions
+            middleware = ExecutiveRestrictionMiddleware(get_response=lambda req: HttpResponse("Success"))
+            
+            # Should raise PermissionDenied for /admin/
+            request.path = '/admin/auth/user/'
+            with self.assertRaises(PermissionDenied):
+                middleware(request)
+                
+            # Should raise PermissionDenied for control system
+            request.path = '/manage/feature-flags/'
+            with self.assertRaises(PermissionDenied):
+                middleware(request)
+                
+            # Should pass for other admin views (like dashboard)
+            request.path = '/manage/dashboard/'
+            response = middleware(request)
+            self.assertEqual(response.content.decode(), "Success")

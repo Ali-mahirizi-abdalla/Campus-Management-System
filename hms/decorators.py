@@ -26,7 +26,7 @@ def role_required(allowed_roles=[]):
                 role = staff_profile.role
                 if role in allowed_roles:
                     return view_func(request, *args, **kwargs)
-                if role == 'vice_chancellor' and 'super_admin' in allowed_roles:
+                if role in ['vice_chancellor', 'deputy_vice_chancellor'] and 'super_admin' in allowed_roles:
                     return view_func(request, *args, **kwargs)
 
             # 3. SECONDARY: Check Django Groups (backward compatibility)
@@ -64,7 +64,7 @@ def permission_required(permission_code):
             staff_profile = getattr(request.user, 'staff_profile', None)
             role = staff_profile.role if staff_profile else None
             
-            if role in ['super_admin', 'vice_chancellor']:
+            if role in ['super_admin', 'vice_chancellor', 'deputy_vice_chancellor']:
                 return view_func(request, *args, **kwargs)
 
             if role:
@@ -87,11 +87,11 @@ def permission_required(permission_code):
 # ─────────────────────────────────────────────────────────
 
 def super_admin_required(view_func):
-    return role_required(allowed_roles=['super_admin', 'vice_chancellor'])(view_func)
+    return role_required(allowed_roles=['super_admin', 'vice_chancellor', 'deputy_vice_chancellor'])(view_func)
 
 def admin_only(view_func):
     """Fallback / Compatibility / Super Admin check"""
-    return role_required(allowed_roles=['super_admin', 'vice_chancellor'])(view_func)
+    return role_required(allowed_roles=['super_admin', 'vice_chancellor', 'deputy_vice_chancellor'])(view_func)
 
 def welfare_officer_required(view_func):
     return role_required(allowed_roles=['super_admin', 'dean_of_students'])(view_func)

@@ -108,9 +108,9 @@ class SubscriptionLockMiddleware:
 
         return self.get_response(request)
 
-class ViceChancellorRestrictionMiddleware:
+class ExecutiveRestrictionMiddleware:
     """
-    Middleware to restrict Vice Chancellor role from accessing:
+    Middleware to restrict Vice Chancellor and Deputy Vice Chancellor roles from accessing:
     1. Django Admin (Database access) at /admin/
     2. Control system pages (Feature flags, permission matrix, role management, staff management)
     """
@@ -120,16 +120,16 @@ class ViceChancellorRestrictionMiddleware:
     def __call__(self, request):
         if request.user.is_authenticated:
             staff_profile = getattr(request.user, 'staff_profile', None)
-            if staff_profile and staff_profile.role == 'vice_chancellor':
+            if staff_profile and staff_profile.role in ['vice_chancellor', 'deputy_vice_chancellor']:
                 path = request.path
                 
                 # 1. Block access to django admin (db access)
                 if path.startswith('/admin/'):
-                    raise PermissionDenied("Database access is restricted for Vice Chancellor.")
+                    raise PermissionDenied("Database access is restricted for executive officers.")
                 
                 # 2. Block access to control system paths
                 if any(x in path for x in ['/manage/feature-flags/', '/manage/permissions/', '/manage/roles/', '/manage/staff/']):
-                    raise PermissionDenied("Control system access is restricted for Vice Chancellor.")
+                    raise PermissionDenied("Control system access is restricted for executive officers.")
                 
                 # 3. Block by resolved URL name
                 try:
@@ -156,7 +156,7 @@ class ViceChancellorRestrictionMiddleware:
                         'edit_staff', 'delete_staff', 'generate_staff_link', 'manage_invitation_action',
                         'manual_register_staff'
                     ]:
-                        raise PermissionDenied("Control system access is restricted for Vice Chancellor.")
+                        raise PermissionDenied("Control system access is restricted for executive officers.")
                 except Exception as e:
                     if isinstance(e, PermissionDenied):
                         raise e

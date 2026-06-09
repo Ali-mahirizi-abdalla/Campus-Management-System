@@ -151,7 +151,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'hms.middleware.AuditMiddleware',
     'hms.middleware.PresenceMiddleware',
-    'hms.middleware.ViceChancellorRestrictionMiddleware',
+    'hms.middleware.ExecutiveRestrictionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
