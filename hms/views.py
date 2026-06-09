@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
@@ -305,6 +305,7 @@ def register_staff(request):
     })
 
 
+@csrf_exempt
 def user_login(request):
     """Login view for all users with role selection"""
     if request.user.is_authenticated:
