@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
@@ -335,7 +336,9 @@ def user_login(request):
     return render(request, 'hms/login.html', {'form': form})
 
 @login_required
+@csrf_exempt
 def user_logout(request):
+    """Accept both GET and POST to avoid CSRF errors from link-based logouts."""
     logout(request)
     return redirect('hms:login')
 
