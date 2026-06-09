@@ -11,6 +11,7 @@ django.setup()
 
 from django.db import connection
 from django.core.management import call_command
+from django.db.migrations.recorder import MigrationRecorder
 
 # All tables the library 0001_initial migration creates
 LIBRARY_TABLES = [
@@ -22,28 +23,12 @@ LIBRARY_TABLES = [
     'library_book',
 ]
 
-def run_sql(sql, params=None):
-    with connection.cursor() as cursor:
-        cursor.execute(sql, params)
-
 def table_exists(table_name):
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT EXISTS (
-                SELECT FROM information_schema.tables
-                WHERE table_schema = 'public' AND table_name = %s
-            );
-        """, [table_name])
-        return cursor.fetchone()[0]
+    return table_name in connection.introspection.table_names()
 
 def migration_recorded(app, name):
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT EXISTS (
-                SELECT 1 FROM django_migrations WHERE app = %s AND name = %s
-            );
-        """, [app, name])
-        return cursor.fetchone()[0]
+    recorder = MigrationRecorder(connection)
+    return (app, name) in recorder.applied_migrations()
 
 print("=== Library DB Fix Script ===\n")
 
@@ -60,12 +45,17 @@ print(f"Migration recorded:  {recorded}\n")
 if existing and missing:
     print("Partial state detected — dropping existing library tables for a clean migrate...\n")
     # Drop in reverse order of foreign key dependencies
-    for table in LIBRARY_TABLES:
-        if table_exists(table):
-            run_sql(f'DROP TABLE IF EXISTS "{table}" CASCADE;')
-            print(f"  Dropped: {table}")
+    recorder = MigrationRecorder(connection)
+    with connection.cursor() as cursor:
+        for table in LIBRARY_TABLES:
+            if table in connection.introspection.table_names():
+                if connection.vendor == 'postgresql':
+                    cursor.execute(f'DROP TABLE IF EXISTS "{table}" CASCADE;')
+                else:
+                    cursor.execute(f'DROP TABLE IF EXISTS "{table}";')
+                print(f"  Dropped: {table}")
     # Also clear any stale migration record
-    run_sql("DELETE FROM django_migrations WHERE app = 'library';")
+    recorder.migration_class.objects.filter(app='library').delete()
     print("  Cleared library migration records\n")
 
 elif not existing and not recorded:
@@ -73,11 +63,8 @@ elif not existing and not recorded:
 
 elif existing and not missing and not recorded:
     print("All tables exist but not recorded — faking migration.\n")
-    run_sql("""
-        INSERT INTO django_migrations (app, name, applied)
-        VALUES ('library', '0001_initial', NOW())
-        ON CONFLICT DO NOTHING;
-    """)
+    recorder = MigrationRecorder(connection)
+    recorder.record_applied('library', '0001_initial')
 
 elif recorded and not missing:
     print("All tables exist and migration is recorded — nothing to fix.\n")
@@ -90,6 +77,6 @@ call_command('migrate', '--noinput')
 print("\n=== Final State ===")
 for table in LIBRARY_TABLES:
     exists = table_exists(table)
-    print(f"  {'✓' if exists else '✗'} {table}")
+    print(f"  {'[OK]' if exists else '[MISSING]'} {table}")
 
 print("\nDone!")
