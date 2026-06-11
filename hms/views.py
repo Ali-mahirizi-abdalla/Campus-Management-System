@@ -3314,31 +3314,46 @@ def audit_log_export(request):
 
 @login_required
 def update_student_status(request):
-    """Toggle student status (attachment/graduating)"""
+    """Toggle student status (attachment/graduating) and update academic info (level/department)"""
     if request.method == 'POST':
         try:
             student = request.user.student_profile
-            
+
+            # Handle level of study update
+            if 'update_academic_info' in request.POST:
+                level_of_study = request.POST.get('level_of_study', '').strip()
+                program_of_study = request.POST.get('program_of_study', '').strip()
+
+                VALID_LEVELS = ['diploma', 'bachelors', 'masters', 'doctorate', 'postgrad_diploma', 'certificate']
+                if level_of_study and level_of_study in VALID_LEVELS:
+                    student.level_of_study = level_of_study
+
+                if program_of_study:
+                    student.program_of_study = program_of_study
+
+                student.save()
+                messages.success(request, 'Academic information updated successfully.')
+
             # Check which toggle was clicked
-            if 'toggle_attachment' in request.POST:
+            elif 'toggle_attachment' in request.POST:
                 student.is_on_attachment = not student.is_on_attachment
                 # If on attachment, they might be away? (Optional logic)
                 status = "ON ATTACHMENT" if student.is_on_attachment else "OFF ATTACHMENT"
                 messages.success(request, f'Status updated: You are now {status}.')
-                
+                student.save()
+
             elif 'toggle_graduating' in request.POST:
                 student.is_graduating = not student.is_graduating
                 status = "GRADUATING CLASS" if student.is_graduating else "CONTINUING STUDENT"
                 messages.success(request, f'Status updated: You are now marked as {status}.')
-                
-            student.save()
-            
+                student.save()
+
         except AttributeError:
             messages.error(request, "Student profile not found.")
         except Exception as e:
             messages.error(request, f"An error occurred: {str(e)}")
-            
-            
+
+
     return redirect('hms:student_dashboard')
 
 
