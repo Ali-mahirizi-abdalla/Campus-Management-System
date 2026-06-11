@@ -171,11 +171,11 @@ def register_student(request):
             messages.error(request, "Invalid or expired student invitation link.")
             return redirect('hms:login')
     else:
-        # Require login and admin permission if not self-registering
+        # No invite token — require login and admin permission for manual registration
         if not request.user.is_authenticated:
-            from django.contrib.auth.views import redirect_to_login
-            messages.error(request, "Registration requires a valid invitation link.")
-            return redirect_to_login(request.get_full_path(), login_url='hms:login')
+            messages.error(request, "A valid student invitation link is required to register.")
+            return redirect('hms:login')
+        # Authenticated admins can manually add students without a token
         if not request.user.is_superuser:
             staff_profile = getattr(request.user, 'staff_profile', None)
             if not staff_profile or staff_profile.role not in ['super_admin', 'vice_chancellor', 'reg_admin']:
@@ -4624,18 +4624,32 @@ def generate_student_link(request):
     
     if request.method == 'POST':
         try:
-            # Parse settings
-            expiry_hours = int(request.POST.get('expiry_hours', 24))
-            usage_limit = int(request.POST.get('usage_limit', 1))
-            
+            # Parse expiry radio (24h / 7d / never)
+            expiry_val = request.POST.get('expiry', '24h')
+            if expiry_val == '24h':
+                expiry_hours = 24
+            elif expiry_val == '7d':
+                expiry_hours = 168   # 7 * 24
+            else:  # 'never'
+                expiry_hours = 0
+
+            # Parse usage radio (single / multiple / unlimited)
+            usage_val = request.POST.get('usage', 'single')
+            if usage_val == 'single':
+                usage_limit = 1
+            elif usage_val == 'multiple':
+                usage_limit = 5
+            else:  # 'unlimited'
+                usage_limit = 0
+
             # Generate unique secure token
             token = get_random_string(64)
-            
+
             # Calculate expiration
             expires_at = None
             if expiry_hours > 0:
                 expires_at = timezone.now() + timedelta(hours=expiry_hours)
-                
+
             # Create invitation
             invite = StudentInvitation.objects.create(
                 token=token,
@@ -4643,19 +4657,19 @@ def generate_student_link(request):
                 usage_limit=usage_limit,
                 created_by=request.user
             )
-            
+
             # Generate full URL
             registration_url = request.build_absolute_uri(
                 reverse('hms:register')
             ) + f'?invite={token}'
-            
+
             messages.success(request, "Student Registration link generated successfully.")
             return render(request, 'hms/admin/generate_student_link.html', {
                 'generated_url': registration_url,
                 'invite': invite,
                 'recent_links': StudentInvitation.objects.order_by('-created_at')[:10]
             })
-            
+
         except Exception as e:
             messages.error(request, f"Failed to generate link: {str(e)}")
             

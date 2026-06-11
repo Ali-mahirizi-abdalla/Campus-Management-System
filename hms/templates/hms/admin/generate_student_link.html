@@ -6,7 +6,9 @@
 {% block extra_head %}
 <!-- External Font & Icons from User Request -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+    rel="stylesheet">
 
 <style>
     /* ============================================
@@ -327,6 +329,7 @@
             opacity: 0;
             transform: translateY(-10px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -512,6 +515,7 @@
             opacity: 0;
             transform: translateX(100px);
         }
+
         to {
             opacity: 1;
             transform: translateX(0);
@@ -521,6 +525,7 @@
     .toast-success {
         border-left-color: #10B981;
     }
+
     .toast-success i {
         color: #10B981;
     }
@@ -528,6 +533,7 @@
     .toast-error {
         border-left-color: #EF4444;
     }
+
     .toast-error i {
         color: #EF4444;
     }
@@ -535,6 +541,7 @@
     .toast-warning {
         border-left-color: #F59E0B;
     }
+
     .toast-warning i {
         color: #F59E0B;
     }
@@ -542,6 +549,7 @@
     .toast-info {
         border-left-color: #3B82F6;
     }
+
     .toast-info i {
         color: #3B82F6;
     }
@@ -585,14 +593,16 @@
         display: inline-block;
         width: 18px;
         height: 18px;
-        border: 2px solid rgba(255,255,255,0.3);
+        border: 2px solid rgba(255, 255, 255, 0.3);
         border-radius: 50%;
         border-top-color: white;
         animation: spin 0.6s linear infinite;
     }
 
     @keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     /* ---------- RESPONSIVE DESIGN ---------- */
@@ -600,7 +610,7 @@
         .invitation-container {
             padding: 24px 20px;
         }
-        
+
         .form-grid {
             gap: 20px;
         }
@@ -610,38 +620,39 @@
         .invitation-container {
             padding: 20px 16px;
         }
-        
+
         .card {
             padding: 20px;
         }
-        
+
         .form-grid {
             grid-template-columns: 1fr;
             gap: 20px;
         }
-        
-        .radio-group, .usage-group {
+
+        .radio-group,
+        .usage-group {
             flex-direction: column;
             gap: 12px;
         }
-        
+
         .link-meta-grid {
             flex-direction: column;
             gap: 10px;
         }
-        
+
         .footer-buttons {
             justify-content: center;
         }
-        
+
         .action-buttons {
             justify-content: center;
         }
-        
+
         .page-header h1 {
             font-size: 26px;
         }
-        
+
         .toast-notification {
             left: 16px;
             right: 16px;
@@ -653,22 +664,22 @@
         .card {
             padding: 16px;
         }
-        
+
         .btn-primary {
             padding: 12px 20px;
             font-size: 14px;
         }
-        
+
         .link-actions {
             flex-direction: column;
         }
-        
+
         .link-actions .btn-secondary,
         .link-actions .btn-icon {
             width: 100%;
             justify-content: center;
         }
-        
+
         .actions-cell {
             flex-direction: column;
         }
@@ -679,7 +690,7 @@
         body {
             background: white;
         }
-        
+
         .btn-primary,
         .btn-secondary,
         .btn-icon,
@@ -689,12 +700,12 @@
         .link-actions {
             display: none;
         }
-        
+
         .card {
             box-shadow: none;
             border: 1px solid #ddd;
         }
-        
+
         .generated-link-card {
             background: white;
             border: 1px solid #ddd;
@@ -781,7 +792,7 @@
         background: #1E293B;
         color: #F8FAFC;
     }
-    
+
     .dark .toast-message {
         color: #F8FAFC;
     }
@@ -790,7 +801,7 @@
 
 {% block content %}
 <div class="invitation-container">
-    
+
     <!-- Page Header with Navy to Teal Gradient Text -->
     <div class="page-header">
         <h1><i class="fas fa-link"></i> Staff Invitation System</h1>
@@ -799,17 +810,20 @@
 
     <!-- Django backend system message notifications -->
     {% if messages %}
-        {% for message in messages %}
-            {% if message.tags == 'success' and 'link generated successfully' in message.message|lower %}
-                <!-- Skip standard success banner to let success-card display -->
-            {% else %}
-                <div class="card" style="padding: 16px; border-left: 5px solid {% if message.tags == 'success' %}#10B981{% else %}#EF4444{% endif %}; margin-bottom: 24px;">
-                    <div style="font-weight: 700; color: {% if message.tags == 'success' %}#065F46{% else %}#991B1B{% endif %};">
-                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i> {{ message }}
-                    </div>
-                </div>
-            {% endif %}
-        {% endfor %}
+    {% for message in messages %}
+    {% if message.tags == 'success' and 'link generated successfully' in message.message|lower %}
+    <!-- Skip standard success banner to let success-card display -->
+    {% else %}
+    <div class="card"
+        style="padding: 16px; border-left: 5px solid {% if message.tags == 'success' %}#10B981{% else %}#EF4444{% endif %}; margin-bottom: 24px;">
+        <div style="font-weight: 700; color: {% if message.tags == 'success' %}#065F46{% else %}#991B1B{% endif %};">
+            <i
+                class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
     {% endif %}
 
     <!-- Recently Generated Link Card -->
@@ -819,23 +833,24 @@
             <i class="fas fa-check-circle"></i>
             <h4>Recently Generated Link</h4>
         </div>
-        
+
         <div class="link-url" id="new-link-text">{{ generated_url }}</div>
-        
+
         <div class="link-meta-grid">
             <div class="meta-item">
                 <span class="meta-label">Expires:</span>
                 <span class="meta-value">
                     {% if recent_links.0.expires_at %}
-                        {{ recent_links.0.expires_at|timeuntil }} left
+                    {{ recent_links.0.expires_at|timeuntil }} left
                     {% else %}
-                        Never
+                    Never
                     {% endif %}
                 </span>
             </div>
             <div class="meta-item">
                 <span class="meta-label">Usage:</span>
-                <span class="meta-value">{{ invite.used_count }}/{% if invite.usage_limit == 0 %}∞{% else %}{{ invite.usage_limit }}{% endif %}</span>
+                <span class="meta-value">{{ invite.used_count }}/{% if invite.usage_limit == 0 %}∞{% else %}{{
+                    invite.usage_limit }}{% endif %}</span>
             </div>
             <div class="meta-item">
                 <span class="meta-label">Status:</span>
@@ -844,9 +859,10 @@
                 </span>
             </div>
         </div>
-        
+
         <div class="link-actions">
-            <button type="button" class="btn-secondary" onclick="copyToClipboard('{{ generated_url }}', 'Link copied to clipboard!')">
+            <button type="button" class="btn-secondary"
+                onclick="copyToClipboard('{{ generated_url }}', 'Link copied to clipboard!')">
                 <i class="fas fa-copy"></i> Copy Link
             </button>
             <button type="button" class="btn-icon" onclick="sendInviteEmail({{ invite.id }})">
@@ -858,7 +874,7 @@
             <button type="button" class="btn-icon" onclick="simulateAction('WhatsApp message queued!')">
                 <i class="fab fa-whatsapp"></i> WhatsApp
             </button>
-            <a href="{% url 'hms:manage_invitation_action' invite.id %}?action=delete" class="btn-danger">
+            <a href="{% url 'hms:manage_student_invitation_action' invite.id %}?action=delete" class="btn-danger">
                 <i class="fas fa-times-circle"></i> Revoke
             </a>
         </div>
@@ -868,58 +884,14 @@
     <!-- Generate Link Panel -->
     <form method="POST" id="genForm">
         {% csrf_token %}
-        
+
         <div class="card">
             <div class="card-header">
                 <i class="fas fa-plus-circle"></i> Generate New Invitation Link
             </div>
-            
+
             <div class="form-grid">
-                <!-- Step 1: Select Target Role -->
-                <div class="form-group">
-                    <label class="form-label"><i class="fas fa-user-tag"></i> Step 1: Select Staff Role</label>
-                    <select name="role" class="form-select" required>
-                        <option value="">-- Select Target Role --</option>
-                        <option value="ANY" style="font-weight: bold; color: #0D9488;">-- General Link (Let User Choose) --</option>
-                        <optgroup label="Executive Leadership">
-                            <option value="VC">Vice Chancellor</option>
-                            <option value="DVC">Deputy Vice Chancellor</option>
-                            <option value="DVC_ASA">DVC ASA</option>
-                        </optgroup>
-                        <optgroup label="Registry">
-                            <option value="REG_ADMIN">Register Admin</option>
-                            <option value="REG_USER">Register User</option>
-                        </optgroup>
-                        <optgroup label="Academic">
-                            <option value="SUPER_ADMIN">Super Admin</option>
-                            <option value="DEAN_HHS">Dean of Students</option>
-                            <option value="DEAN_GRAD">Dean - Graduate School</option>
-                            <option value="DEPT_MCS">Dept MCS Coordinator</option>
-                            <option value="DIR_RESOURCE">Director - Resource Mobilization</option>
-                            <option value="DIR_TVET">Director - TVET</option>
-                            <option value="DIPLOMA">Diploma Coordinator</option>
-                            <option value="librarian">Head Of Library Services (HOLS)</option>
-                        </optgroup>
-                        <optgroup label="Welfare &amp; Student Services">
-                            <option value="HEALTH_MGR">Health Manager</option>
-                            <option value="MAINT_SUP">Maintenance Supervisor</option>
-                            <option value="WARDEN">Warden</option>
-                            <option value="DEFERMENT">Deferment Officer</option>
-                        </optgroup>
-                        <optgroup label="Operations">
-                            <option value="FINANCE">Finance Officer</option>
-                            <option value="SECURITY">Security Officer</option>
-                            <option value="EMERGENCY">Emergency Coordinator</option>
-                            <option value="SUPPORT">Support Agent</option>
-                        </optgroup>
-                        <optgroup label="Media &amp; Communications">
-                            <option value="NEWS_EDITOR">News Editor</option>
-                            <option value="NEWS_AUDITOR">News Auditor</option>
-                            <option value="AUDITOR">Auditor</option>
-                        </optgroup>
-                    </select>
-                </div>
-                
+
                 <!-- Step 1: Link Expiry -->
                 <div class="form-group">
                     <label class="form-label"><i class="fas fa-clock"></i> Step 1: Link Expiry</label>
@@ -939,7 +911,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Step 2: Usage Limit -->
             <div class="form-group" style="margin-bottom: 24px;">
                 <label class="form-label"><i class="fas fa-users-cog"></i> Step 2: Usage Limit</label>
@@ -958,7 +930,7 @@
                     </label>
                 </div>
             </div>
-            
+
             <button type="submit" class="btn-primary" id="genBtn">
                 <i class="fas fa-link"></i> Generate Invitation Link
             </button>
@@ -970,7 +942,7 @@
         <div class="card-header">
             <i class="fas fa-clipboard-list"></i> Active Registration Links
         </div>
-        
+
         <div class="table-wrapper">
             <table class="links-table">
                 <thead>
@@ -990,17 +962,18 @@
                         </td>
                         <td>
                             {% if invite.expires_at %}
-                                {% if invite.is_expired %}
-                                    <span style="color: #991B1B; font-weight: 700;">Expired</span>
-                                {% else %}
-                                    {{ invite.expires_at|timeuntil }} left
-                                {% endif %}
+                            {% if invite.is_expired %}
+                            <span style="color: #991B1B; font-weight: 700;">Expired</span>
                             {% else %}
-                                <span style="color: #0D9488; font-weight: 700;">Never</span>
+                            {{ invite.expires_at|timeuntil }} left
+                            {% endif %}
+                            {% else %}
+                            <span style="color: #0D9488; font-weight: 700;">Never</span>
                             {% endif %}
                         </td>
                         <td>
-                            {{ invite.used_count }}/{% if invite.usage_limit == 0 %}∞{% else %}{{ invite.usage_limit }}{% endif %}
+                            {{ invite.used_count }}/{% if invite.usage_limit == 0 %}∞{% else %}{{ invite.usage_limit
+                            }}{% endif %}
                         </td>
                         <td>
                             {% if invite.is_expired %}
@@ -1019,16 +992,20 @@
                         </td>
                         <td>
                             <div class="actions-cell" style="justify-content: flex-end;">
-                                <button type="button" class="btn-icon" title="Copy Link" onclick="copyToClipboard('{{ invite.full_url }}', 'Link copied to clipboard!')">
+                                <button type="button" class="btn-icon" title="Copy Link"
+                                    onclick="copyToClipboard('{{ invite.full_url }}', 'Link copied to clipboard!')">
                                     <i class="fas fa-clipboard"></i>
                                 </button>
-                                <button type="button" class="btn-icon" title="Email Link" onclick="sendInviteEmail({{ invite.id }})">
+                                <button type="button" class="btn-icon" title="Email Link"
+                                    onclick="sendInviteEmail({{ invite.id }})">
                                     <i class="fas fa-envelope"></i>
                                 </button>
-                                <button type="button" class="btn-icon" title="Refresh/Renew Link" onclick="simulateAction('Link validity refreshed!')">
+                                <button type="button" class="btn-icon" title="Refresh/Renew Link"
+                                    onclick="simulateAction('Link validity refreshed!')">
                                     <i class="fas fa-sync-alt"></i>
                                 </button>
-                                <a href="{% url 'hms:manage_invitation_action' invite.id %}?action=delete" class="btn-danger" style="padding: 6px 12px; font-size: 11px;" title="Delete Link">
+                                <a href="{% url 'hms:manage_invitation_action' invite.id %}?action=delete"
+                                    class="btn-danger" style="padding: 6px 12px; font-size: 11px;" title="Delete Link">
                                     {% if invite.is_expired or not invite.is_valid %}
                                     <i class="fas fa-trash-alt"></i>
                                     {% else %}
@@ -1051,12 +1028,13 @@
                 </tbody>
             </table>
         </div>
-        
+
         <div class="footer-buttons">
             <a href="." class="btn-secondary">
                 <i class="fas fa-sync-alt"></i> Refresh List
             </a>
-            <a href="{% url 'hms:manage_invitation_action' 0 %}?action=clear_expired" class="btn-secondary" style="color: #EF4444; border-color: #EF4444;">
+            <a href="{% url 'hms:manage_invitation_action' 0 %}?action=clear_expired" class="btn-secondary"
+                style="color: #EF4444; border-color: #EF4444;">
                 <i class="fas fa-trash-alt"></i> Clear Expired
             </a>
         </div>
@@ -1069,23 +1047,23 @@
 <script>
     function showToast(message, type = 'success') {
         const container = document.getElementById('toastContainer');
-        
+
         const toast = document.createElement('div');
         toast.className = `toast-notification toast-${type}`;
-        
+
         let iconClass = 'fa-check-circle';
         if (type === 'error') iconClass = 'fa-exclamation-circle';
         else if (type === 'warning') iconClass = 'fa-exclamation-triangle';
         else if (type === 'info') iconClass = 'fa-info-circle';
-        
+
         toast.innerHTML = `
             <i class="fas ${iconClass}"></i>
             <span class="toast-message">${message}</span>
             <button type="button" class="toast-close" onclick="this.parentElement.remove()">&close;</button>
         `;
-        
+
         container.appendChild(toast);
-        
+
         // Remove after 3.5 seconds
         setTimeout(() => {
             toast.style.opacity = '0';
@@ -1108,7 +1086,7 @@
             fallbackCopyTextToClipboard(text, successMessage);
         }
     }
-    
+
     function fallbackCopyTextToClipboard(text, successMessage) {
         var textArea = document.createElement("textarea");
         textArea.value = text;
@@ -1130,11 +1108,11 @@
         }
         document.body.removeChild(textArea);
     }
-    
+
     function simulateAction(message) {
         showToast(message, 'success');
     }
-    
+
     function sendInviteEmail(inviteId) {
         const email = prompt("Enter the email address to send this invitation to:");
         if (email && email.trim() !== "") {
@@ -1144,7 +1122,7 @@
         }
     }
 
-    document.getElementById('genForm').addEventListener('submit', function() {
+    document.getElementById('genForm').addEventListener('submit', function () {
         const btn = document.getElementById('genBtn');
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner"></span> Generating Link...';
