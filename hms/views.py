@@ -12,7 +12,7 @@ from django.db.models import Q
 from .models import (Student, Meal, Activity, AwayPeriod, Announcement, Document, MaintenanceRequest,
                      Message, AuditLog,
                      LeaveRequest, DefermentRequest, Visitor, EmergencyAlert,
-                     Room, RoomAssignment, RoomChangeRequest, Payment, Notification, LoginActivity, LostItem, StaffProfile, StaffInvitation,
+                     Room, RoomAssignment, RoomChangeRequest, Payment, Notification, LoginActivity, LostItem, StaffProfile, StaffInvitation, StudentInvitation,
                      AdminSubscription, RegistrationPayment, TutoringPost, HealthAppointment)
 from .decorators import (
     role_required, permission_required, staff_only, admin_only,
@@ -161,8 +161,27 @@ ROLE_BANNERS = {
 def register_student(request):
     """
     Handle student registration logic.
-    Students are now registered directly without mandatory payment.
+    Requires a valid invitation token.
     """
+    invite_token = request.GET.get('invite') or request.POST.get('invite')
+    invite = None
+    if invite_token:
+        invite = StudentInvitation.objects.filter(token=invite_token).first()
+        if not invite or not invite.is_valid():
+            messages.error(request, "Invalid or expired student invitation link.")
+            return redirect('hms:login')
+    else:
+        # Require login and admin permission if not self-registering
+        if not request.user.is_authenticated:
+            from django.contrib.auth.views import redirect_to_login
+            messages.error(request, "Registration requires a valid invitation link.")
+            return redirect_to_login(request.get_full_path(), login_url='hms:login')
+        if not request.user.is_superuser:
+            staff_profile = getattr(request.user, 'staff_profile', None)
+            if not staff_profile or staff_profile.role not in ['super_admin', 'vice_chancellor', 'reg_admin']:
+                messages.error(request, "Access Denied: Only admins can manually register students.")
+                return redirect('hms:dashboard_redirect')
+
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
@@ -172,15 +191,24 @@ def register_student(request):
                     # Create default notification preferences
                     from .models import NotificationPreference
                     NotificationPreference.objects.get_or_create(user=student.user)
-                login(request, student.user, backend='django.contrib.auth.backends.ModelBackend')
-                messages.success(request, "Registration successful! Welcome to Campus Care.")
-                # Fire welcome SMS (only if student opted in via preferences later)
-                try:
-                    from .notifications import notify_welcome
-                    notify_welcome(student)
-                except Exception:
-                    pass
-                return redirect('hms:student_dashboard')
+                    
+                    if invite:
+                        invite.used_count += 1
+                        invite.save()
+                        
+                # Only auto-login if they used an invite (self-registering)
+                if invite:
+                    login(request, student.user, backend='django.contrib.auth.backends.ModelBackend')
+                    messages.success(request, "Registration successful! Welcome to Campus Care.")
+                    try:
+                        from .notifications import notify_welcome
+                        notify_welcome(student)
+                    except Exception:
+                        pass
+                    return redirect('hms:student_dashboard')
+                else:
+                    messages.success(request, f"Student {student.user.get_full_name()} registered successfully!")
+                    return redirect('hms:dashboard_redirect')
             except Exception as e:
                 messages.error(request, f"Registration failed: {str(e)}")
         else:
@@ -188,7 +216,12 @@ def register_student(request):
                 messages.error(request, f"{field}: {', '.join(errors)}")
     else:
         form = StudentRegistrationForm()
-    return render(request, 'hms/register.html', {'form': form})
+        
+    return render(request, 'hms/register.html', {
+        'form': form,
+        'token': invite_token,
+        'invite': invite,
+    })
 
 
 def check_registration_status(request, checkout_id):
@@ -4582,6 +4615,74 @@ def counselling_request_detail(request, pk):
         return redirect('hms:counsellor_dashboard')
         
     return render(request, 'hms/admin/counselling_request_detail.html', {'req': req})
+
+@login_required
+@admin_only
+def generate_student_link(request):
+    """Generate a secure, time-limited student registration invitation link."""
+    from django.utils.crypto import get_random_string
+    
+    if request.method == 'POST':
+        try:
+            # Parse settings
+            expiry_hours = int(request.POST.get('expiry_hours', 24))
+            usage_limit = int(request.POST.get('usage_limit', 1))
+            
+            # Generate unique secure token
+            token = get_random_string(64)
+            
+            # Calculate expiration
+            expires_at = None
+            if expiry_hours > 0:
+                expires_at = timezone.now() + timedelta(hours=expiry_hours)
+                
+            # Create invitation
+            invite = StudentInvitation.objects.create(
+                token=token,
+                expires_at=expires_at,
+                usage_limit=usage_limit,
+                created_by=request.user
+            )
+            
+            # Generate full URL
+            registration_url = request.build_absolute_uri(
+                reverse('hms:register')
+            ) + f'?invite={token}'
+            
+            messages.success(request, "Student Registration link generated successfully.")
+            return render(request, 'hms/admin/generate_student_link.html', {
+                'generated_url': registration_url,
+                'invite': invite,
+                'recent_links': StudentInvitation.objects.order_by('-created_at')[:10]
+            })
+            
+        except Exception as e:
+            messages.error(request, f"Failed to generate link: {str(e)}")
+            
+    # GET request - show form and recent links
+    recent_links = StudentInvitation.objects.order_by('-created_at')[:20]
+    return render(request, 'hms/admin/generate_student_link.html', {
+        'recent_links': recent_links
+    })
+
+@login_required
+@admin_only
+@require_POST
+def manage_student_invitation_action(request, invite_id):
+    """Toggle status or delete a student invitation."""
+    invite = get_object_or_404(StudentInvitation, id=invite_id)
+    action = request.POST.get('action')
+    
+    if action == 'toggle':
+        invite.is_active = not invite.is_active
+        invite.save()
+        status = "activated" if invite.is_active else "deactivated"
+        messages.success(request, f"Link {status} successfully.")
+    elif action == 'delete':
+        invite.delete()
+        messages.success(request, "Link deleted successfully.")
+        
+    return redirect('hms:generate_student_link')
 
 
 

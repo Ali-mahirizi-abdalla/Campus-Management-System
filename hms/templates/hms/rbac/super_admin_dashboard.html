@@ -435,8 +435,11 @@
         <a href="{% url 'hms:analytics_dashboard' %}" class="action-btn">
             <i class="fas fa-chart-pie"></i> Analytics
         </a>
-        <a href="{% url 'hms:register_staff' %}" class="action-btn">
-            <i class="fas fa-user-plus"></i> Add Staff
+        <a href="{% url 'hms:generate_staff_link' %}" class="action-btn">
+            <i class="fas fa-user-plus"></i> Invite Staff
+        </a>
+        <a href="{% url 'hms:generate_student_link' %}" class="action-btn">
+            <i class="fas fa-user-graduate"></i> Invite Student
         </a>
     </div>
 

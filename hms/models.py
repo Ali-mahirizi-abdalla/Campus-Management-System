@@ -729,6 +729,29 @@ class StaffInvitation(models.Model):
         limit_str = f"{self.usage_limit}" if self.usage_limit > 0 else "∞"
         return f"Invite for {self.role} ({self.used_count}/{limit_str})"
 
+class StudentInvitation(models.Model):
+    """Secure, time-bound and usage-limited student registration invitation links."""
+    token = models.CharField(max_length=64, unique=True)
+    expires_at = models.DateTimeField(null=True, blank=True)  # Null for 'Never'
+    usage_limit = models.IntegerField(default=1)  # 1 for single, N for multiple, 0 for unlimited
+    used_count = models.IntegerField(default=0)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_student_invitations')
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def is_valid(self):
+        if not self.is_active:
+            return False
+        if self.expires_at and timezone.now() > self.expires_at:
+            return False
+        if self.usage_limit > 0 and self.used_count >= self.usage_limit:
+            return False
+        return True
+
+    def __str__(self):
+        limit_str = f"{self.usage_limit}" if self.usage_limit > 0 else "∞"
+        return f"Student Invite ({self.used_count}/{limit_str})"
+
 class NotificationPreference(models.Model):
     """Stores a user's preferences for receiving notifications via different channels"""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='notification_preferences')
