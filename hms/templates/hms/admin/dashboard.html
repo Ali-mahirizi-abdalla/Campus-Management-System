@@ -211,12 +211,11 @@
             <span class="role-label">👑 YOUR ROLE:</span>
             <span class="role-name">{{ role_banner.name }}</span>
         </div>
+        {% if role_banner.description and role_banner.description != 'No description available' %}
         <div class="role-banner-description">
             📋 {{ role_banner.description }}
         </div>
-        <div class="role-banner-restriction">
-            🔒 {{ role_banner.restriction }}
-        </div>
+        {% endif %}
     </div>
 </div>
 {% else %}

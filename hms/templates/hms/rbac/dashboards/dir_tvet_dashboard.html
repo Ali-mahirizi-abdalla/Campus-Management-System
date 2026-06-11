@@ -140,10 +140,9 @@
                 <span class="role-name">{{ role_banner.name }}</span>
             </div>
             <div class="role-banner-description">
+                {% if role_banner.description and role_banner.description != 'No description available' %}
                 📋 {{ role_banner.description }}
-            </div>
-            <div class="role-banner-restriction">
-                🔒 {{ role_banner.restriction }}
+                {% endif %}
             </div>
         </div>
     </div>
