@@ -1,4 +1,4 @@
-{% extends 'hms/base.html' %}
+{% extends base_template|default:'hms/base.html' %}
 {% load static %}
 
 {% block title %}Add Staff Member – CampusCare{% endblock %}
@@ -37,10 +37,17 @@
 <div class="font-inter max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
 
     <!-- Back Link -->
+    {% if invite %}
+    <a href="{% url 'hms:login' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-teal-600 transition-colors mb-6 group">
+        <i class="fas fa-arrow-left text-xs transition-transform group-hover:-translate-x-1"></i> 
+        Back to Login
+    </a>
+    {% else %}
     <a href="{% url 'hms:manage_staff' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-teal-600 transition-colors mb-6 group">
         <i class="fas fa-arrow-left text-xs transition-transform group-hover:-translate-x-1"></i> 
         Back to Staff Directory
     </a>
+    {% endif %}
 
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
@@ -52,7 +59,7 @@
             <p class="text-sm text-slate-500 font-medium pl-4">Create a new staff account and assign their system role</p>
         </div>
         <div class="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm self-start">
-            <i class="fas fa-shield-alt"></i> Manual Registration
+            <i class="fas fa-shield-alt"></i> {% if invite %}Self Registration{% else %}Manual Registration{% endif %}
         </div>
     </div>
 
@@ -73,6 +80,9 @@
     <!-- Main Form -->
     <form method="POST" enctype="multipart/form-data" id="staff-reg-form" novalidate class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
         {% csrf_token %}
+        {% if token %}
+        <input type="hidden" name="invite" value="{{ token }}">
+        {% endif %}
 
         <div class="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
             
@@ -180,6 +190,10 @@
                             Assigned Role <span class="text-rose-500 leading-none">*</span>
                         </label>
                         <div class="relative">
+                            {% if invite %}
+                            <input type="text" name="role_display" value="{% for val, label in role_choices %}{% if val == invite.role %}{{ label }}{% endif %}{% endfor %}" class="w-full pl-4 pr-10 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-800 outline-none cursor-not-allowed" readonly>
+                            <input type="hidden" name="role" value="{{ invite.role }}">
+                            {% else %}
                             <select name="role" id="id_role" required
                                 class="w-full appearance-none pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 focus:bg-white transition-all outline-none {% if form.role.errors %}border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/10{% endif %}">
                                 <option value="">— Select a role —</option>
@@ -223,6 +237,8 @@
                                 </optgroup>
                             </select>
                             <i class="fas fa-chevron-down select-icon text-xs"></i>
+                            {% endif %}
+                        </div>
                         </div>
                         <p class="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1.5"><i class="fas fa-info-circle text-slate-300"></i> Determines system access & permissions</p>
                         {% for err in form.role.errors %}
@@ -348,7 +364,7 @@
                 Staff will be prompted to change password on first login.
             </div>
             <div class="flex items-center gap-3 w-full sm:w-auto">
-                <a href="{% url 'hms:manage_staff' %}" class="flex-1 sm:flex-none text-center px-6 py-2.5 bg-white border-2 border-slate-200 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all text-sm">
+                <a href="{% if invite %}{% url 'hms:login' %}{% else %}{% url 'hms:manage_staff' %}{% endif %}" class="flex-1 sm:flex-none text-center px-6 py-2.5 bg-white border-2 border-slate-200 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all text-sm">
                     Cancel
                 </a>
                 <button type="submit" id="submit-btn" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl shadow-lg shadow-slate-900/20 hover:bg-slate-800 hover:shadow-xl hover:-translate-y-0.5 transition-all active:translate-y-0 text-sm">

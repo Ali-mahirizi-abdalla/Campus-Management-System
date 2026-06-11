@@ -276,12 +276,23 @@
                 </div>
             </div>
             <div class="header-actions">
+                {% if user.staff_profile.role == 'super_admin' and not staff.is_approved %}
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" name="approve_staff" class="btn btn-primary" style="background: #10b981; border-color: #10b981;" onclick="return confirm('Approve this staff account?');">
+                        <i class="fas fa-check-circle"></i> Approve Account
+                    </button>
+                </form>
+                {% endif %}
+                
+                {% if user.staff_profile.role != 'vice_chancellor' %}
                 <a href="{% url 'hms:edit_staff' staff.id %}" class="btn btn-outline">
                     <i class="fas fa-user-edit"></i> Edit Profile
                 </a>
                 <a href="{% url 'hms:delete_staff' staff.id %}" class="btn btn-danger" onclick="return confirm('CRITICAL: Are you sure you want to terminate this staff account? This action cannot be undone.')">
                     <i class="fas fa-user-times"></i> Terminate Account
                 </a>
+                {% endif %}
             </div>
         </div>
 

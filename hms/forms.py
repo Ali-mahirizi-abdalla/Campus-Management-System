@@ -899,7 +899,7 @@ class StaffEditForm(forms.ModelForm):
 
     class Meta:
         model = StaffProfile
-        fields = ['role', 'national_id', 'phone', 'profile_image']
+        fields = ['role', 'national_id', 'phone', 'is_approved', 'profile_image']
         widgets = {
             'role': forms.Select(attrs={'class': 'w-full px-4 py-3 bg-slate-50 border rounded-xl'}),
             'national_id': forms.TextInput(attrs={'class': 'w-full px-4 py-3 bg-slate-50 border rounded-xl'}),

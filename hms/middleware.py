@@ -122,13 +122,18 @@ class ExecutiveRestrictionMiddleware:
             staff_profile = getattr(request.user, 'staff_profile', None)
             if staff_profile and staff_profile.role in ['vice_chancellor', 'deputy_vice_chancellor']:
                 path = request.path
+                is_vc = (staff_profile.role == 'vice_chancellor')
                 
                 # 1. Block access to django admin (db access)
                 if path.startswith('/admin/'):
                     raise PermissionDenied("Database access is restricted for executive officers.")
                 
                 # 2. Block access to control system paths
-                if any(x in path for x in ['/manage/feature-flags/', '/manage/permissions/', '/manage/roles/', '/manage/staff/']):
+                check_paths = ['/manage/feature-flags/', '/manage/staff/']
+                if not is_vc:
+                    check_paths.extend(['/manage/permissions/', '/manage/roles/'])
+                
+                if any(x in path for x in check_paths):
                     raise PermissionDenied("Control system access is restricted for executive officers.")
                 
                 # 3. Block by resolved URL name
@@ -141,9 +146,6 @@ class ExecutiveRestrictionMiddleware:
                     control_system_url_names = [
                         'hms:feature_flags',
                         'hms:update_feature_flags_api',
-                        'hms:permission_matrix',
-                        'hms:save_permissions',
-                        'hms:manage_roles',
                         'hms:manage_staff',
                         'hms:edit_staff',
                         'hms:delete_staff',
@@ -151,11 +153,24 @@ class ExecutiveRestrictionMiddleware:
                         'hms:manage_invitation_action',
                         'hms:manual_register_staff',
                     ]
-                    if full_url_name in control_system_url_names or url_name in [
-                        'feature_flags', 'permission_matrix', 'manage_roles', 'manage_staff',
+                    if not is_vc:
+                        control_system_url_names.extend([
+                            'hms:permission_matrix',
+                            'hms:save_permissions',
+                            'hms:manage_roles',
+                        ])
+                    
+                    blocked_names = [
+                        'feature_flags', 'manage_staff',
                         'edit_staff', 'delete_staff', 'generate_staff_link', 'manage_invitation_action',
                         'manual_register_staff'
-                    ]:
+                    ]
+                    if not is_vc:
+                        blocked_names.extend([
+                            'permission_matrix', 'manage_roles', 'save_permissions'
+                        ])
+                    
+                    if full_url_name in control_system_url_names or url_name in blocked_names:
                         raise PermissionDenied("Control system access is restricted for executive officers.")
                 except Exception as e:
                     if isinstance(e, PermissionDenied):

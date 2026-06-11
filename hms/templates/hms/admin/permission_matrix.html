@@ -126,8 +126,10 @@
         </div>
         <div class="matrix-controls">
             <button class="btn-export" id="exportBtn">📥 Export CSV</button>
+            {% if not user.staff_profile.role == 'vice_chancellor' %}
             <button class="btn-reset" id="resetBtn">↩️ Reset</button>
             <button class="btn-save" id="saveAllBtn">💾 Save All Changes</button>
+            {% endif %}
         </div>
     </div>
 
@@ -148,11 +150,13 @@
                         {% for role_key, role_name in roles %}
                         <th>
                             <span class="role-name">{{ role_name }}</span>
+                            {% if not user.staff_profile.role == 'vice_chancellor' %}
                             <div class="col-actions">
                                 <button class="btn-col-full select-col-btn" data-role="{{ role_key }}" data-type="full" title="Full All">✅</button>
                                 <button class="btn-col-read select-col-btn" data-role="{{ role_key }}" data-type="read" title="Read All">📖</button>
                                 <button class="btn-col-none select-col-btn" data-role="{{ role_key }}" data-type="none" title="None All">❌</button>
                             </div>
+                            {% endif %}
                         </th>
                         {% endfor %}
                     </tr>
@@ -165,7 +169,8 @@
                         <td>
                             <select class="perm-select"
                                     data-role="{{ role_key }}"
-                                    data-permission="{{ p.code }}">
+                                    data-permission="{{ p.code }}"
+                                    {% if user.staff_profile.role == 'vice_chancellor' %}disabled style="opacity: 0.8; cursor: not-allowed;"{% endif %}>
                                 <option value="full">✅ Full</option>
                                 <option value="read">📖 Read</option>
                                 <option value="none">❌ None</option>

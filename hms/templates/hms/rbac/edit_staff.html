@@ -244,6 +244,14 @@
                     </div>
                 </div>
 
+                <div class="form-grid">
+                    <div class="input-group" style="grid-column: span 2; display: flex; align-items: center; gap: 10px; margin-top: 0.5rem; margin-bottom: 1.5rem;">
+                        {{ form.is_approved }}
+                        <label class="input-label" style="margin-bottom: 0; cursor: pointer;" for="id_is_approved">Approved & Active (Give System Permission)</label>
+                        {% if form.is_approved.errors %}<p class="error-msg">{{ form.is_approved.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
                 <button type="submit" class="submit-btn">Update Staff Details</button>
             </form>
         </div>

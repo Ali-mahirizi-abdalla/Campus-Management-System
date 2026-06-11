@@ -272,16 +272,30 @@ def mpesa_callback(request):
     return HttpResponse("OK")
 
 
-@login_required
-@admin_only
 def register_staff(request):
     """
-    Handle staff registration logic for super admins.
-    Registers staff with name, role, national ID, phone, and password.
+    Handle staff registration logic.
+    For guests: via a valid invitation token.
+    For admins: directly (original functionality).
     """
-    if not request.user.is_superuser:
-        messages.error(request, "Access Denied: Only super admins can register staff.")
-        return redirect('hms:admin_dashboard')
+    invite_token = request.GET.get('invite') or request.POST.get('invite')
+    invite = None
+    if invite_token:
+        invite = StaffInvitation.objects.filter(token=invite_token).first()
+        if not invite or not invite.is_valid():
+            messages.error(request, "Invalid or expired invitation link.")
+            return redirect('hms:login')
+    
+    # Require login and admin permission if not self-registering
+    if not invite:
+        if not request.user.is_authenticated:
+            from django.contrib.auth.views import redirect_to_login
+            return redirect_to_login(request.get_full_path(), login_url='hms:login')
+        if not request.user.is_superuser:
+            staff_profile = getattr(request.user, 'staff_profile', None)
+            if not staff_profile or staff_profile.role not in ['super_admin', 'vice_chancellor', 'deputy_vice_chancellor']:
+                messages.error(request, "Access Denied: Only super admins can register staff.")
+                return redirect('hms:admin_dashboard')
 
     if request.method == 'POST':
         form = StaffRegistrationForm(request.POST, request.FILES)
@@ -289,19 +303,34 @@ def register_staff(request):
             try:
                 with transaction.atomic():
                     staff = form.save()
-                messages.success(request, f"Staff member {staff.user.get_full_name()} registered successfully!")
-                return redirect('hms:admin_dashboard')
+                    if invite:
+                        staff.role = invite.role  # Secure role assignment
+                        staff.is_approved = False
+                        staff.save()
+                        invite.used_count += 1
+                        invite.save()
+                        messages.success(request, f"Registration successful! Your account as {staff.get_role_display()} is pending approval by the Super Admin.")
+                        return redirect('hms:login')
+                    else:
+                        messages.success(request, f"Staff member {staff.user.get_full_name()} registered successfully!")
+                        return redirect('hms:admin_dashboard')
             except Exception as e:
                 messages.error(request, f"Error creating staff: {str(e)}")
         else:
             for field, errors in form.errors.items():
                 messages.error(request, f"{field}: {', '.join(errors)}")
     else:
-        form = StaffRegistrationForm()
+        # Pre-populate role if invite exists
+        initial_role = invite.role if invite else None
+        form = StaffRegistrationForm(initial_role=initial_role)
 
+    base_template = 'hms/auth_base.html' if invite else 'hms/base.html'
     return render(request, 'hms/admin/register_staff.html', {
         'form': form,
-        'role_choices': StaffProfile.ROLE_CHOICES
+        'role_choices': StaffProfile.ROLE_CHOICES,
+        'token': invite_token,
+        'invite': invite,
+        'base_template': base_template,
     })
 
 
@@ -309,6 +338,12 @@ def register_staff(request):
 def user_login(request):
     """Login view for all users with role selection"""
     if request.user.is_authenticated:
+        staff_profile = getattr(request.user, 'staff_profile', None)
+        if staff_profile and not staff_profile.is_approved:
+            logout(request)
+            messages.error(request, 'Your account is pending approval by the Super Admin. Please contact the administrator.')
+            return redirect('hms:login')
+
         if hasattr(request.user, 'staff_profile') or request.user.is_superuser or request.user.is_staff:
             return redirect('hms:dashboard_redirect')
         elif hasattr(request.user, 'student_profile'):
@@ -320,6 +355,13 @@ def user_login(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
+            
+            # Check if staff profile is approved
+            staff_profile = getattr(user, 'staff_profile', None)
+            if staff_profile and not staff_profile.is_approved:
+                messages.error(request, 'Your account is pending approval by the Super Admin. Please contact the administrator.')
+                return render(request, 'hms/login.html', {'form': form})
+
             login(request, user)
             messages.success(request, f'Welcome back, {user.first_name}!')
             
@@ -4085,6 +4127,16 @@ def manage_invitation_action(request, invite_id):
 def staff_details(request, staff_id):
     """Detailed view for a staff member"""
     staff = get_object_or_404(StaffProfile, id=staff_id)
+    
+    if request.method == 'POST' and 'approve_staff' in request.POST:
+        if hasattr(request.user, 'staff_profile') and request.user.staff_profile.role == 'super_admin':
+            staff.is_approved = True
+            staff.save()
+            messages.success(request, f"Staff account for {staff.user.get_full_name()} has been approved.")
+            return redirect('hms:staff_details', staff_id=staff.id)
+        else:
+            messages.error(request, "Only Super Admins can approve staff accounts.")
+            
     return render(request, 'hms/rbac/staff_details.html', {
         'staff': staff,
         'page_title': f"Staff Details: {staff.user.get_full_name()}"
@@ -4142,11 +4194,11 @@ from django.views.decorators.csrf import csrf_exempt
 
 @login_required
 def permission_matrix(request):
-    """Permission matrix UI for Super Admins"""
+    """Permission matrix UI for Super Admins and Vice Chancellor"""
     if not request.user.is_superuser:
         staff_profile = getattr(request.user, 'staff_profile', None)
-        if not staff_profile or staff_profile.role != 'super_admin':
-            messages.error(request, 'Only Super Admins can manage the permission matrix.')
+        if not staff_profile or staff_profile.role not in ['super_admin', 'vice_chancellor']:
+            messages.error(request, 'Only Super Admins and the Vice Chancellor can view the permission matrix.')
             return redirect('hms:dashboard_redirect')
         
     from .models import StaffProfile, Permission, RolePermission
