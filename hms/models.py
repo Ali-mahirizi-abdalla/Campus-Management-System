@@ -83,6 +83,7 @@ class Student(models.Model):
         ('sees', 'SEES – School of Environmental and Earth Sciences'),
         ('shss', 'SHSS – School of Humanities and Social Sciences'),
         ('spas', 'SPAS – School of Performing Arts and Sports'),
+        ('diploma', 'Diploma'),
         ('finance', 'Finance'),
         ('dean', 'Dean of School'),
     ]
@@ -96,7 +97,7 @@ class Student(models.Model):
     is_graduating = models.BooleanField(default=False, help_text="Is the student in their graduating semester/year?")
     
     LEVEL_OF_STUDY_CHOICES = [
-        ('diploma', 'Diploma (TVET)'),
+        ('diploma', 'Diploma'),
         ('bachelors', 'Bachelor\'s'),
         ('masters', 'Master\'s'),
         ('doctorate', 'Ph.D (Doctorate)'),

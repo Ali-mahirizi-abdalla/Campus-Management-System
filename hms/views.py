@@ -953,6 +953,7 @@ def dashboard_admin(request):
         'sees': Student.objects.filter(academic_school='sees').count(),
         'shss': Student.objects.filter(academic_school='shss').count(),
         'spas': Student.objects.filter(academic_school='spas').count(),
+        'diploma': Student.objects.filter(academic_school='diploma').count(),
         'finance': Student.objects.filter(academic_school='finance').count(),
         'dean': Student.objects.filter(academic_school='dean').count(),
     }
@@ -1202,6 +1203,7 @@ def render_role_dashboard(request, title, desc):
             'sees': Student.objects.filter(academic_school='sees').count(),
             'shss': Student.objects.filter(academic_school='shss').count(),
             'spas': Student.objects.filter(academic_school='spas').count(),
+            'diploma': Student.objects.filter(academic_school='diploma').count(),
             'finance': Student.objects.filter(academic_school='finance').count(),
             'dean': Student.objects.filter(academic_school='dean').count(),
         }
