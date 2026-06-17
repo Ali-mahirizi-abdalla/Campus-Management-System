@@ -5,1502 +5,1042 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Care – Student Welfare Management System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="One unified, modern platform for all student welfare services. Submit deferments, pay hostel fees, book health visits, chat with staff, and manage accommodation seamlessly.">
+    <meta name="author" content="Ali Mahirizi Abdalla">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://campuscare.co.ke/">
+    <meta property="og:title" content="Campus Care – Student Welfare Management System">
+    <meta property="og:description" content="One unified, modern platform for all student welfare services. Submit deferments, pay hostel fees, book health visits, chat with staff, and manage accommodation seamlessly.">
+    <meta property="og:image" content="https://campuscare.co.ke/static/images/og-image-1200x630.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Campus Care">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://campuscare.co.ke/">
+    <meta property="twitter:title" content="Campus Care – Student Welfare Management System">
+    <meta property="twitter:description" content="One unified, modern platform for all student welfare services. Submit deferments, pay hostel fees, book health visits, chat with staff, and manage accommodation seamlessly.">
+    <meta property="twitter:image" content="https://campuscare.co.ke/static/images/og-image-1200x630.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* ===== ROOT VARIABLES ===== */
         :root {
-            --primary: #0D9488;
-            --primary-hover: #0F766E;
-            --primary-light: #F0FDF4;
-            --primary-glow: rgba(13, 148, 136, 0.15);
-            --dark: #0F172A;
-            --dark-soft: #1E293B;
-            --light: #F8FAFC;
-            --border: #E2E8F0;
+            --primary: #0F172A;
+            --secondary: #0D9488;
+            --accent: #10B981;
+            --bg: #F8FAFC;
             --white: #FFFFFF;
-            --text-dark: #0F172A;
-            --text-muted: #64748B;
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gray: #64748B;
+            --dark: #1E293B;
+            --gradient: linear-gradient(135deg, #0F172A 0%, #0D9488 100%);
+            --shadow: 0 20px 40px -12px rgba(0,0,0,0.15);
+            --radius: 24px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Plus Jakarta Sans', 'Outfit', system-ui, sans-serif;
-            background: var(--light);
-            color: var(--text-dark);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--dark);
             line-height: 1.6;
             overflow-x: hidden;
         }
 
-        /* Smooth Scrolling */
-        html {
-            scroll-behavior: smooth;
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(13,148,136,0.2); }
+            50% { box-shadow: 0 0 40px rgba(13,148,136,0.4); }
+        }
+        @keyframes countUp {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* ======================== NAVBAR ======================== */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== NAVBAR ===== */
         .navbar {
-            background: var(--glass-bg);
+            background: rgba(255,255,255,0.95);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--glass-border);
             padding: 16px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 1000;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
-            transition: var(--transition);
+            border-bottom: 1px solid rgba(226,232,240,0.5);
+            transition: all 0.3s;
+        }
+        .navbar.scrolled {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
         }
 
         .navbar-brand {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             text-decoration: none;
         }
-
-        .navbar-brand .logo-img {
-            width: 46px;
-            height: 46px;
-            background: linear-gradient(135deg, var(--primary), var(--dark));
-            border-radius: 12px;
+        .navbar-brand .logo {
+            width: 44px;
+            height: 44px;
+            background: var(--gradient);
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 16px var(--primary-glow);
-            padding: 2px;
+            font-size: 22px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(13,148,136,0.3);
+            overflow: hidden;
         }
-
-        .navbar-brand .logo-img img {
+        .navbar-brand .logo img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            border-radius: 10px;
         }
-
         .navbar-brand h1 {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
-            letter-spacing: -0.5px;
-            color: var(--dark);
-            line-height: 1.1;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
-
         .navbar-brand span {
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 500;
+            font-size: 10px;
+            color: var(--gray);
             display: block;
-            margin-top: 1px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
         }
 
-        /* Profile Dropdown */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+            position: relative;
+        }
+        .nav-links a:hover { color: var(--secondary); }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--secondary);
+            transition: width 0.3s;
+        }
+        .nav-links a:hover::after { width: 100%; }
+
         .profile-dropdown {
             position: relative;
         }
-
         .profile-btn {
-            background: var(--white);
-            border: 1px solid var(--border);
-            padding: 8px 16px;
-            border-radius: 30px;
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 8px 16px;
+            background: var(--bg);
+            border: 1px solid #E2E8F0;
+            border-radius: 40px;
             cursor: pointer;
-            font-family: inherit;
-            font-weight: 600;
-            color: var(--dark-soft);
-            transition: var(--transition);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s;
         }
-
         .profile-btn:hover {
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px var(--primary-glow);
-            transform: translateY(-1px);
+            border-color: var(--secondary);
+            background: #EFF6FF;
         }
-
         .profile-btn .avatar {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
+            background: var(--gradient);
             border-radius: 50%;
-            background: var(--primary-light);
-            color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            color: white;
+            font-size: 14px;
         }
-
-        .profile-btn i.fa-chevron-down {
-            font-size: 11px;
-            color: var(--text-muted);
-            transition: transform 0.2s;
+        .profile-btn .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
         }
-
-        .profile-dropdown:hover .profile-btn i.fa-chevron-down {
-            transform: rotate(180deg);
-        }
+        .profile-btn i { color: var(--gray); }
 
         .dropdown-menu {
             position: absolute;
+            top: 52px;
             right: 0;
-            top: calc(100% + 8px);
-            width: 280px;
-            background: var(--white);
-            border: 1px solid var(--border);
+            background: white;
+            border: 1px solid #E2E8F0;
             border-radius: 16px;
-            padding: 12px;
-            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.08);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: var(--transition);
+            box-shadow: var(--shadow);
+            width: 220px;
+            display: none;
+            overflow: hidden;
+            z-index: 1001;
         }
-
-        .dropdown-menu.open {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
+        .dropdown-menu.open { display: block; animation: fadeUp 0.2s ease; }
         .dropdown-header {
-            padding: 8px 12px 12px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 8px;
+            padding: 16px 20px;
+            border-bottom: 1px solid #E2E8F0;
         }
-
-        .dropdown-header h4 {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .dropdown-header p {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
+        .dropdown-header h4 { font-size: 14px; font-weight: 600; color: var(--dark); }
+        .dropdown-header p { font-size: 12px; color: var(--gray); }
         .dropdown-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 10px 12px;
-            color: var(--dark-soft);
+            padding: 12px 20px;
             text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: var(--transition);
+            color: var(--dark);
+            font-size: 14px;
+            transition: background 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            cursor: pointer;
+            text-align: left;
         }
+        .dropdown-item:hover { background: var(--bg); }
+        .dropdown-item i { width: 20px; color: var(--secondary); }
+        .dropdown-divider { height: 1px; background: #E2E8F0; margin: 0 12px; }
 
-        .dropdown-item:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-
-        .dropdown-item i {
-            font-size: 16px;
-            width: 20px;
-            text-align: center;
-            color: var(--text-muted);
-            transition: var(--transition);
-        }
-
-        .dropdown-item:hover i {
-            color: var(--primary);
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: var(--border);
-            margin: 8px 0;
-        }
-
-        /* ======================== HERO SECTION ======================== */
+        /* ===== HERO ===== */
         .hero {
-            padding: 100px 40px 80px;
-            background: radial-gradient(circle at 80% 20%, rgba(13, 148, 136, 0.08) 0%, transparent 50%),
-                        radial-gradient(circle at 20% 80%, rgba(15, 23, 42, 0.03) 0%, transparent 50%),
-                        var(--white);
+            padding: 140px 40px 80px;
+            background: var(--gradient);
+            color: white;
             position: relative;
             overflow: hidden;
-            border-bottom: 1px solid var(--border);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
         }
-
         .hero::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 100%;
-            background: linear-gradient(180deg, transparent 80%, var(--light) 100%);
-            z-index: 1;
-            pointer-events: none;
+            top: -40%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -5%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite reverse;
         }
 
         .hero-container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
+            grid-template-columns: 1fr 1fr;
             gap: 60px;
             align-items: center;
             position: relative;
-            z-index: 2;
+            z-index: 1;
         }
-
-        .hero-info-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 16px;
-            background: var(--primary-light);
-            border: 1px solid rgba(13, 148, 136, 0.15);
-            border-radius: 30px;
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 24px;
-        }
-
-        .hero-info-pill i {
-            font-size: 14px;
-        }
-
         .hero-text h1 {
-            font-size: 52px;
+            font-size: 56px;
             font-weight: 800;
-            letter-spacing: -1.5px;
-            line-height: 1.1;
-            color: var(--dark);
+            line-height: 1.08;
             margin-bottom: 20px;
+            letter-spacing: -1px;
         }
-
-        .hero-text h1 span {
-            background: linear-gradient(135deg, var(--primary) 0%, #10B981 100%);
+        .hero-text h1 .highlight {
+            background: linear-gradient(135deg, #FDE047, #F59E0B);
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
         }
-
         .hero-text p {
             font-size: 18px;
-            color: var(--text-muted);
-            margin-bottom: 36px;
-            max-width: 540px;
+            color: rgba(255,255,255,0.8);
+            max-width: 500px;
+            margin-bottom: 32px;
+            line-height: 1.8;
         }
-
         .hero-buttons {
             display: flex;
             gap: 16px;
             flex-wrap: wrap;
         }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 14px 28px;
-            border-radius: 30px;
-            font-size: 15px;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
         .btn-primary {
-            background: var(--primary);
-            color: var(--white);
-            box-shadow: 0 10px 20px -5px rgba(13, 148, 136, 0.3);
-            border: 1px solid transparent;
+            padding: 16px 36px;
+            background: white;
+            color: var(--secondary);
+            border: none;
+            border-radius: 60px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         }
-
         .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px -5px rgba(13, 148, 136, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
         }
-
         .btn-secondary {
-            background: var(--white);
-            color: var(--dark-soft);
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            padding: 16px 36px;
+            background: rgba(255,255,255,0.12);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 60px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            backdrop-filter: blur(4px);
         }
-
         .btn-secondary:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-2px);
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
         }
 
-        /* Hero Dashboard Mockup */
-        .hero-image {
-            display: flex;
-            justify-content: center;
-            position: relative;
-        }
-
-        .hero-image::after {
-            content: '';
-            position: absolute;
-            width: 130%;
-            height: 130%;
-            background: radial-gradient(circle, rgba(13, 148, 136, 0.1) 0%, transparent 60%);
-            z-index: 0;
-            top: -15%;
-            left: -15%;
-            pointer-events: none;
-        }
-
-        .mockup {
-            width: 100%;
-            max-width: 480px;
-            background: var(--white);
+        /* ===== HERO MOCKUP ===== */
+        .hero-mockup {
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(8px);
             border-radius: 24px;
-            border: 1px solid var(--border);
-            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.12);
-            overflow: hidden;
-            z-index: 1;
-            position: relative;
-            transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
-            transition: var(--transition);
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
         }
-
-        .mockup:hover {
-            transform: perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(-4px);
-            box-shadow: 0 30px 60px -10px rgba(15, 23, 42, 0.16);
-        }
-
         .mockup-header {
-            background: #F8FAFC;
-            border-bottom: 1px solid var(--border);
-            padding: 14px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 16px;
         }
-
-        .mockup-header .dots {
-            display: flex;
-            gap: 6px;
-        }
-
+        .mockup-header .dots { display: flex; gap: 6px; }
         .mockup-header .dots span {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
+            width: 10px; height: 10px; border-radius: 50%;
         }
-
         .mockup-header .dots span:nth-child(1) { background: #EF4444; }
         .mockup-header .dots span:nth-child(2) { background: #F59E0B; }
         .mockup-header .dots span:nth-child(3) { background: #10B981; }
-
-        .mockup-header .title {
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .mockup-body {
-            padding: 24px;
+        .mockup-header .title { color: rgba(255,255,255,0.4); font-size: 12px; }
+        .mockup-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            background: #FAFAFA;
+            gap: 6px;
         }
-
         .mockup-card {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 18px 14px;
-            text-align: center;
-            border: 1px solid var(--border);
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .mockup-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.25); }
+        .mockup-card .icon-box { 
+            width: 18px; height: 18px; border-radius: 4px;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; margin-bottom: 6px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .mockup-card .title { font-size: 7px; font-weight: 600; color: rgba(255,255,255,0.9); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mockup-card .count { font-size: 12px; font-weight: 700; color: white; line-height: 1; margin-bottom: 2px;}
+        .mockup-card .label { font-size: 5px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        .mockup-section-title {
+            font-size: 7px; font-weight: 700; color: rgba(255,255,255,0.6);
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; margin-top: 14px;
         }
 
-        .mockup-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.03);
-            transform: translateY(-2px);
-        }
-
-        .mockup-card .icon {
-            font-size: 26px;
-            margin-bottom: 10px;
-            width: 46px;
-            height: 46px;
-            background: var(--light);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .mockup-card .count {
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--dark);
-            margin-bottom: 2px;
-        }
-
-        .mockup-card .label {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        /* Floating Overlays on Mockup */
-        .mockup-badge {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 8px 14px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-            z-index: 2;
-            transition: var(--transition);
-        }
-
-        .badge-1 {
-            bottom: -15px;
-            left: 24px;
-        }
-
-        .badge-2 {
-            top: -15px;
-            right: 24px;
-        }
-
-        .mockup:hover ~ .badge-1 {
-            transform: translateY(-4px);
-        }
-
-        .mockup:hover ~ .badge-2 {
-            transform: translateY(4px);
-        }
-
-        .mockup-badge i {
-            color: #10B981;
-            font-size: 16px;
-        }
-
-        .mockup-badge span {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--dark-soft);
-        }
-
-        .mockup-badge p {
-            font-size: 9px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        /* ======================== STATS SECTION ======================== */
+        /* ===== STATS ===== */
         .stats-section {
             padding: 60px 40px;
-            background: var(--white);
-            position: relative;
-            z-index: 10;
+            background: white;
+            border-bottom: 1px solid #E2E8F0;
         }
-
         .stats-grid {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 30px;
+            gap: 24px;
+            text-align: center;
         }
-
         .stat-item {
-            padding: 30px 24px;
+            padding: 24px;
             border-radius: 20px;
-            background: var(--light);
-            border: 1px solid var(--border);
-            text-align: center;
-            transition: var(--transition);
-        }
-
-        .stat-item:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 15px 30px rgba(13, 148, 136, 0.05);
-        }
-
-        .stat-item h3 {
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 6px;
-            letter-spacing: -1px;
-        }
-
-        .stat-item p {
-            color: var(--text-muted);
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* ======================== ABOUT SECTION ======================== */
-        .about-section {
-            padding: 100px 40px;
-            background: var(--light);
-        }
-
-        .about-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1.1fr;
-            gap: 70px;
-            align-items: center;
-        }
-
-        .about-image {
-            display: flex;
-            justify-content: center;
-        }
-
-        .about-image .brand-card {
-            background: linear-gradient(135deg, var(--dark), var(--primary));
-            border-radius: 28px;
-            padding: 50px 40px;
-            color: var(--white);
-            text-align: center;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 20px 40px rgba(13, 148, 136, 0.2);
+            background: var(--bg);
+            transition: all 0.3s;
             position: relative;
             overflow: hidden;
         }
-
-        .about-image .brand-card::before {
+        .stat-item::before {
             content: '';
             position: absolute;
-            top: -40%;
-            right: -40%;
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 50%;
-            filter: blur(10px);
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient);
         }
-
-        .about-image .brand-card .logo-icon {
-            width: 72px;
-            height: 72px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        .about-image .brand-card .logo-icon img {
-            width: 80%;
-            height: 80%;
-            object-fit: contain;
-        }
-
-        .about-image .brand-card h3 {
-            font-size: 26px;
+        .stat-item:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+        .stat-item .icon { font-size: 32px; margin-bottom: 8px; display: block; }
+        .stat-item .number {
+            font-size: 44px;
             font-weight: 800;
-            letter-spacing: -0.5px;
-            margin-bottom: 4px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .stat-item .label { font-size: 14px; color: var(--gray); font-weight: 500; margin-top: 4px; }
+        .stat-item .trend {
+            font-size: 12px; color: var(--accent); margin-top: 8px;
+            display: flex; align-items: center; justify-content: center; gap: 4px;
         }
 
-        .about-image .brand-card p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 30px;
-        }
-
-        .about-image .brand-card .stats-mini {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .about-image .brand-card .stats-mini div {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 16px 12px;
-            backdrop-filter: blur(5px);
-        }
-
-        .about-image .brand-card .stats-mini div .num {
-            font-size: 20px;
-            font-weight: 800;
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .about-image .brand-card .stats-mini div .lbl {
-            font-size: 10px;
-            opacity: 0.8;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .about-text h2 {
-            font-size: 38px;
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 20px;
-            color: var(--dark);
-        }
-
-        .about-text p {
-            color: var(--text-muted);
-            font-size: 16px;
-            margin-bottom: 24px;
-        }
-
-        .about-features {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .about-feature {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--dark-soft);
-            padding: 12px 16px;
-            background: var(--white);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .about-feature i {
-            color: var(--primary);
-            font-size: 15px;
-        }
-
-        /* ======================== FEATURES GRID ======================== */
+        /* ===== FEATURES ===== */
         .features-section {
-            padding: 100px 40px;
-            background: var(--white);
+            padding: 80px 40px;
+            background: var(--bg);
         }
-
         .section-header {
-            max-width: 600px;
-            margin: 0 auto 60px;
             text-align: center;
+            max-width: 700px;
+            margin: 0 auto 48px;
         }
-
         .section-header h2 {
-            font-size: 38px;
-            font-weight: 800;
-            letter-spacing: -1px;
-            color: var(--dark);
+            font-size: 36px;
+            font-weight: 700;
             margin-bottom: 12px;
         }
-
-        .section-header p {
-            color: var(--text-muted);
-            font-size: 16px;
+        .section-header h2 span {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
+        .section-header p { color: var(--gray); font-size: 16px; }
 
         .features-grid {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 24px;
         }
-
         .feature-card {
-            background: var(--light);
-            border-radius: 24px;
-            padding: 32px 24px;
-            border: 1px solid var(--border);
-            transition: var(--transition);
+            background: white;
+            border-radius: 20px;
+            padding: 28px 24px;
+            border: 1px solid #E2E8F0;
+            transition: all 0.3s;
+            cursor: pointer;
             position: relative;
-            display: flex;
-            flex-direction: column;
+            overflow: hidden;
         }
-
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        .feature-card:hover::before { transform: scaleX(1); }
         .feature-card:hover {
-            background: var(--white);
-            border-color: var(--primary);
             transform: translateY(-6px);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+            box-shadow: var(--shadow);
+            border-color: var(--secondary);
+        }
+        .feature-card .icon { font-size: 40px; margin-bottom: 12px; display: block; }
+        .feature-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+        .feature-card p { font-size: 13px; color: var(--gray); line-height: 1.6; }
+        .feature-card .tag {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 4px 12px;
+            background: #EFF6FF;
+            color: var(--secondary);
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 600;
         }
 
-        .feature-card .icon-wrapper {
-            width: 52px;
-            height: 52px;
-            background: var(--white);
-            border-radius: 16px;
+        /* ===== STAFF ROLES ===== */
+        .staff-section {
+            padding: 80px 40px;
+            background: white;
+        }
+        .staff-grid {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .staff-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: var(--bg);
+            border-radius: 14px;
+            border: 1px solid #E2E8F0;
+            text-decoration: none;
+            color: var(--dark);
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .staff-link:hover {
+            border-color: var(--secondary);
+            transform: translateX(6px);
+            background: #F0FDF4;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .staff-link .role-icon { font-size: 20px; width: 28px; text-align: center; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--primary);
+            color: white;
+            padding: 60px 40px 32px;
+            border-top: 4px solid var(--secondary);
+        }
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+        .footer-brand .logo-footer {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .footer-brand p { color: #94A3B8; font-size: 14px; max-width: 300px; }
+        .footer h5 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: white; }
+        .footer a {
+            display: block;
+            color: #94A3B8;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 8px;
+            transition: color 0.2s;
+        }
+        .footer a:hover { color: white; }
+        .footer .social {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .footer .social a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
-            transition: var(--transition);
+            font-size: 16px;
+            color: #94A3B8;
+            transition: all 0.2s;
         }
-
-        .feature-card:hover .icon-wrapper {
-            background: var(--primary);
-            color: var(--white);
-            transform: scale(1.05);
-        }
-
-        .feature-card h4 {
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .feature-card p {
-            font-size: 13.5px;
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin-bottom: 20px;
-            flex-grow: 1;
-        }
-
-        .feature-badge {
-            align-self: flex-start;
-            padding: 4px 12px;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--primary);
-            transition: var(--transition);
-        }
-
-        .feature-card:hover .feature-badge {
-            background: var(--primary-light);
-            border-color: rgba(13, 148, 136, 0.15);
-        }
-
-        /* ======================== STAFF ROLES (CATEGORIZED) ======================== */
-        .staff-section {
-            padding: 100px 40px;
-            background: var(--light);
-        }
-
-        .staff-categories {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
-        }
-
-        /* 3-column span for center card on bottom */
-        .staff-categories > div:nth-child(5) {
-            grid-column: span 2;
-        }
-
-        .category-card {
-            background: var(--white);
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-            transition: var(--transition);
-        }
-
-        .category-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-            border-color: rgba(13, 148, 136, 0.15);
-        }
-
-        .category-card h3 {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--dark);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 12px;
-        }
-
-        .category-card h3 i {
-            color: var(--primary);
-        }
-
-        .roles-list {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .staff-categories > div:nth-child(5) .roles-list {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .role-pill {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            background: var(--light);
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--dark-soft);
-            text-decoration: none;
-            transition: var(--transition);
-            border: 1px solid transparent;
-        }
-
-        .role-pill:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-            border-color: rgba(13, 148, 136, 0.1);
-            transform: translateX(4px);
-        }
-
-        .role-pill .role-emoji {
-            font-size: 15px;
-            width: 20px;
+        .footer .social a:hover { background: var(--secondary); color: white; }
+        .footer .copyright {
             text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 24px;
+            margin-top: 40px;
+            color: #475569;
+            font-size: 13px;
         }
+        .footer .copyright a { display: inline; color: var(--secondary); }
 
-        /* ======================== FOOTER ======================== */
-        .footer {
-            background: var(--dark);
-            color: var(--white);
-            padding: 80px 40px 40px;
-            border-top: 4px solid var(--primary);
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr 1fr;
-            gap: 60px;
-            margin-bottom: 60px;
-        }
-
-        .footer-brand .footer-logo {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .footer-brand .footer-logo img {
-            width: 38px;
-            height: 38px;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-
-        .footer-brand p {
-            color: #94A3B8;
-            font-size: 14px;
-            margin-bottom: 20px;
-            max-width: 320px;
-        }
-
-        .footer-brand .developer-tag {
-            font-size: 12px;
-            color: #64748B;
-            font-weight: 600;
-        }
-
-        .footer-links h4 {
-            font-size: 15px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--white);
-            margin-bottom: 20px;
-        }
-
-        .footer-links ul {
-            list-style: none;
-        }
-
-        .footer-links ul li {
-            margin-bottom: 12px;
-        }
-
-        .footer-links ul li a {
-            color: #94A3B8;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .footer-links ul li a:hover {
-            color: var(--primary);
-            padding-left: 4px;
-        }
-
-        .footer-contact h4 {
-            font-size: 15px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--white);
-            margin-bottom: 20px;
-        }
-
-        .footer-contact p {
-            color: #94A3B8;
-            font-size: 14px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .footer-contact a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .footer-contact a:hover {
-            color: #10B981;
-        }
-
-        .footer-divider {
-            border: none;
-            border-top: 1px solid #1E293B;
-            max-width: 1200px;
-            margin: 0 auto 30px;
-        }
-
-        .footer-bottom {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .footer-bottom p {
-            color: #64748B;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        /* ======================== RESPONSIVE ======================== */
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
-            .hero-container {
-                grid-template-columns: 1fr;
-                gap: 50px;
-                text-align: center;
-            }
-            .hero-text p {
-                margin: 0 auto 36px;
-            }
-            .hero-buttons {
-                justify-content: center;
-            }
-            .hero-image .mockup {
-                max-width: 420px;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .about-container {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-            .features-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .staff-categories {
-                grid-template-columns: 1fr;
-            }
-            .staff-categories > div:nth-child(5) {
-                grid-column: span 1;
-            }
-            .staff-categories > div:nth-child(5) .roles-list {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .footer-container {
-                grid-template-columns: 1fr repeat(2, 0.8fr);
-            }
+            .hero-container { grid-template-columns: 1fr; text-align: center; }
+            .hero-text p { margin: 0 auto 32px; }
+            .hero-text h1 { font-size: 40px; }
+            .hero-mockup { max-width: 500px; margin: 0 auto; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .staff-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-container { grid-template-columns: 1fr 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
         }
-
         @media (max-width: 768px) {
-            .navbar {
-                padding: 14px 20px;
-            }
-            .navbar-brand h1 {
-                font-size: 17px;
-            }
-            .profile-btn .user-name {
-                display: none;
-            }
-            .hero-text h1 {
-                font-size: 38px;
-            }
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-            .footer-container {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-            .footer-bottom {
-                flex-direction: column;
-                gap: 12px;
-                text-align: center;
-            }
+            .navbar { padding: 12px 20px; }
+            .nav-links { display: none; }
+            .hero { padding: 120px 20px 60px; }
+            .hero-text h1 { font-size: 32px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .staff-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .footer-container { grid-template-columns: 1fr; }
+            .mockup-grid { grid-template-columns: 1fr; }
         }
-
         @media (max-width: 480px) {
-            .hero-buttons {
-                flex-direction: column;
-            }
-            .hero-buttons .btn {
-                width: 100%;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .about-features {
-                grid-template-columns: 1fr;
-            }
-            .roles-list, .staff-categories > div:nth-child(5) .roles-list {
-                grid-template-columns: 1fr;
-            }
-            .badge-1, .badge-2 {
-                display: none;
-            }
+            .hero-text h1 { font-size: 28px; }
+            .hero-buttons { flex-direction: column; width: 100%; }
+            .btn-primary, .btn-secondary { width: 100%; text-align: center; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-<!-- ======================== NAVBAR ======================== -->
-<nav class="navbar">
-    <a href="/" class="navbar-brand">
-        <div class="logo-img">
-            <img src="{% static 'img/campus_care_logo.png' %}" alt="Campus Care Logo">
-        </div>
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+    <a href="#" class="navbar-brand">
+        <div class="logo"><img src="{% static 'img/campus_care_logo.png' %}" alt="Campus Care Logo" style="width: 100%; height: 100%; object-fit: contain;"></div>
         <div>
             <h1>CAMPUS CARE</h1>
             <span>Student Welfare Management System</span>
         </div>
     </a>
-
+    <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#staff-roles">Roles</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </div>
     <div class="profile-dropdown">
         <button class="profile-btn" onclick="toggleDropdown()">
             <div class="avatar"><i class="fas fa-user"></i></div>
-            <span class="user-name">{% if user.is_authenticated %}{{ user.username|default:user.email|default:"User" }}{% else %}Guest{% endif %}</span>
+            <span class="user-name">Guest</span>
             <i class="fas fa-chevron-down"></i>
         </button>
         <div class="dropdown-menu" id="dropdownMenu">
-            {% if user.is_authenticated %}
-            <div class="dropdown-header">
-                <h4>Welcome back</h4>
-                <p>{{ user.email }}</p>
-            </div>
-            <a href="{% url 'hms:student_dashboard' %}" class="dropdown-item"><i class="fas fa-user-circle"></i> My Dashboard</a>
-            <a href="{% url 'hms:logout' %}" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            {% else %}
-            <div class="dropdown-header">
-                <h4>Welcome to Campus Care</h4>
-                <p>Access your welfare account</p>
-            </div>
+            <div class="dropdown-header"><h4>Welcome</h4><p>Sign in or create account</p></div>
             <a href="{% url 'hms:login' %}" class="dropdown-item"><i class="fas fa-sign-in-alt"></i> Login</a>
             <a href="{% url 'hms:register' %}" class="dropdown-item"><i class="fas fa-user-plus"></i> Create Account</a>
             <a href="{% url 'hms:password_reset' %}" class="dropdown-item"><i class="fas fa-key"></i> Forgot Password</a>
-            {% endif %}
             <div class="dropdown-divider"></div>
-            <a href="#about" class="dropdown-item"><i class="fas fa-info-circle"></i> About Page</a>
+            <a href="#features" class="dropdown-item"><i class="fas fa-th-list"></i> Features</a>
             <a href="#staff-roles" class="dropdown-item"><i class="fas fa-users"></i> Staff Roles</a>
+            <a href="#about" class="dropdown-item"><i class="fas fa-info-circle"></i> About</a>
+            <a href="#contact" class="dropdown-item"><i class="fas fa-envelope"></i> Contact</a>
         </div>
     </div>
 </nav>
 
-<!-- ======================== HERO SECTION ======================== -->
-<section class="hero">
+<!-- ===== HERO ===== -->
+<section class="hero" id="home">
     <div class="hero-container">
         <div class="hero-text">
-            <div class="hero-info-pill">
-                <i class="fas fa-sparkles"></i> All-in-one Welfare Management Portal
-            </div>
-            <h1>Digitizing <span>Campus Life</span> & Student Welfare</h1>
+            <h1>Digitizing Campus Life &<br><span class="highlight">Student Welfare</span></h1>
             <p>One unified, modern platform for all student welfare services. Submit deferments, pay hostel fees, book health visits, chat with staff, and manage your accommodation seamlessly.</p>
             <div class="hero-buttons">
-                <a href="{% url 'hms:register' %}" class="btn btn-primary"><i class="fas fa-graduation-cap"></i> Student Portal</a>
-                <a href="{% url 'hms:login' %}" class="btn btn-secondary"><i class="fas fa-user-tie"></i> Staff Portal</a>
-                <a href="#about" class="btn btn-secondary">Learn More</a>
+                <a href="{% url 'hms:register' %}" class="btn-primary"><i class="fas fa-user-plus"></i> Student Portal</a>
+                <a href="{% url 'hms:login' %}" class="btn-secondary"><i class="fas fa-user-tie"></i> Staff Portal</a>
+                <a href="#features" class="btn-secondary"><i class="fas fa-info-circle"></i> Learn More</a>
             </div>
         </div>
-        <div class="hero-image">
-            <div class="mockup-wrapper" style="position: relative; width: 100%; max-width: 480px; display: flex; justify-content: center;">
-                <div class="mockup">
-                    <div class="mockup-header">
-                        <div class="dots">
-                            <span></span><span></span><span></span>
-                        </div>
-                        <span class="title">Campus Care Dashboard</span>
-                    </div>
-                    <div class="mockup-body">
-                        <div class="mockup-card">
-                            <div class="icon">📋</div>
-                            <div class="count">0</div>
-                            <div class="label">Deferments</div>
-                        </div>
-                        <div class="mockup-card">
-                            <div class="icon">💸</div>
-                            <div class="count">0</div>
-                            <div class="label">M-Pesa Trans</div>
-                        </div>
-                        <div class="mockup-card">
-                            <div class="icon">🏥</div>
-                            <div class="count">0</div>
-                            <div class="label">Health Bookings</div>
-                        </div>
-                        <div class="mockup-card">
-                            <div class="icon">🔧</div>
-                            <div class="count">0</div>
-                            <div class="label">Maintenance</div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Interactive Floating Badges -->
-                <div class="mockup-badge badge-1">
-                    <i class="fas fa-circle-check" style="color: #10B981;"></i>
-                    <div>
-                        <span>M-Pesa Confirmed</span>
-                        <p>Instant Receipt</p>
-                    </div>
-                </div>
-                <div class="mockup-badge badge-2">
-                    <i class="fas fa-shield-halved" style="color: #0D9488;"></i>
-                    <div>
-                        <span>Secure Access</span>
-                        <p>Role-based RBAC</p>
-                    </div>
-                </div>
+        <div class="hero-mockup">
+            <div class="mockup-header">
+                <div class="dots"><span></span><span></span><span></span></div>
+                <span class="title">Campus Care Dashboard</span>
+            </div>
+            <div class="mockup-section-title" style="margin-top: 0;">ACADEMIC SCHOOLS & DEPARTMENTS</div>
+            <div class="mockup-grid" style="grid-template-columns: repeat(5, 1fr);">
+                <!-- 10 schools -->
+                <div class="mockup-card" style="background: linear-gradient(135deg, #1d4ed8, #1e3a8a); border-top: 2px solid #60a5fa;"><div class="icon-box">📚</div><div class="title">Library</div><div class="count">0</div><div class="label">STUDENTS</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); border-top: 2px solid #c4b5fd;"><div class="icon-box">🎨</div><div class="title">SASA</div><div class="count">0</div><div class="label">STUDENTS</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb); border-top: 2px solid #93c5fd;"><div class="icon-box">🎓</div><div class="title">SED</div><div class="count">0</div><div class="label">STUDENTS</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #f59e0b, #d97706); border-top: 2px solid #fcd34d;"><div class="icon-box">💼</div><div class="title">SOB</div><div class="count">0</div><div class="label">STUDENTS</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #ef4444, #dc2626); border-top: 2px solid #fca5a5;"><div class="icon-box">🏥</div><div class="title">SHHS</div><div class="count">0</div><div class="label">STUDENTS</div></div>
+                
+                <div class="mockup-card" style="background: linear-gradient(135deg, #10b981, #059669); border-top: 2px solid #6ee7b7;"><div class="icon-box">🌍</div><div class="title">SEES</div><div class="count">0</div><div class="label">STUDENTS</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #ec4899, #db2777); border-top: 2px solid #f9a8d4;"><div class="icon-box">🏛️</div><div class="title">SHSS</div><div class="count">0</div><div class="label">STUDENTS</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #6366f1, #4f46e5); border-top: 2px solid #a5b4fc;"><div class="icon-box">🎭</div><div class="title">SPAS</div><div class="count">0</div><div class="label">STUDENTS</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #d946ef, #a21caf); border-top: 2px solid #f0abfc;"><div class="icon-box">📜</div><div class="title">Diploma</div><div class="count">0</div><div class="label">STUDENTS</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #14b8a6, #0d9488); border-top: 2px solid #5eead4;"><div class="icon-box">💰</div><div class="title">Finance</div><div class="count">0</div><div class="label">STUDENTS</div></div>
+            </div>
+
+            <div class="mockup-section-title">KEY METRICS</div>
+            <div class="mockup-grid" style="grid-template-columns: repeat(4, 1fr);">
+                <div class="mockup-card" style="background: linear-gradient(135deg, #4f46e5, #3730a3); border-top: 2px solid #818cf8;"><div class="icon-box">📊</div><div class="title">In Session</div><div class="count">57</div><div class="label">STUDENTS</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #d97706, #b45309); border-top: 2px solid #fcd34d;"><div class="icon-box">📅</div><div class="title">Deferment</div><div class="count">0</div><div class="label">REQUESTS</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #0891b2, #155e75); border-top: 2px solid #67e8f9;"><div class="icon-box">🏢</div><div class="title">Attachment</div><div class="count">2</div><div class="label">EXTERNAL</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #059669, #064e3b); border-top: 2px solid #6ee7b7;"><div class="icon-box">🎓</div><div class="title">Graduating</div><div class="count">0</div><div class="label">FINALISTS</div></div>
+            </div>
+
+            <div class="mockup-section-title">LEVEL OF STUDY</div>
+            <div class="mockup-grid" style="grid-template-columns: repeat(6, 1fr);">
+                <div class="mockup-card" style="background: linear-gradient(135deg, #0d9488, #115e59); border-top: 2px solid #5eead4;"><div class="icon-box">📄</div><div class="title">Postgrad</div><div class="count">0</div><div class="label">DIPLOMA</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #d97706, #b45309); border-top: 2px solid #fcd34d;"><div class="icon-box">💡</div><div class="title">Diploma</div><div class="count">2</div><div class="label">DIPLOMA</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border-top: 2px solid #93c5fd;"><div class="icon-box">🎓</div><div class="title">Bachelor's</div><div class="count">55</div><div class="label">BACHELOR'S</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #9333ea, #7e22ce); border-top: 2px solid #d8b4fe;"><div class="icon-box">🎓</div><div class="title">Master's</div><div class="count">0</div><div class="label">MASTER'S</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #e11d48, #be123c); border-top: 2px solid #fda4af;"><div class="icon-box">📄</div><div class="title">Ph.D</div><div class="count">0</div><div class="label">DOCTORATE</div></div>
+                <div class="mockup-card" style="background: linear-gradient(135deg, #ea580c, #c2410c); border-top: 2px solid #fdba74;"><div class="icon-box">✨</div><div class="title">Certificate</div><div class="count">0</div><div class="label">CERTIFICATE</div></div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ======================== STATS SECTION ======================== -->
+<!-- ===== STATS ===== -->
 <section class="stats-section">
     <div class="stats-grid">
         <div class="stat-item">
-            <h3>23</h3>
-            <p>Staff Access Roles</p>
+            <span class="icon">🎓</span>
+            <div class="number">10,000+</div>
+            <div class="label">Students Served</div>
+            <div class="trend"><i class="fas fa-arrow-up"></i> Growing Daily</div>
         </div>
         <div class="stat-item">
-            <h3>86%</h3>
-            <p>Processing Speedup</p>
+            <span class="icon">👑</span>
+            <div class="number">23</div>
+            <div class="label">Staff Access Roles</div>
+            <div class="trend"><i class="fas fa-check-circle"></i> Complete Control</div>
         </div>
         <div class="stat-item">
-            <h3>100%</h3>
-            <p>Digital & Paperless</p>
+            <span class="icon">⚡</span>
+            <div class="number">86%</div>
+            <div class="label">Processing Speedup</div>
+            <div class="trend"><i class="fas fa-arrow-up"></i> Faster Approvals</div>
         </div>
         <div class="stat-item">
-            <h3>24/7</h3>
-            <p>On-Demand Access</p>
+            <span class="icon">🌙</span>
+            <div class="number">24/7</div>
+            <div class="label">On-Demand Access</div>
+            <div class="trend"><i class="fas fa-check-circle"></i> Always Available</div>
         </div>
     </div>
 </section>
 
-<!-- ======================== ABOUT SECTION ======================== -->
-<section class="about-section" id="about">
-    <div class="about-container">
-        <div class="about-image">
-            <div class="brand-card">
-                <div class="logo-icon">
-                    <img src="{% static 'img/campus_care_logo.png' %}" alt="Campus Care Logo">
-                </div>
-                <h3>Campus Care</h3>
-                <p>Student Welfare Management System</p>
-                <div class="stats-mini">
-                    <div>
-                        <div class="num">10,000+</div>
-                        <div class="lbl">Students</div>
-                    </div>
-                    <div>
-                        <div class="num">100%</div>
-                        <div class="lbl">Automated</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="about-text">
-            <h2>About Campus Care</h2>
-            <p>Campus Care is a comprehensive, state-of-the-art Student Welfare Management System designed to digitize and automate critical welfare services into a single integrated platform.</p>
-            <p>By replacing manual, paper-driven workflows, Campus Care guarantees secure, real-time access to student services, immediate coordinator actions, and efficient administrative oversight.</p>
-            <div class="about-features">
-                <div class="about-feature"><i class="fas fa-check-circle"></i> Seamless Approvals</div>
-                <div class="about-feature"><i class="fas fa-check-circle"></i> Direct M-Pesa Hook</div>
-                <div class="about-feature"><i class="fas fa-check-circle"></i> Secure Live Chat</div>
-                <div class="about-feature"><i class="fas fa-check-circle"></i> 23 Access Levels</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ======================== FEATURES GRID ======================== -->
-<section class="features-section">
+<!-- ===== FEATURES ===== -->
+<section class="features-section" id="features">
     <div class="section-header">
-        <h2>System Features</h2>
-        <p>A list of active, robust welfare modules configured in the platform.</p>
+        <h2>Everything You Need. <span>All in One Place.</span></h2>
+        <p>From deferments to payments, health to maintenance — Campus Care brings all student welfare services together.</p>
     </div>
     <div class="features-grid">
-        <!-- 1. Deferments -->
         <div class="feature-card">
-            <div class="icon-wrapper"><i class="fas fa-file-signature"></i></div>
+            <span class="icon">📋</span>
             <h4>Academic Deferments</h4>
-            <p>Submit and track deferment requests. Automated workflow redirects applications directly to designated coordinators.</p>
-            <span class="feature-badge">Active</span>
+            <p>Submit and track deferment requests. Automated workflow redirects to designated coordinators. 86% faster approval.</p>
+            <span class="tag">⚡ 86% Faster</span>
         </div>
-        <!-- 2. M-Pesa Payments -->
         <div class="feature-card">
-            <div class="icon-wrapper"><i class="fas fa-mobile-screen-button"></i></div>
+            <span class="icon">💰</span>
             <h4>M-Pesa Payments</h4>
             <p>Settle room accommodation and library fines through direct M-Pesa STK Push callbacks with automated invoice update.</p>
-            <span class="feature-badge">M-Pesa Enabled</span>
+            <span class="tag">💳 M-Pesa Enabled</span>
         </div>
-        <!-- 3. Accommodation -->
         <div class="feature-card">
-            <div class="icon-wrapper"><i class="fas fa-hotel"></i></div>
+            <span class="icon">🏠</span>
             <h4>Room Accommodation</h4>
-            <p>Explore available hostels and blocks, select rooms, handle room checkout, and request formal room changes.</p>
-            <span class="feature-badge">Active</span>
+            <p>Explore available hostels, select rooms, handle room checkout, and request formal room changes seamlessly.</p>
+            <span class="tag">🛏️ Active</span>
         </div>
-        <!-- 4. Health Booking -->
         <div class="feature-card">
-            <div class="icon-wrapper"><i class="fas fa-stethoscope"></i></div>
+            <span class="icon">🏥</span>
             <h4>Health Booking</h4>
             <p>Schedule medical consultations at the campus clinic online, track clinic slots, and receive dynamic reminders.</p>
-            <span class="feature-badge">Active</span>
+            <span class="tag">📱 24/7 Access</span>
         </div>
-        <!-- 5. Mental Health -->
         <div class="feature-card">
-            <div class="icon-wrapper"><i class="fas fa-heart-pulse"></i></div>
+            <span class="icon">🧠</span>
             <h4>Confidential Counselling</h4>
             <p>Submit secure counselling and mental support requests reviewed only by certified campus counselling officers.</p>
-            <span class="feature-badge">Confidential</span>
+            <span class="tag">🤝 Anonymous</span>
         </div>
-        <!-- 6. Maintenance -->
         <div class="feature-card">
-            <div class="icon-wrapper"><i class="fas fa-screwdriver-wrench"></i></div>
+            <span class="icon">🔧</span>
             <h4>Facility Maintenance</h4>
             <p>Log maintenance requests for repairs in your hostel room. Upload issue details and monitor ticket execution.</p>
-            <span class="feature-badge">Active</span>
+            <span class="tag">⏱️ 24hr Response</span>
         </div>
-        <!-- 7. Library -->
         <div class="feature-card">
-            <div class="icon-wrapper"><i class="fas fa-book-open"></i></div>
+            <span class="icon">📚</span>
             <h4>Smart Library Services</h4>
             <p>Access your student library profile, view currently borrowed items, check due dates, and settle fine balances.</p>
-            <span class="feature-badge">Active</span>
+            <span class="tag">📖 Active</span>
         </div>
-        <!-- 8. Tutoring Hub -->
         <div class="feature-card">
-            <div class="icon-wrapper"><i class="fas fa-chalkboard-user"></i></div>
-            <h4>Peer Tutoring Hub</h4>
-            <p>Participate in peer-to-peer learning. Students can publish study support posts or find tutoring help from others.</p>
-            <span class="feature-badge">Active</span>
-        </div>
-        <!-- 9. Lost & Found -->
-        <div class="feature-card">
-            <div class="icon-wrapper"><i class="fas fa-magnifying-glass"></i></div>
-            <h4>Lost & Found</h4>
-            <p>Report misplaced personal properties on campus or search resolved listings to claim lost items.</p>
-            <span class="feature-badge">Active</span>
-        </div>
-        <!-- 10. Direct Messaging -->
-        <div class="feature-card">
-            <div class="icon-wrapper"><i class="fas fa-comments"></i></div>
-            <h4>Secure Live Chat</h4>
-            <p>Direct communication hub enabling students to chat securely with support agents, wardens, or administrators.</p>
-            <span class="feature-badge">Live Chat</span>
-        </div>
-        <!-- 11. Visitor Management -->
-        <div class="feature-card">
-            <div class="icon-wrapper"><i class="fas fa-user-lock"></i></div>
-            <h4>Visitor Security</h4>
-            <p>Log visitor sign-ins, monitor active guests, and enforce sign-out workflows to maintain hostel security.</p>
-            <span class="feature-badge">Active</span>
-        </div>
-        <!-- 12. WhatsApp Bot -->
-        <div class="feature-card">
-            <div class="icon-wrapper"><i class="fab fa-whatsapp"></i></div>
+            <span class="icon">💬</span>
             <h4>WhatsApp Bot</h4>
             <p>Quick access helper enabling query of fee status and tracking deferment requests directly via WhatsApp messaging.</p>
-            <span class="feature-badge">Demo Mode</span>
+            <span class="tag">📱 Demo Mode</span>
         </div>
-        <!-- 13. Announcements -->
         <div class="feature-card">
-            <div class="icon-wrapper"><i class="fas fa-bullhorn"></i></div>
+            <span class="icon">👤</span>
+            <h4>Visitor Security</h4>
+            <p>Log visitor sign-ins, monitor active guests, and enforce sign-out workflows to maintain hostel security.</p>
+            <span class="tag">🔒 Active</span>
+        </div>
+        <div class="feature-card">
+            <span class="icon">💬</span>
+            <h4>Secure Live Chat</h4>
+            <p>Direct communication hub enabling students to chat securely with support agents, wardens, or administrators.</p>
+            <span class="tag">💬 Live Chat</span>
+        </div>
+        <div class="feature-card">
+            <span class="icon">📢</span>
             <h4>Announcements & Alerts</h4>
             <p>View administrative broadcasts and alerts, or receive real-time emergency signals published by staff.</p>
-            <span class="feature-badge">Active</span>
+            <span class="tag">📢 Active</span>
+        </div>
+        <div class="feature-card">
+            <span class="icon">🤝</span>
+            <h4>Peer Tutoring Hub</h4>
+            <p>Participate in peer-to-peer learning. Students can publish study support posts or find tutoring help from others.</p>
+            <span class="tag">📚 Active</span>
         </div>
     </div>
 </section>
 
-<!-- ======================== STAFF ROLES (CATEGORIZED) ======================== -->
+<!-- ===== STAFF ROLES ===== -->
 <section class="staff-section" id="staff-roles">
     <div class="section-header">
-        <h2>23 Access Roles</h2>
-        <p>Categorized layout of system access roles and administration points.</p>
+        <h2>23 <span>Staff Access Roles</span></h2>
+        <p>Role-based access for complete control. Each role sees only what they need.</p>
     </div>
-    <div class="staff-categories">
-        <!-- 1. Executive -->
-        <div class="category-card">
-            <h3><i class="fas fa-building-columns"></i> Executive & Oversight</h3>
-            <div class="roles-list">
-                <a href="#super-admin" class="role-pill"><span class="role-emoji">👑</span> Super Admin</a>
-                <a href="#vc" class="role-pill"><span class="role-emoji">👑</span> Vice Chancellor</a>
-                <a href="#dvc" class="role-pill"><span class="role-emoji">📚</span> DVC Academic</a>
-                <a href="#dir-resource" class="role-pill"><span class="role-emoji">💰</span> Director Mobilization</a>
-                <a href="#auditor" class="role-pill"><span class="role-emoji">📜</span> Auditor</a>
+    <div class="staff-grid">
+        <a href="#" class="staff-link"><span class="role-icon">👑</span> Super Admin</a>
+        <a href="#" class="staff-link"><span class="role-icon">👑</span> Vice Chancellor</a>
+        <a href="#" class="staff-link"><span class="role-icon">📚</span> Deputy Vice Chancellor</a>
+        <a href="#" class="staff-link"><span class="role-icon">📋</span> Register Admin</a>
+        <a href="#" class="staff-link"><span class="role-icon">👤</span> Register User</a>
+        <a href="#" class="staff-link"><span class="role-icon">👨🎓</span> Dean of Students</a>
+        <a href="#" class="staff-link"><span class="role-icon">🎓</span> Dean - Graduate School</a>
+        <a href="#" class="staff-link"><span class="role-icon">💰</span> Director - Resource Mobilization</a>
+        <a href="#" class="staff-link"><span class="role-icon">🔧</span> Director - TVET</a>
+        <a href="#" class="staff-link"><span class="role-icon">📋</span> Deferment Officer</a>
+        <a href="#" class="staff-link"><span class="role-icon">💻</span> Dept MCS Coordinator</a>
+        <a href="#" class="staff-link"><span class="role-icon">🏥</span> Health Manager</a>
+        <a href="#" class="staff-link"><span class="role-icon">🔧</span> Maintenance Supervisor</a>
+        <a href="#" class="staff-link"><span class="role-icon">🏠</span> Warden</a>
+        <a href="#" class="staff-link"><span class="role-icon">💰</span> Finance Officer</a>
+        <a href="#" class="staff-link"><span class="role-icon">👤</span> Security Officer</a>
+        <a href="#" class="staff-link"><span class="role-icon">📢</span> News Editor</a>
+        <a href="#" class="staff-link"><span class="role-icon">📜</span> News Auditor</a>
+        <a href="#" class="staff-link"><span class="role-icon">🚨</span> Emergency Coordinator</a>
+        <a href="#" class="staff-link"><span class="role-icon">💬</span> Support Agent</a>
+        <a href="#" class="staff-link"><span class="role-icon">📜</span> Auditor</a>
+        <a href="#" class="staff-link"><span class="role-icon">🎓</span> Diploma Coordinator</a>
+        <a href="#" class="staff-link"><span class="role-icon">🏫</span> Department Coordinator</a>
+    </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section class="features-section" id="about" style="background:white;">
+    <div class="section-header">
+        <h2>About <span>Campus Care</span></h2>
+        <p>An automated web portal to manage and streamline all dimensions of Student Welfare Services.</p>
+    </div>
+    <div style="max-width: 1280px; margin:0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items:center;">
+        <div>
+            <p style="color:var(--gray); font-size:16px; line-height:1.8; margin-bottom:20px;">
+                Campus Care is a comprehensive, state-of-the-art Student Welfare Management System designed to digitize and automate critical welfare services into a single integrated platform.
+            </p>
+            <p style="color:var(--gray); font-size:16px; line-height:1.8;">
+                By replacing manual, paper-driven workflows, Campus Care guarantees secure, real-time access to student services, immediate coordinator actions, and efficient administrative oversight.
+            </p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:24px;">
+                <div style="display:flex; align-items:center; gap:8px; padding:12px; background:var(--bg); border-radius:12px;">
+                    <i class="fas fa-check-circle" style="color:var(--secondary);"></i>
+                    <span style="font-weight:500;">Seamless Approvals</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; padding:12px; background:var(--bg); border-radius:12px;">
+                    <i class="fas fa-check-circle" style="color:var(--secondary);"></i>
+                    <span style="font-weight:500;">Direct M-Pesa Hook</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; padding:12px; background:var(--bg); border-radius:12px;">
+                    <i class="fas fa-check-circle" style="color:var(--secondary);"></i>
+                    <span style="font-weight:500;">Secure Live Chat</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; padding:12px; background:var(--bg); border-radius:12px;">
+                    <i class="fas fa-check-circle" style="color:var(--secondary);"></i>
+                    <span style="font-weight:500;">23 Access Levels</span>
+                </div>
             </div>
         </div>
-
-        <!-- 2. Admissions & Registry -->
-        <div class="category-card">
-            <h3><i class="fas fa-id-card"></i> Admissions & Registry</h3>
-            <div class="roles-list">
-                <a href="#register-admin" class="role-pill"><span class="role-emoji">📋</span> Register Admin</a>
-                <a href="#register-user" class="role-pill"><span class="role-emoji">👤</span> Register User</a>
-                <a href="#deferment-officer" class="role-pill"><span class="role-emoji">📋</span> Deferment Officer</a>
-            </div>
-        </div>
-
-        <!-- 3. Academic Coordinates -->
-        <div class="category-card">
-            <h3><i class="fas fa-book-bookmark"></i> Academic Coordinators</h3>
-            <div class="roles-list">
-                <a href="#dean-graduate" class="role-pill"><span class="role-emoji">🎓</span> Dean Grad School</a>
-                <a href="#director-tvet" class="role-pill"><span class="role-emoji">🔧</span> Director TVET</a>
-                <a href="#dept-mcs" class="role-pill"><span class="role-emoji">💻</span> MCS Coordinator</a>
-                <a href="#diploma-coord" class="role-pill"><span class="role-emoji">🎓</span> Diploma Coordinator</a>
-                <a href="#dept-coord" class="role-pill"><span class="role-emoji">🏫</span> Dept Coordinator</a>
-            </div>
-        </div>
-
-        <!-- 4. Operations & Security -->
-        <div class="category-card">
-            <h3><i class="fas fa-shield-heart"></i> Operations & Security</h3>
-            <div class="roles-list">
-                <a href="#finance-officer" class="role-pill"><span class="role-emoji">💰</span> Finance Officer</a>
-                <a href="#security-officer" class="role-pill"><span class="role-emoji">👤</span> Security Officer</a>
-                <a href="#emergency-coord" class="role-pill"><span class="role-emoji">🚨</span> Emergency Coordinator</a>
-                <a href="#news-editor" class="role-pill"><span class="role-emoji">📢</span> News Editor</a>
-                <a href="#news-auditor" class="role-pill"><span class="role-emoji">📜</span> News Auditor</a>
-            </div>
-        </div>
-
-        <!-- 5. Welfare & Facilities -->
-        <div class="category-card">
-            <h3><i class="fas fa-hand-holding-hand"></i> Welfare & Facilities</h3>
-            <div class="roles-list">
-                <a href="#dean-students" class="role-pill"><span class="role-emoji">👨‍🎓</span> Dean of Students</a>
-                <a href="#warden" class="role-pill"><span class="role-emoji">🏠</span> Warden</a>
-                <a href="#health-manager" class="role-pill"><span class="role-emoji">🏥</span> Health Manager</a>
-                <a href="#maintenance-sup" class="role-pill"><span class="role-emoji">🔧</span> Maintenance Supervisor</a>
-                <a href="#support-agent" class="role-pill"><span class="role-emoji">💬</span> Support Agent</a>
+        <div style="background:var(--gradient); border-radius:24px; padding:40px; color:white; text-align:center; box-shadow:0 20px 40px -12px rgba(13,148,136,0.3);">
+            <img src="{% static 'img/campus_care_logo.png' %}" alt="Campus Care Logo" style="width: 64px; height: 64px; object-fit: contain; margin-bottom: 16px;">
+            <h3 style="font-size:28px; font-weight:700;">Campus Care</h3>
+            <p style="opacity:0.7;">Student Welfare Management System</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:24px;">
+                <div style="background:rgba(255,255,255,0.1); border-radius:12px; padding:16px;">
+                    <div style="font-size:28px; font-weight:700;">10,000+</div>
+                    <div style="font-size:12px; opacity:0.7;">Students</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.1); border-radius:12px; padding:16px;">
+                    <div style="font-size:28px; font-weight:700;">100%</div>
+                    <div style="font-size:12px; opacity:0.7;">Automated</div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ======================== FOOTER ======================== -->
+<!-- ===== CONTACT ===== -->
+<section class="features-section" id="contact" style="background:var(--bg);">
+    <div class="section-header">
+        <h2>Get in <span>Touch</span></h2>
+        <p>Ready to transform campus welfare? Reach out to us.</p>
+    </div>
+    <div style="max-width: 700px; margin:0 auto; background:white; border-radius:24px; padding:40px; border:1px solid #E2E8F0; box-shadow:var(--shadow);">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+            <div style="text-align:center; padding:24px; background:var(--bg); border-radius:16px;">
+                <i class="fas fa-envelope" style="font-size:32px; color:var(--secondary); margin-bottom:12px;"></i>
+                <h4 style="font-weight:600;">Email</h4>
+                <a href="mailto:info@campuscare.co.ke" style="color:var(--secondary); text-decoration:none;">info@campuscare.co.ke</a>
+            </div>
+            <div style="text-align:center; padding:24px; background:var(--bg); border-radius:16px;">
+                <i class="fas fa-phone" style="font-size:32px; color:var(--secondary); margin-bottom:12px;"></i>
+                <h4 style="font-weight:600;">Phone</h4>
+                <a href="tel:0750168458" style="color:var(--secondary); text-decoration:none;">0750 168 458</a>
+            </div>
+        </div>
+        <div style="text-align:center; margin-top:24px; padding-top:24px; border-top:1px solid #E2E8F0;">
+            <p style="color:var(--gray);">Developed by: <strong style="color:var(--dark);">Ali Mahirizi Abdalla</strong></p>
+            <div style="display:flex; justify-content:center; gap:12px; margin-top:8px;">
+                <a href="#" style="color:var(--gray); font-size:13px;">About System</a>
+                <span style="color:#E2E8F0;">|</span>
+                <a href="#staff-roles" style="color:var(--gray); font-size:13px;">Access Levels</a>
+                <span style="color:#E2E8F0;">|</span>
+                <a href="{% url 'hms:login' %}" style="color:var(--gray); font-size:13px;">Sign In Portal</a>
+                <span style="color:#E2E8F0;">|</span>
+                <a href="{% url 'hms:register' %}" style="color:var(--gray); font-size:13px;">Create Student Profile</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
 <footer class="footer">
     <div class="footer-container">
         <div class="footer-brand">
-            <div class="footer-logo">
-                <img src="{% static 'img/campus_care_logo.png' %}" alt="Campus Care Logo"> Campus Care
+            <div class="logo-footer"><img src="{% static 'img/campus_care_logo.png' %}" alt="Logo" style="width: 24px; height: 24px; object-fit: contain;"> Campus Care</div>
+            <p>Student Welfare Management System — Digitizing campus life for students everywhere.</p>
+            <div class="social">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
             </div>
-            <p>An automated web portal to manage and streamline all dimensions of Student Welfare Services.</p>
-            <div class="developer-tag">Developed by: Ali Mahirizi Abdalla</div>
         </div>
-        <div class="footer-links">
-            <h4>Navigations</h4>
-            <ul>
-                <li><a href="#about">About System</a></li>
-                <li><a href="#staff-roles">Access Levels</a></li>
-                <li><a href="{% url 'hms:login' %}">Sign In Portal</a></li>
-                <li><a href="{% url 'hms:register' %}">Create Student Profile</a></li>
-            </ul>
+        <div>
+            <h5>Quick Links</h5>
+            <a href="#features">Features</a>
+            <a href="#staff-roles">Staff Roles</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
         </div>
-        <div class="footer-contact">
-            <h4>Support Contacts</h4>
-            <p><i class="fas fa-envelope"></i> <a href="mailto:alimahrez744@gmail.com">alimahrez744@gmail.com</a></p>
-            <p><i class="fas fa-phone"></i> <a href="tel:0750168458">0750168458</a></p>
+        <div>
+            <h5>Support</h5>
+            <a href="/help/">Help Center</a>
+            <a href="/faq/">FAQ</a>
+            <a href="/privacy/">Privacy Policy</a>
+            <a href="/terms/">Terms of Service</a>
+        </div>
+        <div>
+            <h5>Contact</h5>
+            <a href="mailto:info@campuscare.co.ke"><i class="fas fa-envelope"></i> info@campuscare.co.ke</a>
+            <a href="tel:0750168458"><i class="fas fa-phone"></i> 0750 168 458</a>
+            <a href="#"><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</a>
         </div>
     </div>
-    <hr class="footer-divider">
-    <div class="footer-bottom">
-        <p>© 2026 Campus Care Welfare Portal. All rights reserved.</p>
+    <div class="copyright">
+        © 2026 <a href="#">Campus Care</a>. All rights reserved. Developed by <strong>Ali Mahirizi Abdalla</strong>
     </div>
 </footer>
 
-<!-- ======================== SCRIPT ======================== -->
+<!-- ===== SCRIPT ===== -->
 <script>
     function toggleDropdown() {
         const menu = document.getElementById('dropdownMenu');
         menu.classList.toggle('open');
     }
 
-    // Close dropdown when clicking outside
     document.addEventListener('click', function(event) {
         const dropdown = document.querySelector('.profile-dropdown');
-        if (dropdown && !dropdown.contains(event.target)) {
+        if (!dropdown.contains(event.target)) {
             document.getElementById('dropdownMenu').classList.remove('open');
         }
     });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Scroll animation
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
