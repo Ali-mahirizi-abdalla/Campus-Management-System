@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="3Z1_mH2YOg-whHK9grZyyn3x9phP8UeUr_isg1u0ovU" />
     <title>{% block title %}CampusCare – Student Welfare | Hostel, Meals, Maintenance{% endblock %}</title>
-    <meta name="description" content="A comprehensive campus platform for student welfare, hostel management, meal planning, maintenance requests, and more.">
+    <meta name="description"
+        content="A comprehensive campus platform for student welfare, hostel management, meal planning, maintenance requests, and more.">
 
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="{% static 'manifest.json' %}">
@@ -17,20 +18,23 @@
     <meta name="apple-mobile-web-app-title" content="CampusCare">
     <link rel="apple-touch-icon" href="{% static 'img/icon-192.png' %}">
 
+
     <!-- Open Graph Meta Tags (WhatsApp, Facebook link previews) -->
-    <meta property="og:title" content="CampusCare – Student Welfare | Hostel, Meals, Maintenance">
-    <meta property="og:description" content="A powerful campus platform for student welfare, hostel management, meal planning, maintenance requests, and more.">
+    <meta property="og:title" content="SWMS – Student Welfare | Hostel, Meals, Maintenance">
+    <meta property="og:description"
+        content="A powerful campus platform for student welfare, hostel management, meal planning, maintenance requests, and more.">
     <meta property="og:image" content="https://campus-care.co.ke/static/img/campuscare_logo.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:url" content="https://campus-care.co.ke/">
-    <meta property="og:site_name" content="CampusCare">
+    <meta property="og:site_name" content="SWMS">
     <meta property="og:type" content="website">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="CampusCare - Student Welfare Management System">
-    <meta name="twitter:description" content="A comprehensive campus management platform for student welfare, hostel management, meal planning, maintenance requests, and more.">
+    <meta name="twitter:title" content="SWMS - Student Welfare Management System">
+    <meta name="twitter:description"
+        content="A comprehensive Student Welfare Management System for student welfare, hostel management, meal planning, maintenance requests, and more.">
     <meta name="twitter:image" content="https://campus-care.co.ke/static/img/campuscare_logo.png">
 
     <!-- Tailwind CSS -->
@@ -44,8 +48,8 @@
                 extend: {
                     colors: {
                         primary: {
-                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 
-                            400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 
+                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+                            400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
                             800: '#1e40af', 900: '#1e3a8a'
                         },
                         dark: {
@@ -77,7 +81,7 @@
         .custom-scrollbar::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.05);
         }
-        
+
         .dark .custom-scrollbar::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.05);
         }
@@ -86,7 +90,7 @@
             background: rgba(0, 0, 0, 0.2);
             border-radius: 2px;
         }
-        
+
         .dark .custom-scrollbar::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.2);
         }
@@ -94,7 +98,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: rgba(0, 0, 0, 0.3);
         }
-        
+
         .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.3);
         }
@@ -120,7 +124,8 @@
 
             <!-- Left: Mobile Toggle & Brand -->
             <div class="flex items-center gap-4">
-                <button id="mobile-menu-btn" class="md:hidden text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-lg transition">
+                <button id="mobile-menu-btn"
+                    class="md:hidden text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 p-2 rounded-lg transition">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 6h16M4 12h16M4 18h16"></path>
@@ -196,57 +201,87 @@
                     <!-- Notification Dropdown -->
                     <div id="notification-dropdown"
                         class="hidden absolute right-0 mt-2 w-80 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-700 z-50 overflow-hidden transform origin-top-right transition-all duration-200 opacity-0 scale-95">
-                        <div class="p-4 border-b border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-900/50 flex justify-between items-center">
+                        <div
+                            class="p-4 border-b border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-900/50 flex justify-between items-center">
                             <h3 class="font-bold text-gray-900 dark:text-white">Notifications</h3>
                             {% if unread_notification_count > 0 %}
-                            <span class="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-full">{{ unread_notification_count }} New</span>
+                            <span
+                                class="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-full">{{
+                                unread_notification_count }} New</span>
                             {% endif %}
                         </div>
-                        
+
                         <div class="max-h-[320px] overflow-y-auto custom-scrollbar">
                             {% if unread_notifications %}
-                                <div class="divide-y divide-gray-100 dark:divide-slate-700/50" id="notification-list">
-                                    {% for notif in unread_notifications %}
-                                    <div class="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors relative group" id="notif-{{ notif.id }}">
-                                        <div class="flex gap-3">
-                                            <!-- Icon based on type -->
-                                            <div class="flex-shrink-0 mt-1">
-                                                {% if notif.notification_type == 'meal' %}
-                                                <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center"><span class="text-sm">🍔</span></div>
-                                                {% elif notif.notification_type == 'finance' %}
-                                                <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center"><span class="text-sm">💰</span></div>
-                                                {% elif notif.notification_type == 'maintenance' %}
-                                                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><span class="text-sm">🔧</span></div>
-                                                {% else %}
-                                                <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center"><span class="text-sm">📢</span></div>
-                                                {% endif %}
+                            <div class="divide-y divide-gray-100 dark:divide-slate-700/50" id="notification-list">
+                                {% for notif in unread_notifications %}
+                                <div class="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors relative group"
+                                    id="notif-{{ notif.id }}">
+                                    <div class="flex gap-3">
+                                        <!-- Icon based on type -->
+                                        <div class="flex-shrink-0 mt-1">
+                                            {% if notif.notification_type == 'meal' %}
+                                            <div
+                                                class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center">
+                                                <span class="text-sm">🍔</span>
                                             </div>
-                                            <!-- Content -->
-                                            <div class="flex-1 min-w-0 pr-6">
-                                                <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ notif.title }}</p>
-                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2 leading-relaxed">{{ notif.message }}</p>
-                                                <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-1.5">{{ notif.created_at|timesince }} ago</p>
+                                            {% elif notif.notification_type == 'finance' %}
+                                            <div
+                                                class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                                                <span class="text-sm">💰</span>
                                             </div>
+                                            {% elif notif.notification_type == 'maintenance' %}
+                                            <div
+                                                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                                                <span class="text-sm">🔧</span>
+                                            </div>
+                                            {% else %}
+                                            <div
+                                                class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                                                <span class="text-sm">📢</span>
+                                            </div>
+                                            {% endif %}
                                         </div>
-                                        <!-- Dismiss button -->
-                                        <button onclick="dismissNotification({{ notif.id }})" title="Mark as read"
-                                            class="absolute top-4 right-4 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:shadow-md border border-gray-100 dark:border-slate-700">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        </button>
-                                        {% if notif.link %}
-                                        <a href="{{ notif.link }}" class="absolute inset-0 z-0" onclick="dismissNotification({{ notif.id }})"></a>
-                                        {% endif %}
+                                        <!-- Content -->
+                                        <div class="flex-1 min-w-0 pr-6">
+                                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{
+                                                notif.title }}</p>
+                                            <p
+                                                class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2 leading-relaxed">
+                                                {{ notif.message }}</p>
+                                            <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-1.5">{{
+                                                notif.created_at|timesince }} ago</p>
+                                        </div>
                                     </div>
-                                    {% endfor %}
+                                    <!-- Dismiss button -->
+                                    <button onclick="dismissNotification({{ notif.id }})" title="Mark as read"
+                                        class="absolute top-4 right-4 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:shadow-md border border-gray-100 dark:border-slate-700">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </button>
+                                    {% if notif.link %}
+                                    <a href="{{ notif.link }}" class="absolute inset-0 z-0"
+                                        onclick="dismissNotification({{ notif.id }})"></a>
+                                    {% endif %}
                                 </div>
+                                {% endfor %}
+                            </div>
                             {% else %}
-                                <div class="p-8 text-center" id="empty-notifications">
-                                    <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                                        <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    </div>
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white">All caught up!</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">You have no new notifications.</p>
+                            <div class="p-8 text-center" id="empty-notifications">
+                                <div
+                                    class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
                                 </div>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">All caught up!</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">You have no new notifications.
+                                </p>
+                            </div>
                             {% endif %}
                         </div>
                     </div>
@@ -274,7 +309,8 @@
                             class="text-sm font-bold text-slate-700 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-teal-300 transition-colors leading-tight">
                             {{ user.first_name }}</p>
                         <p class="text-[10px] text-slate-500 dark:text-white uppercase tracking-widest">
-                            {% if user.is_superuser %}Super Admin{% elif user.is_staff %}Staff{% else %}Student{% endif %}
+                            {% if user.is_superuser %}Super Admin{% elif user.is_staff %}Staff{% else %}Student{% endif
+                            %}
                         </p>
                     </div>
                 </a>
@@ -358,7 +394,7 @@
         function toggleSidebar() {
             if (!sidebar) return;
             const isHidden = sidebar.classList.contains('-translate-x-full');
-            
+
             if (isHidden) {
                 // Open
                 sidebar.classList.remove('-translate-x-full');
@@ -491,28 +527,28 @@
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const notifElement = document.getElementById(`notif-${id}`);
-                    if (notifElement) {
-                        notifElement.style.transition = 'all 0.3s ease';
-                        notifElement.style.opacity = '0';
-                        notifElement.style.transform = 'translateX(20px)';
-                        setTimeout(() => {
-                            notifElement.remove();
-                            // Update badge count
-                            const badge = document.getElementById('notification-badge');
-                            if (badge) {
-                                let count = parseInt(badge.textContent);
-                                count--;
-                                if (count > 0) {
-                                    badge.textContent = count;
-                                } else {
-                                    badge.remove();
-                                    const list = document.getElementById('notification-list');
-                                    if (list) {
-                                        list.innerHTML = `
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const notifElement = document.getElementById(`notif-${id}`);
+                        if (notifElement) {
+                            notifElement.style.transition = 'all 0.3s ease';
+                            notifElement.style.opacity = '0';
+                            notifElement.style.transform = 'translateX(20px)';
+                            setTimeout(() => {
+                                notifElement.remove();
+                                // Update badge count
+                                const badge = document.getElementById('notification-badge');
+                                if (badge) {
+                                    let count = parseInt(badge.textContent);
+                                    count--;
+                                    if (count > 0) {
+                                        badge.textContent = count;
+                                    } else {
+                                        badge.remove();
+                                        const list = document.getElementById('notification-list');
+                                        if (list) {
+                                            list.innerHTML = `
                                         <div class="p-8 text-center" id="empty-notifications">
                                             <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
                                                 <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -520,13 +556,13 @@
                                             <p class="text-sm font-medium text-gray-900 dark:text-white">All caught up!</p>
                                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">You have no new notifications.</p>
                                         </div>`;
+                                        }
                                     }
                                 }
-                            }
-                        }, 300);
+                            }, 300);
+                        }
                     }
-                }
-            });
+                });
         }
 
         // Enable Push Notifications
