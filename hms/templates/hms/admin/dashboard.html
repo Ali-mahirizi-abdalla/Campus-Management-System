@@ -335,16 +335,16 @@
         <h2 class="text-xs font-bold text-slate-500 uppercase tracking-widest"><i class="fas fa-university mr-1"></i> Academic Schools & Departments</h2>
     </div>
     <div class="department-cards">
-        <div class="dept-card" style="background: linear-gradient(135deg, #1d4ed8, #1e3a8a); border-top: 3px solid #60a5fa;">
-            <div class="dept-glow"></div>
-            <div class="relative z-10">
-                <div class="dept-icon-box">📚</div>
-                <p class="dept-title">Library</p>
-                <p style="font-size: 8px; color: rgba(255,255,255,0.7); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="Library">Library</p>
-                <p class="dept-count">{{ school_counts.library }}</p>
-                <p class="dept-label">Students</p>
-            </div>
-        </div>
+        <a href="{% url 'library:myloft_redirect' %}" target="_blank" class="dept-card" style="background: linear-gradient(135deg, #1d4ed8, #1e3a8a); border-top: 3px solid #60a5fa;">
+    <div class="dept-glow"></div>
+    <div class="relative z-10">
+        <div class="dept-icon-box">📚</div>
+        <p class="dept-title">Library</p>
+        <p style="font-size: 8px; color: rgba(255,255,255,0.7); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="Library">Library</p>
+        <p class="dept-count">{{ school_counts.library }}</p>
+        <p class="dept-label">Students</p>
+    </div>
+</a>
         <div class="dept-card" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); border-top: 3px solid #c4b5fd;">
             <div class="dept-glow"></div>
             <div class="relative z-10">
