@@ -719,9 +719,10 @@ def student_profile(request):
             )
             
             if profile_form.is_valid():
-                # Handle profile image separately
-                if 'profile_image' in request.FILES:
-                    student.profile_image = request.FILES['profile_image']
+                # Safely handle profile image upload if provided
+                image_file = request.FILES.get('image')
+                if image_file:
+                    student.profile_image = image_file
                     student.save()
                 
                 # Save form data (user and student fields)
