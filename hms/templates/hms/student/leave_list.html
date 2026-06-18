@@ -102,8 +102,7 @@
                                 {% else %}
                                     bg-rose-50 text-rose-700 border-rose-100
                                 {% endif %}">
-                                {% if leave.status == 'pending' %}🟡{% elif leave.status == 'approved' %}🟢{% else
-                                %}🔴{% endif %}
+                                {% if leave.status == 'pending' %}🟡{% elif leave.status == 'approved' %}🟢{% else %}🔴{% endif %}
                                 {{ leave.get_status_display }}
                             </span>
                         </div>
