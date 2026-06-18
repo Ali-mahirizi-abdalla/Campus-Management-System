@@ -8,14 +8,14 @@ ROLES = [
         'dir': 'admin',
         'name': 'dashboard_super_admin.html',
         'title': 'Super Admin Dashboard',
-        'features': ['📊 All System Metrics', '👥 Staff Management (Add, Edit, Delete)', '👑 Role Management (Assign Permissions)', '🎓 All Students (View, Edit, Delete)', '🏥 Health Management (Full Access)', '🔧 Maintenance Management (Full Access)', '🏠 Accommodation Management (Full Access)', '💰 Payments & M-Pesa (Full Access)', '👤 Visitor Management (Full Access)', '📢 News & Alerts (Full Access)', '📜 Audit Logs (Full Access)', '🚨 Emergency Alerts (Full Access)', '💬 Student Chat (Monitor All)', '⚙️ System Settings']
+        'features': ['📊 All System Metrics', '👥 Staff Management (Add, Edit, Delete)', '🎓 All Students (View, Edit, Delete)', '🏥 Health Management (Full Access)', '🔧 Maintenance Management (Full Access)', '🏠 Accommodation Management (Full Access)', '💰 Payments & M-Pesa (Full Access)', '👤 Visitor Management (Full Access)', '📢 News & Alerts (Full Access)', '📜 Audit Logs (Full Access)', '🚨 Emergency Alerts (Full Access)', '💬 Student Chat (Monitor All)', '⚙️ System Settings']
     },
     {
         'code': 'vice_chancellor',
         'dir': 'executive',
         'name': 'dashboard_vc.html',
         'title': 'Vice Chancellor Dashboard',
-        'features': ['📊 Institution Analytics', '👥 View All Staff (Read-Only)', '📈 Department Performance Reports', '🏫 Campus Overview', '📋 Strategic Reports']
+        'features': ['📊 Institution Analytics', '👥 View All Staff (Read-Only)', '📈 Department Performance Reports', '🏫 Campus Overview', '📋 Strategic Reports', '👑 Role Management (Assign Permissions)', '🔒 Permission Matrix']
     },
     {
         'code': 'deputy_vice_chancellor',
