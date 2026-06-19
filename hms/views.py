@@ -4270,8 +4270,9 @@ from django.views.decorators.csrf import csrf_exempt
 def permission_matrix(request):
     if not request.user.is_superuser:
         staff_profile = getattr(request.user, 'staff_profile', None)
-        if not staff_profile or staff_profile.role != 'super_admin':
-            messages.error(request, 'Only Super Admins can view the permission matrix.')
+        allowed_roles = ['super_admin', 'vice_chancellor', 'deputy_vice_chancellor']
+        if not staff_profile or staff_profile.role not in allowed_roles:
+            messages.error(request, 'Only Admins can view the permission matrix.')
             return redirect('hms:dashboard_redirect')
         
     from .models import StaffProfile, Permission, RolePermission

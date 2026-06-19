@@ -45,7 +45,7 @@
         {% if user.staff_profile.role != 'vice_chancellor' and user.staff_profile.role != 'deputy_vice_chancellor' %}
         <a href="{% url 'hms:manage_staff' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Staff Management</a>
         {% endif %}
-        {% if user.is_superuser or user.staff_profile.role == 'super_admin' %}
+        {% if user.is_superuser or user.staff_profile.role in ['super_admin', 'vice_chancellor', 'deputy_vice_chancellor'] %}
     <a href="{% url 'hms:manage_roles' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm {% if request.resolver_match.url_name == 'manage_roles' %}bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400{% endif %} rounded-xl transition">Role Management</a>
     <a href="{% url 'hms:permission_matrix' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm {% if request.resolver_match.url_name == 'permission_matrix' %}bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400{% endif %} rounded-xl transition">Permission Matrix</a>
 {% endif %}
