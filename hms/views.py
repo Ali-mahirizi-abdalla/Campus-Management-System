@@ -298,6 +298,8 @@ def mpesa_callback(request):
     return HttpResponse("OK")
 
 
+@ensure_csrf_cookie
+
 def register_staff(request):
     """
     Handle staff registration logic.
