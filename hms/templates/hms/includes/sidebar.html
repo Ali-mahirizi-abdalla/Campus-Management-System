@@ -45,7 +45,7 @@
         {% if user.staff_profile.role != 'vice_chancellor' and user.staff_profile.role != 'deputy_vice_chancellor' %}
         <a href="{% url 'hms:manage_staff' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">Staff Management</a>
         {% endif %}
-        {% if user.is_superuser or user.staff_profile.role in ['super_admin', 'vice_chancellor', 'deputy_vice_chancellor'] %}
+        {% if user.is_superuser or user.staff_profile.role == 'super_admin' or user.staff_profile.role == 'vice_chancellor' or user.staff_profile.role == 'deputy_vice_chancellor' %}
     <a href="{% url 'hms:manage_roles' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm {% if request.resolver_match.url_name == 'manage_roles' %}bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400{% endif %} rounded-xl transition">Role Management</a>
     <a href="{% url 'hms:permission_matrix' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm {% if request.resolver_match.url_name == 'permission_matrix' %}bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400{% endif %} rounded-xl transition">Permission Matrix</a>
 {% endif %}
@@ -320,8 +320,7 @@
         </a>
         {% comment %}Student access to admin pages{% endcomment %}
 <a href="{% url 'hms:terms_of_service' %}" class="flex items-center gap-3 px-4 py-3 {% if request.resolver_match.url_name == 'terms_of_service' %}bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 shadow-lg text-indigo-600 dark:text-indigo-400{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400{% endif %} rounded-xl transition group">Terms of Service</a>
-        <a href={% url 'hms:manage_roles' %} class="flex items-center gap-3 px-4 py-3 {% if request.resolver_match.url_name == 'manage_roles' %}bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 shadow-lg text-indigo-600 dark:text-indigo-400{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400{% endif %} rounded-xl transition group">Role Management</a>
-        <a href={% url 'hms:permission_matrix' %} class="flex items-center gap-3 px-4 py-3 {% if request.resolver_match.url_name == 'permission_matrix' %}bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 shadow-lg text-indigo-600 dark:text-indigo-400{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400{% endif %} rounded-xl transition group">Permission Matrix</a>
+        
 {% if feature_flags.library_management %}
         <a href="{% url 'library:student_library' %}"
             class="flex items-center gap-3 px-4 py-3 {% if 'library' in request.path %}bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 shadow-lg text-indigo-600 dark:text-indigo-400{% else %}hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400{% endif %} rounded-xl transition group">

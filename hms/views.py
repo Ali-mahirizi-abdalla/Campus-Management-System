@@ -478,6 +478,8 @@ def global_search(request):
 @login_required
 def dashboard_redirect(request):
     """Unified redirect for staff dashboards based on role"""
+    if request.user.username == 'mosses_isutsa':
+        return redirect('library:librarian_dashboard')
     if request.user.is_superuser:
         return redirect('hms:admin_dashboard')
 
